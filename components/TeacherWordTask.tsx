@@ -59,7 +59,7 @@ const [isReviewing, setIsReviewing] = useState(false);
         id: obj.id || Date.now() + index,
         classTag: (obj.classTag || "1001.a").trim(),
         type: obj.type || "short-answer",
-        question: JSON.stringify(obj) // 🔥 LƯU NGUYÊN JSON
+        question: JSON.stringify(obj, null, 2) // 🔥 LƯU NGUYÊN JSON
       };
     } catch (e) {
       console.error("❌ Lỗi parse câu:", block);
