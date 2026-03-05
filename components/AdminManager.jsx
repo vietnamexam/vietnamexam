@@ -160,6 +160,53 @@ useEffect(() => {
     return () => clearTimeout(timer);
   }
 }, [editForm]);
+
+  const handleUpdateFromPreview = async (updatedItem) => {
+  setLoading(true);
+  try {
+    // 1. Cập nhật vào danh sách đang Preview để thầy thấy kết quả ngay
+    const currentList = JSON.parse(jsonInput);
+    const newList = currentList.map(it => it.id === updatedItem.id ? updatedItem : it);
+    setJsonInput(JSON.stringify(newList, null, 2));
+
+    // 2. Gọi API updateQuestion (Tận dụng hàm thầy đã viết)
+    // Giả lập logic của handleQuickUpdate nhưng gửi toàn bộ Object
+    const payload = {
+      data: {
+        id: updatedItem.id,
+        classTag: updatedItem.classTag,
+        type: updatedItem.type,
+        part: updatedItem.part,
+        question: updatedItem.question,
+        options: updatedItem.options,
+        answer: updatedItem.answer,
+        loigiai: updatedItem.loigiai,
+        date: new Date().toLocaleString('vi-VN')
+      }
+    };
+
+    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+    if (result.status === 'success') {
+      alert("🚀 Đã cập nhật câu hỏi lên Sheet thành công!");
+    } else {
+      alert("Lỗi: " + result.message);
+    }
+  } catch (error) {
+    alert("Không kết nối được server");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// --- TRONG PHẦN RENDER TAB WORD ---
+
   // edit từng câu
  const handleEditFromPreview = (item) => {
   setEditForm({
@@ -709,7 +756,7 @@ const handleQuickUpdate = async (field, newValue) => {
           <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
             {jsonInput ? (
               <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
-              onEditSingle={handleEditFromPreview}
+              onUpdateSingle={handleUpdateFromPreview} 
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-2">
                 <i className="fa-solid fa-eye-slash text-2xl"></i>
