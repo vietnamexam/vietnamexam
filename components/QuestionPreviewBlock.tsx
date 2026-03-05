@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react';
-
-const QuestionPreviewBlock = ({ data, onChange }) => {
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [tempItem, setTempItem] = useState(null);
-
+import React, { useEffect } from 'react';
+const QuestionPreviewBlock = ({ data }) => {
   useEffect(() => {
     if (window.MathJax) {
       const timer = setTimeout(() => {
@@ -11,25 +7,13 @@ const QuestionPreviewBlock = ({ data, onChange }) => {
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [data, editingIndex]);
+  }, [data]);
 
   if (!data || data.length === 0) return null;
 
-  const handleSave = () => {
-    const newData = [...data];
-    newData[editingIndex] = tempItem;
-    onChange(newData);
-    setEditingIndex(null);
-    setTempItem(null);
-  };
-
-  const startEdit = (item, index) => {
-    setEditingIndex(index);
-    setTempItem({ ...item });
-  };
-
   const renderOptions = (item) => {
     try {
+      // 1. XỬ LÝ CÂU TRẢ LỜI NGẮN (SA)
       const isShortAnswer = !item.options || item.options === "" || item.options === "[]";
       if (isShortAnswer) {
         return (
@@ -40,13 +24,29 @@ const QuestionPreviewBlock = ({ data, onChange }) => {
         );
       }
 
-      const options = typeof item.options === 'string'
-        ? JSON.parse(item.options)
-        : item.options;
+      const options = typeof item.options === 'string' ? JSON.parse(item.options) : item.options;
 
+      // 2. XỬ LÝ CÂU ĐÚNG/SAI (TF)
+      if (Array.isArray(options) && typeof options[0] === 'object') {
+        return (
+          <div className="space-y-2 mt-4">
+            {options.map((opt, i) => (
+              <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span className="font-bold text-blue-600 text-xs italic">{String.fromCharCode(97 + i)})</span>
+                <span className="text-sm flex-1">{opt.text}</span>
+                <span className={`text-[10px] font-black px-2 py-1 rounded-lg ${opt.a ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
+                  {opt.a ? 'ĐÚNG' : 'SAI'}
+                </span>
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      // 3. XỬ LÝ CÂU TRẮC NGHIỆM (MCQ)
       const labels = ['A', 'B', 'C', 'D'];
       const entries = Array.isArray(options) ? options : Object.values(options);
-
+      
       return (
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -57,119 +57,52 @@ const QuestionPreviewBlock = ({ data, onChange }) => {
                   <b className={`w-6 h-6 flex items-center justify-center rounded-lg text-[10px] ${isCorrect ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
                     {labels[i]}
                   </b>
-                  <span className={`text-sm ${isCorrect ? 'font-semibold text-rose-900' : 'text-slate-600'}`}>
-                    {text}
-                  </span>
+                  <span className={`text-sm ${isCorrect ? 'font-semibold text-rose-900' : 'text-slate-600'}`}>{text}</span>
                 </div>
               );
             })}
           </div>
-
-          <div className="flex items-center justify-end">
-            <div className="bg-rose-600 text-white px-6 py-2 rounded-2xl shadow-lg">
-              <b className="text-xl font-black">ĐÁP ÁN: {item.answer}</b>
-            </div>
+          
+          {/* Ô KẾT QUẢ TỔNG HỢP CHO MCQ */}
+          {/* Ô ĐÁP ÁN CHO MCQ */}
+        <div className="flex items-center justify-end">
+          <div className="bg-rose-600 text-white px-6 py-2 rounded-2xl shadow-lg shadow-rose-200 flex items-center gap-3 animate-bounce-short">
+            <b className="text-2xl font-black">ĐÁP ÁN: {item.answer}</b>
           </div>
+        </div>
         </div>
       );
     } catch (e) {
-      return <div className="mt-2 p-3 bg-slate-100 rounded-lg text-xs italic text-rose-500">Lỗi dữ liệu</div>;
+      return <div className="mt-2 p-3 bg-slate-100 rounded-lg text-xs italic text-rose-500">Lỗi dữ liệu: {item.answer}</div>;
     }
   };
 
   return (
-    <div className="h-full space-y-8 overflow-y-auto pr-4">
+    <div className="h-full space-y-8 overflow-y-auto pr-4 no-scrollbar scroll-smooth">
       {data.map((item, index) => (
-        <div key={index} className="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm relative group">
-
-          {/* HEADER */}
+        <div key={index} className="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm relative animate-fade-in group">
+          {/* Header câu hỏi */}
           <div className="absolute top-0 left-0 flex items-center">
-            <div className="bg-slate-900 text-white px-6 py-2 rounded-br-[1.5rem] font-black text-xs uppercase">
+            <div className="bg-slate-900 text-white px-6 py-2 rounded-br-[1.5rem] font-black text-xs uppercase tracking-widest">
               Câu {index + 1}
             </div>
             <div className="px-4 text-[10px] font-bold text-slate-400">
-              ID: {item.id} • {item.classTag}
+              ID: {item.id} • ClassTag: {item.classTag}
             </div>
           </div>
 
-          {/* NÚT SỬA */}
-          <button
-            onClick={() => startEdit(item, index)}
-            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold transition"
-          >
-            SỬA
-          </button>
+          {/* Nội dung câu hỏi */}
+          <div className="mt-8 text-slate-800 font-medium leading-relaxed preview-content text-lg" dangerouslySetInnerHTML={{ __html: item.question }} />
+          
+          {/* Các phương án */}
+          {renderOptions(item)}
 
-          {/* NỘI DUNG */}
-          {editingIndex === index ? (
-            <div className="mt-8 space-y-4">
-
-              <textarea
-                className="w-full p-4 border rounded-xl"
-                value={tempItem.question}
-                onChange={(e) =>
-                  setTempItem({ ...tempItem, question: e.target.value })
-                }
-              />
-
-              <textarea
-                className="w-full p-4 border rounded-xl"
-                value={tempItem.options}
-                onChange={(e) =>
-                  setTempItem({ ...tempItem, options: e.target.value })
-                }
-              />
-
-              <input
-                className="w-full p-4 border rounded-xl"
-                value={tempItem.answer}
-                onChange={(e) =>
-                  setTempItem({ ...tempItem, answer: e.target.value })
-                }
-              />
-
-              <textarea
-                className="w-full p-4 border rounded-xl"
-                value={tempItem.loigiai}
-                onChange={(e) =>
-                  setTempItem({ ...tempItem, loigiai: e.target.value })
-                }
-              />
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handleSave}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-xs"
-                >
-                  LƯU
-                </button>
-                <button
-                  onClick={() => setEditingIndex(null)}
-                  className="px-6 py-3 bg-slate-200 rounded-xl font-bold text-xs"
-                >
-                  HỦY
-                </button>
-              </div>
+          {/* Lời giải */}
+          {item.loigiai && (
+            <div className="mt-6 p-6 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+              <span className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-[0.2em]">Hướng dẫn giải</span>
+              <div className="text-sm text-slate-600 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: item.loigiai }} />
             </div>
-          ) : (
-            <>
-              <div
-                className="mt-8 text-slate-800 font-medium leading-relaxed text-lg"
-                dangerouslySetInnerHTML={{ __html: item.question }}
-              />
-              {renderOptions(item)}
-              {item.loigiai && (
-                <div className="mt-6 p-6 bg-slate-50 rounded-[2.5rem] border border-dashed">
-                  <span className="text-[10px] font-black text-slate-400 block mb-2 uppercase">
-                    Hướng dẫn giải
-                  </span>
-                  <div
-                    className="text-sm text-slate-600 italic"
-                    dangerouslySetInnerHTML={{ __html: item.loigiai }}
-                  />
-                </div>
-              )}
-            </>
           )}
         </div>
       ))}
