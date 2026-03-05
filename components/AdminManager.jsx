@@ -353,21 +353,32 @@ const handleUploadLG = async () => {
 };
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
-  const handleVerifyAdminOTP = () => {
-    if (otp === "12345@" || otp === "6688@") setIsAdminVerified(true);
-    else alert("Mã OTP sai!");
-  };
-  if (!isAdminVerified) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center p-4">
-        <div className="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md text-center">
-          <h2 className="text-2xl font-black mb-8">ADMIN SECURITY</h2>
-          <input type="text" className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" value={otp} onChange={e => setOtp(e.target.value)} />
-          <button onClick={handleVerifyAdminOTP} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black">XÁC MINH</button>
-        </div>
-      </div>
-    );
+  const handleVerifyAdminOTP = async () => {
+  if (!otp) return alert("Vui lòng nhập mật khẩu!");
+  
+  setLoading(true); // Tận dụng state loading có sẵn
+  try {
+    // Gọi lên Google Sheets để lấy pass ở ô E2
+    const resp = await fetch(`${DANHGIA_URL}?action=checkAdminOTP`);
+    const res = await resp.json();
+    
+    if (res.status === "success") {
+      // So sánh mã người dùng nhập với mã lấy từ ô E2
+      if (otp.trim() === res.pass.toString().trim()) {
+        setIsAdminVerified(true);
+      } else {
+        alert("Mã OTP không chính xác. Thầy kiểm tra lại ô E2 Sheet(idgv) nhé!");
+      }
+    } else {
+      alert("Không thể kết nối với dữ liệu admin!");
+    }
+  } catch (e) {
+    console.error(e);
+    alert("Lỗi kết nối server khi xác minh!");
+  } finally {
+    setLoading(false);
   }
+};
 // Hàm tìm câu trùng
 const handleFindDuplicates = async () => {
   setLoading(true);
