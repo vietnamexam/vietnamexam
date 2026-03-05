@@ -126,6 +126,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
+  const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
   
@@ -276,7 +277,8 @@ const chuan_hoa = (data) => ({
     }
   }).filter(Boolean);
 
-  setJsonInput(JSON.stringify(results, null, 2));
+ setJsonInput(JSON.stringify(results, null, 2));
+setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
   const handleLoadQuestions = async () => {
@@ -701,7 +703,7 @@ const handleQuickUpdate = async (field, newValue) => {
           </div>
 
           <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
-            {jsonInput ? (
+            {previewData.length > 0 ? (
               <QuestionPreviewBlock
   data={previewData}
   onUpdate={setPreviewData}
