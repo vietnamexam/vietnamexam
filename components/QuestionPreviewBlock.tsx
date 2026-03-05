@@ -229,13 +229,14 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
 
             {/* OPTIONS */}
             {editing ? (
-             className="w-full border rounded-xl p-4 mt-4 min-h-[160px] resize-y"
-                value={editData.options}
-                onChange={(e)=>setEditData({...editData, options:e.target.value})}
-              />
-            ) : (
-              renderOptions(item)
-            )}
+  <textarea
+    className="w-full border rounded-xl p-4 mt-4 min-h-[160px] resize-y"
+    value={editData.options}
+    onChange={(e)=>setEditData({...editData, options:e.target.value})}
+  />
+) : (
+  renderOptions(item)
+)}
 
             {/* ANSWER */}
             {editing && (
