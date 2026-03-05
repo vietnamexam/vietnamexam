@@ -92,11 +92,14 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
         </div>
         
         {/* Nút Sửa: Làm nhỏ lại cho tinh tế */}
-        {!isEditing && (
-          <button onClick={() => setIsEditing(true)} className="opacity-40 group-hover:opacity-100 px-3 py-1 bg-slate-100 text-slate-500 rounded-lg font-bold text-[9px] hover:bg-blue-600 hover:text-white transition-all">
-            CHỈNH SỬA
-          </button>
-        )}
+       {!isEditing && (
+  <button
+    onClick={() => setIsEditing(true)}
+    className="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg font-bold text-[9px] hover:bg-blue-600 hover:text-white transition-all"
+  >
+    CHỈNH SỬA
+  </button>
+)}
         {isEditing && (
           <div className="flex gap-1">
              <button onClick={handleSave} className="px-3 py-1 bg-emerald-500 text-white rounded-lg font-bold text-[9px]">LƯU</button>
