@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { DANHGIA_URL, API_ROUTING } from '../config';
 
 const TeacherWordTask = ({ onBack }) => {
+  // Thêm vào cùng các state khác
+const [previewData, setPreviewData] = useState([]);
+const [isReviewing, setIsReviewing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [idgv, setIdgv] = useState('');
   const [customLink, setCustomLink] = useState(''); // Để dự phòng nếu cần dán trực tiếp link
@@ -20,6 +23,17 @@ const TeacherWordTask = ({ onBack }) => {
 
   const [jsonInputWord, setJsonInputWord] = useState('');
   const [jsonInputLG, setJsonInputLG] = useState('');
+  // Hàm ép MathJax render lại sau khi dữ liệu thay đổi
+  useEffect(() => {
+    if (isReviewing && window.MathJax) {
+      window.MathJax.typesetPromise();
+    }
+  }, [isReviewing, previewData]);
+  useEffect(() => {
+  if (showReview && window.MathJax) {
+    window.MathJax.typesetPromise();
+  }
+}, [showReview, previewData]);
 
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
@@ -64,7 +78,8 @@ const TeacherWordTask = ({ onBack }) => {
   }
 
   // 3️⃣ Gửi thẳng sang GAS
-  handleSaveQuestions(results);
+  setPreviewData(results);
+  setIsReviewing(true);
 };
 
 
@@ -324,6 +339,70 @@ const handleSaveQuestions = async (dataArray) => {
 />
   </div>
 </div>
+      {isReviewing && (
+  <div className="fixed inset-0 bg-slate-900/95 z-[999] p-4">
+    <div className="w-full max-w-6xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col h-[90vh]">
+      
+      {/* Thanh điều hướng */}
+      <div className="p-4 bg-slate-900 text-white flex justify-between items-center">
+        <h2 className="font-bold">KIỂM TRA NỘI DUNG</h2>
+        <div className="flex gap-2">
+          <button onClick={() => setIsReviewing(false)} className="px-4 py-2 bg-slate-700 rounded-lg">ĐÓNG</button>
+          <button 
+            onClick={() => handleSaveQuestions(previewData)} 
+            className="px-6 py-2 bg-emerald-500 rounded-lg font-bold"
+          >
+            LƯU VÀO SHEET
+          </button>
+        </div>
+      </div>
+
+      {/* Nội dung Review 2 cột */}
+      <div className="flex-1 overflow-y-auto p-6 bg-slate-100 space-y-6">
+        {previewData.map((item, idx) => {
+          let content = {};
+          try { content = new Function(`return (${item.question})`)(); } catch (e) { content = { question: "Lỗi JSON!" }; }
+          
+          return (
+            <div key={idx} className="bg-white p-4 rounded-2xl shadow grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
+              <span className="absolute -left-2 top-2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded-full">Câu {idx+1}</span>
+              
+              {/* BÊN TRÁI: Ô SỬA TEXT */}
+              <textarea 
+                className="w-full h-48 p-3 bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl"
+                value={item.question}
+                onChange={(e) => {
+                  const newData = [...previewData];
+                  newData[idx].question = e.target.value;
+                  setPreviewData(newData);
+                }}
+              />
+
+              {/* BÊN PHẢI: XEM TOÁN & ẢNH */}
+              <div className="border border-slate-100 p-3 rounded-xl bg-slate-50 overflow-auto">
+                <div className="text-[10px] font-bold text-slate-400 mb-2 uppercase">Hiển thị thực tế:</div>
+                <div className="text-sm mb-3" dangerouslySetInnerHTML={{ __html: content.question }} />
+                
+                {/* Render các lựa chọn nếu có */}
+                {content.o && content.o.map((opt, oIdx) => (
+                  <div key={oIdx} className="text-xs flex gap-2 mb-1">
+                    <b>{String.fromCharCode(65 + oIdx)}.</b>
+                    <div dangerouslySetInnerHTML={{ __html: opt }} />
+                  </div>
+                ))}
+
+                <div className="mt-3 pt-2 border-t border-dashed text-red-500 text-xs font-bold">
+                  Đáp án: {content.a}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+)}
+     
     </div>
   );
 };
