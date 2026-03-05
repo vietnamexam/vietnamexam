@@ -792,135 +792,100 @@ const handleQuickUpdate = async (field, newValue) => {
   </div>
 )}
         {/* MODAL PREVIEW CÂU HỎI */}
+{/* MODAL PREVIEW CÂU HỎI */}
 {showPreview && previewQuestion && (
   <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+    
     <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
       
-      {/* Header của Modal */}
+      {/* Header */}
       <div className="p-6 bg-slate-50 border-b flex justify-between items-center">
         <div>
           <h4 className="font-black text-slate-800">PREVIEW CÂU HỎI</h4>
-          <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">ID: {previewQuestion.id} | Tag: {previewQuestion.classTag}</p>
+          <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">
+            ID: {previewQuestion.id} | Tag: {previewQuestion.classTag}
+          </p>
         </div>
-        <button onClick={() => setShowPreview(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-red-50 text-red-500 transition-colors">
+
+        <button
+          onClick={() => {
+            setShowPreview(false);
+            setPreviewEdit(null);
+          }}
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-red-50 text-red-500 transition-colors"
+        >
           <i className="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      {/* Nội dung câu hỏi */}
-      <div className="p-8 max-h-[70vh] overflow-y-auto">
-        <div className="space-y-4">
+      {/* Body */}
+      <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
 
-  <EditableSection
-    title="Nội dung câu hỏi"
-    value={previewEdit.question}
-    icon="fa-question-circle"
-    onSave={(val) => {
-      setPreviewEdit(prev => ({ ...prev, question: val }));
-      handleQuickUpdate('question', val);
-    }}
-  />
+               <EditableSection
+          title="Nội dung câu hỏi"
+          value={previewEdit?.question}
+          icon="fa-question-circle"
+          onSave={(val) => {
+            setPreviewEdit(prev => ({ ...prev, question: val }));
+            handleQuickUpdate('question', val);
+          }}
+        />
 
-  <EditableSection
-    title="Các phương án (JSON)"
-    value={previewEdit.options}
-    icon="fa-list-ul"
-    onSave={(val) => {
-      setPreviewEdit(prev => ({ ...prev, options: val }));
-      handleQuickUpdate('options', val);
-    }}
-  />
+        <EditableSection
+          title="Các phương án (JSON)"
+          value={previewEdit?.options}
+          icon="fa-list-ul"
+          onSave={(val) => {
+            setPreviewEdit(prev => ({ ...prev, options: val }));
+            handleQuickUpdate('options', val);
+          }}
+        />
 
-  <EditableSection
-    title="Đáp án đúng"
-    value={previewEdit.answer}
-    icon="fa-check-double"
-    isSmall={true}
-    onSave={(val) => {
-      setPreviewEdit(prev => ({ ...prev, answer: val }));
-      handleQuickUpdate('answer', val);
-    }}
-  />
+        <EditableSection
+          title="Đáp án đúng"
+          value={previewEdit?.answer}
+          icon="fa-check-double"
+          isSmall={true}
+          onSave={(val) => {
+            setPreviewEdit(prev => ({ ...prev, answer: val }));
+            handleQuickUpdate('answer', val);
+          }}
+        />
 
-  <EditableSection
-    title="Lời giải chi tiết"
-    value={previewEdit.loigiai}
-    icon="fa-lightbulb"
-    onSave={(val) => {
-      setPreviewEdit(prev => ({ ...prev, loigiai: val }));
-      handleQuickUpdate('loigiai', val);
-    }}
-  />
+        <EditableSection
+          title="Lời giải chi tiết"
+          value={previewEdit?.loigiai}
+          icon="fa-lightbulb"
+          onSave={(val) => {
+            setPreviewEdit(prev => ({ ...prev, loigiai: val }));
+            handleQuickUpdate('loigiai', val);
+          }}
+        />
 
-</div>
-
-        {/* Render danh sách đáp án nếu là MCQ */}
-        <div className="space-y-3">
-          {(() => {
-            try {
-              const options = JSON.parse(previewQuestion.options || "[]");
-              return Object.entries(options).map(([key, value]) => (
-                <div key={key} className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${previewQuestion.answer === key ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-slate-50'}`}>
-                  <div className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-xs ${previewQuestion.answer === key ? 'bg-emerald-500 text-white' : 'bg-white text-slate-400'}`}>
-                    {key.toUpperCase()}
-                  </div>
-                  <div className="text-sm font-medium text-slate-700">{value}</div>
-                  {previewQuestion.answer === key && <i className="fa-solid fa-circle-check text-emerald-500 ml-auto"></i>}
-                </div>
-              ));
-            } catch (e) {
-              return <p className="italic text-slate-400 text-xs">Dữ liệu đáp án không ở dạng trắc nghiệm (MCQ)</p>;
-            }
-          })()}
-        </div>
-
-        {/* Lời giải ẩn hiện */}
-        {previewQuestion.loigiai && (
-          <div className="mt-8 p-6 bg-amber-50 rounded-[2rem] border border-amber-100">
-            <span className="block text-[10px] font-black text-amber-600 mb-2">LỜI GIẢI CHI TIẾT</span>
-            <div className="text-sm text-amber-900/80 leading-relaxed italic whitespace-pre-wrap">
-              {previewQuestion.loigiai}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Footer Modal */}
-      {/* Footer Modal với 3 nút: Sửa - Xóa - Quay lại */}
-<div className="p-6 bg-slate-50 grid grid-cols-3 gap-3">
-  
-  {/* NÚT SỬA */}
-  <button 
-    onClick={() => {
-      setEditForm(previewQuestion); 
-      setShowPreview(false);
-      setCurrentTab('cauhoi');
-    }}
-    className="py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase hover:bg-blue-700 transition-all shadow-md"
-  >
-    <i className="fa-solid fa-pen-to-square mr-1"></i> Sửa câu này
-  </button>
+      {/* Footer */}
+      <div className="p-6 border-t bg-slate-50 flex justify-between items-center">
+        
+        <button
+          onClick={() => handleDeleteInsidePreview(previewQuestion)}
+          className="px-6 py-3 bg-red-100 text-red-600 rounded-2xl font-bold text-xs hover:bg-red-600 hover:text-white transition-all"
+        >
+          <i className="fa-solid fa-trash mr-2"></i> XÓA CÂU NÀY
+        </button>
 
-  {/* NÚT XÓA - Đỏ rực rỡ để cảnh báo */}
-  <button 
-    onClick={() => handleDeleteInsidePreview(previewQuestion)}
-    className="py-3 bg-red-500 text-white rounded-2xl font-black text-[10px] uppercase hover:bg-red-600 transition-all shadow-md"
-  >
-    <i className="fa-solid fa-trash-can mr-1"></i> Xóa vĩnh viễn
-  </button>
+        <button
+          onClick={() => {
+            setShowPreview(false);
+            setPreviewEdit(null);
+          }}
+          className="px-6 py-3 bg-slate-200 text-slate-600 rounded-2xl font-bold text-xs hover:bg-slate-300 transition-all"
+        >
+          ĐÓNG
+        </button>
 
-  {/* NÚT QUAY LẠI */}
-  <button 
-   onClick={() => {
-  setShowPreview(false);
-  setPreviewEdit(null);
-}}
-    className="py-3 bg-slate-200 text-slate-600 rounded-2xl font-black text-[10px] uppercase hover:bg-slate-300 transition-all"
-  >
-    <i className="fa-solid fa-arrow-left mr-1"></i> Quay lại
-  </button>
+      </div>
 
-</div>
     </div>
   </div>
 )}
