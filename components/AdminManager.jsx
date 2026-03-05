@@ -21,17 +21,9 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   }, [isEditing, value]);
 
   const handleSave = () => {
-    onSave(tempValue);
-     const newData = [...data];
-  newData[editingIndex] = tempItem;
-
-  if (onUpdate) {
-    onUpdate(newData);
-  }
-
-  setEditingIndex(null);
-  };
-
+  onSave(tempValue);
+  setIsEditing(false);
+};
   // --- HÀM XỬ LÝ NỘI DUNG TỔNG LỰC ---
   const getHtmlContent = () => {
   if (!value) return '<span class="opacity-30 italic">Trống...</span>';
