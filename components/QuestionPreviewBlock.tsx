@@ -149,8 +149,8 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
             <div className="mt-8 text-slate-800 font-medium leading-relaxed preview-content text-lg">
 
               {editing ? (
-                <textarea
-                  className="w-full border rounded-xl p-3"
+               <textarea
+  className="w-full border rounded-xl p-4 min-h-[160px] resize-y"
                   value={editData.question}
                   onChange={(e)=>setEditData({...editData, question:e.target.value})}
                 />
@@ -162,8 +162,7 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
 
             {/* OPTIONS */}
             {editing ? (
-              <textarea
-                className="w-full border rounded-xl p-3 mt-4"
+             className="w-full border rounded-xl p-4 mt-4 min-h-[160px] resize-y"
                 value={editData.options}
                 onChange={(e)=>setEditData({...editData, options:e.target.value})}
               />
@@ -175,7 +174,7 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
             {editing && (
               <div className="mt-4">
                 <textarea
-                  className="w-full border rounded-xl p-3"
+                  className="w-full border rounded-xl p-4 min-h-[80px]"
                   value={editData.answer}
                   onChange={(e)=>setEditData({...editData, answer:e.target.value})}
                 />
@@ -185,7 +184,7 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
             {/* LOIGIAI */}
             {editing ? (
               <textarea
-                className="w-full border rounded-xl p-3 mt-4"
+               className="w-full border rounded-xl p-4 mt-4 min-h-[200px] resize-y"
                 value={editData.loigiai || ""}
                 onChange={(e)=>setEditData({...editData, loigiai:e.target.value})}
               />
