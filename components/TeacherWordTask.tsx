@@ -29,12 +29,7 @@ const [isReviewing, setIsReviewing] = useState(false);
       window.MathJax.typesetPromise();
     }
   }, [isReviewing, previewData]);
-  useEffect(() => {
-  if (showReview && window.MathJax) {
-    window.MathJax.typesetPromise();
-  }
-}, [showReview, previewData]);
-
+ 
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
   const handleWordParser = (text) => {
