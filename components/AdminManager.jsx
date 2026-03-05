@@ -379,6 +379,38 @@ const handleUploadLG = async () => {
     setLoading(false);
   }
 };
+  // Tìm đến đoạn này trong code của bạn (khoảng dòng 270-280)
+if (!isAdminVerified) {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center p-4">
+      <div className="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md text-center">
+        <h2 className="text-2xl font-black mb-8">ADMIN SECURITY</h2>
+        
+        <input 
+          type="text" 
+          className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
+          value={otp} 
+          onChange={e => setOtp(e.target.value)} 
+          placeholder="••••"
+        />
+
+        {/* THAY THẾ NÚT CŨ BẰNG NÚT MỚI Ở ĐÂY */}
+        <button 
+          onClick={handleVerifyAdminOTP} 
+          disabled={loading}
+          className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-70"
+        >
+          {loading ? (
+            <><i className="fa-solid fa-spinner animate-spin"></i> ĐANG KIỂM TRA...</>
+          ) : (
+            "XÁC MINH"
+          )}
+        </button>
+        
+      </div>
+    </div>
+  );
+}
 // Hàm tìm câu trùng
 const handleFindDuplicates = async () => {
   setLoading(true);
