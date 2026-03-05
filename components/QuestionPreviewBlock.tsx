@@ -16,21 +16,88 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
 
   if (!data || data.length === 0) return null;
 
-  const startEdit = (index, item) => {
-    setEditingIndex(index);
-    setEditData({ ...item });
-  };
+ const startEdit = (index, item) => {
+
+  let formattedOptions = item.options;
+
+  try {
+    const parsed = typeof item.options === "string"
+      ? JSON.parse(item.options)
+      : item.options;
+
+    if (Array.isArray(parsed)) {
+
+      // TRUE FALSE
+      if (typeof parsed[0] === "object") {
+        formattedOptions = parsed
+          .map(o => `${o.text} | ${o.a}`)
+          .join("\n");
+      }
+
+      // MCQ
+      else {
+        formattedOptions = parsed.join("\n");
+      }
+    }
+
+  } catch(e){}
+
+  setEditingIndex(index);
+  setEditData({
+    ...item,
+    options: formattedOptions
+  });
+};
 
   const cancelEdit = () => {
     setEditingIndex(null);
     setEditData({});
   };
 
-  const saveEdit = (index) => {
-    data[index] = editData;
-    setEditingIndex(null);
-    setEditData({});
+ const saveEdit = (index) => {
+
+  let parsedOptions = editData.options;
+
+  try {
+
+    const lines = editData.options
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean);
+
+    // TRUE FALSE
+    if (lines[0].includes("|")) {
+
+      parsedOptions = lines.map(line => {
+
+        const [text, a] = line.split("|");
+
+        return {
+          text: text.trim(),
+          a: a.trim() === "true"
+        };
+
+      });
+
+    } else {
+
+      // MCQ
+      parsedOptions = lines;
+
+    }
+
+  } catch(e){}
+
+  const updated = {
+    ...editData,
+    options: JSON.stringify(parsedOptions)
   };
+
+  data[index] = updated;
+
+  setEditingIndex(null);
+  setEditData({});
+};
 
   const renderOptions = (item) => {
     try {
@@ -150,10 +217,10 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
 
               {editing ? (
                <textarea
-  className="w-full border rounded-xl p-4 min-h-[160px] resize-y"
-                  value={editData.question}
-                  onChange={(e)=>setEditData({...editData, question:e.target.value})}
-                />
+  className="w-full border rounded-xl p-4 mt-4 min-h-[200px] font-mono text-sm leading-relaxed resize-y"
+  value={editData.options}
+  onChange={(e)=>setEditData({...editData, options:e.target.value})}
+/>
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: item.question }} />
               )}
