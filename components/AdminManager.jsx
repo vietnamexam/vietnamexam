@@ -22,7 +22,14 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
 
   const handleSave = () => {
     onSave(tempValue);
-    setIsEditing(false);
+     const newData = [...data];
+  newData[editingIndex] = tempItem;
+
+  if (onUpdate) {
+    onUpdate(newData);
+  }
+
+  setEditingIndex(null);
   };
 
   // --- HÀM XỬ LÝ NỘI DUNG TỔNG LỰC ---
@@ -703,7 +710,10 @@ const handleQuickUpdate = async (field, newValue) => {
 
           <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
             {jsonInput ? (
-              <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
+              <QuestionPreviewBlock
+  data={previewData}
+  onUpdate={setPreviewData}
+/>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-2">
                 <i className="fa-solid fa-eye-slash text-2xl"></i>
