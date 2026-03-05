@@ -14,18 +14,39 @@ export default function ReviewEditor({ questions, onSave }) {
     })
   );
 
-  const updateField = (idx, field, value) => {
-    const copy = [...data];
-    copy[idx].parsed[field] = value;
-    setData(copy);
+ const updateField = (idx, field, value) => {
+
+  const copy = [...data];
+
+  copy[idx] = {
+    ...copy[idx],
+    parsed: {
+      ...copy[idx].parsed,
+      [field]: value
+    }
   };
 
+  setData(copy);
+};
+
   const updateOption = (idx, optIdx, value) => {
-    const copy = [...data];
-    if (!copy[idx].parsed.o) copy[idx].parsed.o = [];
-    copy[idx].parsed.o[optIdx] = value;
-    setData(copy);
+
+  const copy = [...data];
+
+  const options = [...(copy[idx].parsed.o || ["","","",""])];
+
+  options[optIdx] = value;
+
+  copy[idx] = {
+    ...copy[idx],
+    parsed: {
+      ...copy[idx].parsed,
+      o: options
+    }
   };
+
+  setData(copy);
+};
 
   const handleSave = () => {
     const result = data.map(q => ({
@@ -49,13 +70,14 @@ export default function ReviewEditor({ questions, onSave }) {
         return (
           <div key={idx} className="border p-6 rounded-xl bg-white shadow">
 
-            <div className="font-bold mb-2">
-              Câu {idx + 1}
+            <div className="font-bold mb-2 flex justify-between">
+            <span>Câu {idx + 1}</span>
+            <span className="text-xs text-gray-500">{type}</span>
             </div>
 
             {/* QUESTION */}
             <textarea
-  className="w-full border p-3 rounded mb-4 min-h-[120px] font-mono text-sm"
+  className="w-full border p-3 rounded mb-4 min-h-[160px] font-mono text-sm"
   value={obj.question || ""}
   onChange={e =>
     updateField(idx, "question", e.target.value)
