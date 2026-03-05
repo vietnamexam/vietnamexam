@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { DANHGIA_URL, API_ROUTING } from '../config';
+import ReviewEditor from "./ReviewEditor";
 
 const TeacherWordTask = ({ onBack }) => {
+  const [reviewData, setReviewData] = useState([]);
   const [parsedQuestions, setParsedQuestions] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -26,12 +28,12 @@ const TeacherWordTask = ({ onBack }) => {
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
   const handleWordParser = (text) => {
+
   if (!text.trim()) {
     alert("Dán dữ liệu vào đã thầy ơi!");
     return;
   }
 
-  // 1️⃣ Tách câu theo }#
   const rawBlocks = text
     .split('}#')
     .map(b => b.trim())
@@ -43,36 +45,57 @@ const TeacherWordTask = ({ onBack }) => {
     return;
   }
 
-  // 2️⃣ Parse từng block
   const results = rawBlocks.map((block, index) => {
+
     try {
+
       const obj = new Function(`return (${block})`)();
 
       return {
-       
         id: obj.id || Date.now() + index,
         classTag: (obj.classTag || "1001.a").trim(),
         type: obj.type || "short-answer",
-        question: JSON.stringify(obj) // 🔥 LƯU NGUYÊN JSON
+        question: JSON.stringify(obj)
       };
+
     } catch (e) {
+
       console.error("❌ Lỗi parse câu:", block);
       return null;
+
     }
+
   }).filter(Boolean);
-    setParsedQuestions(results); 
+
   if (!results.length) {
     alert("Parse xong nhưng không có câu nào hợp lệ!");
     return;
   }
 
-  // 3️⃣ Gửi thẳng sang GAS
-  handleSaveQuestions(parsedQuestions);
+  setParsedQuestions(results);
+  setReviewData(results);
+
+  alert(`✅ Đã parse ${results.length} câu hỏi`);
+
 };
   const handleEditQuestion = (index, value) => {
+
   const updated = [...parsedQuestions];
-  updated[index].question = value;
+
+  try {
+
+    const parsed = JSON.parse(value);
+
+    updated[index].question = JSON.stringify(parsed);
+
+  } catch {
+
+    updated[index].question = value;
+
+  }
+
   setParsedQuestions(updated);
+
 };
 
 
@@ -285,7 +308,7 @@ const handleSaveQuestions = async (dataArray) => {
           </button>
           <button 
             disabled={loading}
-            onClick={() => handleWordParser(jsonInputWord)}
+            onClick={() => setReviewData(parsedQuestions)}
             className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
           >
             SỬA CÂU HỎI (WORD)
@@ -331,48 +354,13 @@ const handleSaveQuestions = async (dataArray) => {
 />
   </div>
 </div>
-      {parsedQuestions.length > 0 && (
-  <div className="mt-8 space-y-4">
-    <div className="font-black text-lg text-slate-700">
-      REVIEW CÂU HỎI ({parsedQuestions.length})
-    </div>
-
-    {parsedQuestions.map((q, i) => (
-      <div key={i} className="p-4 border rounded-xl bg-slate-50">
-
-        <div className="flex justify-between mb-2">
-          <div className="font-bold">
-            Câu {i + 1} | {q.type}
-          </div>
-
-          <button
-            onClick={() =>
-              setEditingIndex(editingIndex === i ? null : i)
-            }
-            className="px-3 py-1 bg-orange-500 text-white rounded"
-          >
-            {editingIndex === i ? "Đóng" : "Sửa"}
-          </button>
-        </div>
-
-        {editingIndex === i ? (
-          <textarea
-            className="w-full h-40 p-3 border rounded"
-            value={q.question}
-            onChange={(e) =>
-              handleEditQuestion(i, e.target.value)
-            }
-          />
-        ) : (
-          <pre className="text-xs overflow-x-auto">
-            {q.question}
-          </pre>
-        )}
-
-      </div>
-    ))}
-  </div>
+      {reviewData.length > 0 && (
+  <ReviewEditor
+    questions={reviewData}
+    onSave={handleSaveQuestions}
+  />
 )}
+      
     </div>
   );
 };
