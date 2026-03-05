@@ -160,6 +160,20 @@ useEffect(() => {
     return () => clearTimeout(timer);
   }
 }, [editForm]);
+  // edit từng câu
+  const handleEditFromPreview = (item) => {
+  // 1. Nạp dữ liệu vào form sửa
+  setEditForm({
+    ...item,
+    idquestion: item.id // Đảm bảo ID được nạp vào ô tìm kiếm
+  });
+  
+  // 2. Chuyển sang tab "Sửa câu hỏi"
+  setCurrentTab('cauhoi');
+  
+  // 3. Thông báo cho thầy biết
+  console.log("Đã nạp câu hỏi ID " + item.id + " để chỉnh sửa.");
+};
   // Bất cứ khi nào nhận data từ server:
 const chuan_hoa = (data) => ({
   ...data,
