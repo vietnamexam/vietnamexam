@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const QuestionPreviewBlock = ({ data }) => {
+const QuestionPreviewBlock = ({ data, onUpdate }) => {
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editData, setEditData] = useState({});
