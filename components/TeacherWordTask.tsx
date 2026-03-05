@@ -31,7 +31,7 @@ const [isReviewing, setIsReviewing] = useState(false);
     }
   }, [isReviewing, previewData]);
   //==================== sửa lẻ =============================================================================================================
-  const handleEditSingleQuestion = async () => {
+   const handleEditSingleQuestion = async () => {
   if (!idgv || !examCode || !searchId) {
     alert("Thầy cần nhập đủ: IDGV, Mã đề và ID câu hỏi muốn sửa!");
     return;
@@ -40,30 +40,46 @@ const [isReviewing, setIsReviewing] = useState(false);
   setLoading(true);
   try {
     const targetUrl = API_ROUTING[idgv];
-    // Gọi action lấy 1 câu hỏi (Thầy cần thêm action này bên GAS nếu chưa có)
-    const resp = await fetch(`${targetUrl}?action=getSingleQuestion&examCode=${examCode}&questionId=${searchId}`);
+    // Thêm redirect: 'follow' để xử lý việc Google Script chuyển hướng URL
+    const resp = await fetch(`${targetUrl}?action=getSingleQuestion&examCode=${examCode}&questionId=${searchId}`, {
+      method: 'GET',
+      redirect: 'follow' 
+    });
+    
     const res = await resp.json();
 
     if (res.status === 'success' && res.data) {
-      // Ép kiểu dữ liệu về dạng mảng để dùng chung Modal Review
+      // Quan trọng: Dữ liệu res.data.question từ Sheets trả về đã là một chuỗi JSON
+      // Chúng ta cần parse nó ra rồi mới stringify lại với null, 2 để làm đẹp
+      let questionObj;
+      try {
+        questionObj = typeof res.data.question === 'string' 
+          ? JSON.parse(res.data.question) 
+          : res.data.question;
+      } catch (e) {
+        questionObj = res.data; // Phòng hờ dữ liệu lỗi
+      }
+
       const singleData = [{
         id: res.data.id,
         classTag: res.data.classTag,
         type: res.data.type,
-        question: JSON.stringify(res.data, null, 2) // Làm đẹp mã luôn
+        // Hiển thị đẹp trong ô soạn thảo bên trái
+        question: JSON.stringify(questionObj, null, 2) 
       }];
+
       setPreviewData(singleData);
       setIsReviewing(true);
     } else {
-      alert("Không tìm thấy câu hỏi này trong đề, thầy kiểm tra lại ID nhé!");
+      alert(res.message || "Không tìm thấy câu hỏi này trong đề!");
     }
   } catch (e) {
-    alert("Lỗi kết nối khi lấy câu hỏi lẻ!");
+    console.error("Fetch error:", e);
+    alert("Lỗi kết nối hoặc lỗi Script (Thầy nhớ nạp bản GAS mới nhất chưa?)");
   } finally {
     setLoading(false);
   }
 };
- 
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
   const handleWordParser = (text) => {
@@ -317,7 +333,7 @@ const handleSaveQuestions = async (dataArray) => {
             onClick={() => handleWordParser(jsonInputWord)}
             className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
           >
-            XEM TRƯỚC VÀ SỬA
+            TÌM KIẾM
           </button>
          <div className="flex flex-col gap-2 p-3 bg-slate-800/50 rounded-2xl border border-slate-700">
   <div className="text-[10px] text-orange-400 font-bold uppercase ml-1">Sửa nhanh câu lẻ</div>
