@@ -109,8 +109,8 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
 
       <div className="mathjax-content">
         {isEditing ? (
-          <textarea 
-            className={`w-full p-4 bg-slate-50 rounded-2xl outline-none border-2 border-blue-100 text-sm font-medium transition-all focus:bg-white ${isSmall ? 'h-20' : 'h-40'}`}
+         <textarea
+  className={`w-full p-5 bg-slate-50 rounded-2xl outline-none border-2 border-blue-200 text-sm font-medium transition-all focus:bg-white resize-y ${isSmall ? 'min-h-[120px]' : 'min-h-[260px]'}`}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
             autoFocus
