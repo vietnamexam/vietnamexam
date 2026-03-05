@@ -308,7 +308,13 @@ const handleSaveQuestions = async (dataArray) => {
           </button>
           <button 
             disabled={loading}
-            onClick={() => setReviewData(parsedQuestions)}
+            onClick={() => {
+  if (!parsedQuestions.length) {
+    alert("Chưa có câu hỏi để sửa. Hãy IMPORT WORD trước.");
+    return;
+  }
+  setReviewData([...parsedQuestions]);
+}}
             className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
           >
             SỬA CÂU HỎI (WORD)
@@ -353,6 +359,9 @@ const handleSaveQuestions = async (dataArray) => {
   }} 
 />
   </div>
+</div>
+      <div className="text-xs text-gray-500 mt-2">
+  Parsed: {parsedQuestions.length} câu | Review: {reviewData.length} câu
 </div>
       {reviewData.length > 0 && (
   <ReviewEditor
