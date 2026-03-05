@@ -27,95 +27,82 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
 
   // --- HÀM XỬ LÝ NỘI DUNG TỔNG LỰC ---
   const getHtmlContent = () => {
-  if (!value) return '<span class="opacity-30 italic">Trống...</span>';
-  let content = String(value);
+    if (!value) return '<span class="opacity-30 italic">Trống...</span>';
 
-  // 1. Tự động hiển thị ảnh nếu nội dung là link ảnh
-  const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
-  if (!content.includes('<img') && imgRegex.test(content)) {
-    content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
-  }
+    let content = String(value);
 
-  // 2. Hiển thị ĐÁP ÁN ĐÚNG dạng Badge gọn gàng (Đã xóa chữ ĐÁP ÁN/KẾT QUẢ thừa)
-  if (title.toLowerCase().includes("đáp án")) {
-    return `
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl shadow-sm font-bold">
-        <i class="fa-solid fa-check-circle text-[10px] opacity-50"></i>
-        <span>${content}</span>
-      </div>
-    `;
-  }
+    // 1. TỰ ĐỘNG BIẾN LINK ẢNH TRẦN THÀNH THẺ IMG (Nếu có)
+    const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
+    if (!content.includes('<img') && imgRegex.test(content)) {
+      content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
+    }
 
-  // 3. XỬ LÝ PHẦN PHƯƠNG ÁN (JSON)
-  const isOptions = title.toLowerCase().includes("phương án") || title.toLowerCase().includes("options");
-  if (isOptions) {
-    try {
-      const data = typeof value === 'string' ? JSON.parse(value) : value;
+    // 2. XỬ LÝ PHẦN PHƯƠNG ÁN (JSON)
+    const isOptions = title.toLowerCase().includes("phương án") || title.toLowerCase().includes("options");
+    if (isOptions) {
+      try {
+        const data = typeof value === 'string' ? JSON.parse(value) : value;
 
-      // Câu Đúng/Sai (Mảng Object)
-      if (Array.isArray(data) && typeof data[0] === 'object') {
-        return data.map((item, idx) => `
-          <div class="p-2 mb-2 bg-slate-50 rounded-xl border border-slate-100 shadow-sm">
-            <span class="font-bold text-blue-600">Ý ${idx + 1}: </span>
-            <span class="mathjax-item">${item.text}</span> 
-            <span class="ml-2 font-black ${item.a ? 'text-emerald-600' : 'text-rose-500'}">
-              (${item.a ? 'Đúng' : 'Sai'})
-            </span>
-          </div>
-        `).join('');
-      }
-      
-      // Câu MCQ (Mảng chuỗi)
-      if (Array.isArray(data)) {
-        const labels = ['A', 'B', 'C', 'D'];
-        return `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
-          ${data.map((text, i) => `
-            <div class="p-2 bg-slate-50 rounded-lg border border-slate-100">
-              <b class="text-blue-500">${labels[i] || i}:</b> ${text}
+        // Câu Đúng/Sai (Mảng Object)
+        if (Array.isArray(data) && typeof data[0] === 'object') {
+          return data.map((item, idx) => `
+            <div class="p-2 mb-2 bg-slate-50 rounded-xl border border-slate-100 shadow-sm">
+              <span class="font-bold text-blue-600">Ý ${idx + 1}: </span>
+              <span class="mathjax-item">${item.text}</span> 
+              <span class="ml-2 font-black ${item.a ? 'text-emerald-600' : 'text-rose-500'}">
+                (${item.a ? 'Đúng' : 'Sai'})
+              </span>
             </div>
-          `).join('')}
-        </div>`;
-      }
-    } catch (e) { return content; }
-  }
+          `).join('');
+        }
+        
+        // Câu MCQ (Mảng chuỗi)
+        if (Array.isArray(data)) {
+           const labels = ['A', 'B', 'C', 'D'];
+           return `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
+             ${data.map((text, i) => `
+                <div class="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                  <b class="text-blue-500">${labels[i] || i}:</b> ${text}
+                </div>
+             `).join('')}
+           </div>`;
+        }
+      } catch (e) { return content; }
+    }
 
-  return content;
-};
+    return content;
+  };
+
   return (
-    <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-slate-50 transition-all hover:shadow-md mb-4 group">
+    <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 transition-all hover:shadow-md mb-4">
       <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2 text-slate-400 group-hover:text-blue-500 transition-colors">
-          <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center">
-            <i className={`fa-solid ${icon} text-[10px]`}></i>
-          </div>
+        <div className="flex items-center gap-2 text-slate-400">
+          <i className={`fa-solid ${icon} text-xs`}></i>
           <span className="text-[10px] font-black uppercase tracking-wider">{title}</span>
         </div>
-        
-        {/* Nút Sửa: Làm nhỏ lại cho tinh tế */}
-        {!isEditing && (
-          <button onClick={() => setIsEditing(true)} className="opacity-0 group-hover:opacity-100 px-3 py-1 bg-slate-100 text-slate-500 rounded-lg font-bold text-[9px] hover:bg-blue-600 hover:text-white transition-all">
-            CHỈNH SỬA
-          </button>
-        )}
-        {isEditing && (
-          <div className="flex gap-1">
-             <button onClick={handleSave} className="px-3 py-1 bg-emerald-500 text-white rounded-lg font-bold text-[9px]">LƯU</button>
-             <button onClick={() => setIsEditing(false)} className="px-3 py-1 bg-slate-100 text-slate-400 rounded-lg font-bold text-[9px]">HỦY</button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          {isEditing ? (
+            <>
+              <button onClick={handleSave} className="px-4 py-1.5 bg-emerald-500 text-white rounded-xl font-black text-[10px] hover:bg-emerald-600 shadow-sm">LƯU</button>
+              <button onClick={() => { setIsEditing(false); setTempValue(value); }} className="px-4 py-1.5 bg-slate-100 text-slate-400 rounded-xl font-black text-[10px]">HỦY</button>
+            </>
+          ) : (
+            <button onClick={() => setIsEditing(true)} className="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-xl font-black text-[10px] hover:bg-blue-600 hover:text-white transition-all">SỬA</button>
+          )}
+        </div>
       </div>
 
       <div className="mathjax-content">
         {isEditing ? (
           <textarea 
-            className={`w-full p-4 bg-slate-50 rounded-2xl outline-none border-2 border-blue-100 text-sm font-medium transition-all focus:bg-white ${isSmall ? 'h-20' : 'h-40'}`}
+            className={`w-full p-4 bg-slate-50 rounded-2xl outline-none border-2 border-blue-100 text-sm font-medium ${isSmall ? 'h-24' : 'h-48'}`}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
             autoFocus
           />
         ) : (
           <div 
-            className="px-1 text-slate-700 text-sm leading-relaxed"
+            className="px-2 py-1 text-slate-700 text-sm leading-relaxed italic bg-white border border-transparent"
             dangerouslySetInnerHTML={{ __html: getHtmlContent() }} 
           />
         )}
@@ -608,68 +595,65 @@ const handleQuickUpdate = async (field, newValue) => {
     )}
   </div>
 )}
-       {/* TAB 2: IMPORT WORD */}
+
+        {/* TAB 2: IMPORT WORD */}
 {currentTab === 'word' && (
   <div className="space-y-6 animate-in fade-in duration-300">
-    <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
       {/* CỘT 1: NHẬP LIỆU (CHIẾM 4 PHẦN) */}
       <div className="lg:col-span-4 space-y-4">
-        <div className="bg-slate-100 p-5 rounded-[2.5rem] border border-slate-200">
-          <label className="block text-[10px] font-black text-slate-500 mb-2 ml-2 uppercase tracking-wider">
-            1. Dán nội dung từ Word
-          </label>
+        <div className="bg-slate-100 p-5 rounded-[2.5rem]">
+          <label className="block text-[10px] font-black text-slate-500 mb-2 ml-2 uppercase">1. Dán nội dung từ Word</label>
           <textarea 
-            className="w-full h-[600px] p-6 bg-white rounded-[2rem] shadow-inner text-sm outline-none focus:ring-2 ring-orange-400 transition-all" 
+            className="w-full h-[500px] p-6 bg-white rounded-[2rem] shadow-sm text-sm outline-none focus:ring-2 ring-orange-400" 
             placeholder="Dán nội dung dạng {id: 601...}# vào đây..." 
             onChange={(e) => handleWordParser(e.target.value)} 
           />
         </div>
       </div>
 
-      {/* CỘT 2: XEM TRƯỚC (CHIẾM 6 PHẦN) */}
-      <div className="lg:col-span-6 space-y-4">
-        <div className="bg-white p-5 rounded-[2.5rem] border-2 border-slate-100 shadow-sm min-h-[600px] flex flex-col">
-          
-          {/* HEADER CỦA CỘT REVIEW: CHỨA TIÊU ĐỀ VÀ NÚT LƯU */}
-          <div className="flex items-center justify-between mb-4 px-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
-              2. Review hiển thị thực tế
-            </label>
-            
-            <button 
-              onClick={handleSaveQuestions} 
-              disabled={!jsonInput || loading} 
-              className="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-black text-xs shadow-lg hover:shadow-orange-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale transition-all flex items-center gap-2"
-            >
-              {loading ? (
-                <i className="fa-solid fa-spinner animate-spin"></i>
-              ) : (
-                <>
-                  <i className="fa-solid fa-cloud-arrow-up"></i>
-                  ĐẨY LÊN SHEET NH
-                </>
-              )}
-            </button>
+      {/* CỘT 2: XEM TRƯỚC (CHIẾM 5 PHẦN) */}
+      <div className="lg:col-span-5 bg-slate-50 p-5 rounded-[2.5rem] border-2 border-dashed border-slate-200">
+        <label className="block text-[10px] font-black text-slate-500 mb-2 ml-2 uppercase">2. Review hiển thị thực tế</label>
+        {jsonInput ? (
+          <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
+        ) : (
+          <div className="h-full flex items-center justify-center text-slate-300 italic text-sm">
+            Chưa có dữ liệu để xem trước...
           </div>
+        )}
+      </div>
 
-          <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
-            {jsonInput ? (
-              <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-2">
-                <i className="fa-solid fa-eye-slash text-2xl"></i>
-                <span>Chưa có dữ liệu để xem trước...</span>
-              </div>
-            )}
-          </div>
+      {/* CỘT 3: JSON & NÚT LƯU (CHIẾM 3 PHẦN) */}
+      <div className="lg:col-span-3 space-y-4">
+        <div className="bg-slate-900 p-5 rounded-[2.5rem]">
+          <label className="block text-[10px] font-black text-emerald-500 mb-2 ml-2 uppercase">3. Mã JSON hệ thống</label>
+          <textarea 
+            className="w-full h-80 p-4 bg-transparent text-emerald-400 font-mono text-[10px] outline-none border border-emerald-900/50 rounded-xl" 
+            value={jsonInput} 
+            readOnly 
+          />
+          <button 
+            onClick={handleSaveQuestions} 
+            disabled={!jsonInput || loading} 
+            className="w-full mt-4 py-5 bg-orange-600 text-white rounded-[2rem] font-black shadow-lg hover:bg-orange-700 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+          >
+            {loading ? <i className="fa-solid fa-spinner animate-spin"></i> : 'ĐẨY LÊN SHEET NH'}
+          </button>
+        </div>
+        
+        <div className="p-4 bg-blue-50 rounded-3xl border border-blue-100">
+          <p className="text-[10px] text-blue-700 leading-relaxed">
+            <i className="fa-solid fa-circle-info mr-1"></i>
+            Thầy hãy kiểm tra kỹ <b>Cột Review</b>. Nếu Latex hiển thị chưa chuẩn hoặc ID bị sai, hãy sửa lại ở ô nhập liệu trước khi bấm Đẩy lên nhé!
+          </p>
         </div>
       </div>
 
     </div>
   </div>
 )}
-        
         {/* TAB 3: IMPORT LỜI GIẢI TRONG NGÂN HÀNG CÂU HỎI */}
 {currentTab === 'lg' && (
   <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-4">
