@@ -55,12 +55,12 @@ export default function ReviewEditor({ questions, onSave }) {
 
             {/* QUESTION */}
             <textarea
-              className="w-full border p-3 rounded mb-4"
-              value={obj.question || ""}
-              onChange={e =>
-                updateField(idx, "question", e.target.value)
-              }
-            />
+  className="w-full border p-3 rounded mb-4 min-h-[120px] font-mono text-sm"
+  value={obj.question || ""}
+  onChange={e =>
+    updateField(idx, "question", e.target.value)
+  }
+/>
 
             {/* MCQ */}
             {type === "mcq" && (
