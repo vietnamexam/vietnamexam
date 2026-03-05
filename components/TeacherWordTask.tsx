@@ -213,7 +213,7 @@ const handleSaveQuestions = async (dataArray) => {
     });
 
     const res = await resp.json();
-    alert(`✅ Đã cập nhật lời giải thành công rồi nhé tình yêu!`);
+    alert(`✅ Đã  lời giải thành công rồi nhé tình yêu!`);
   } catch (e) {
     console.error(e);
     alert("❌ Không kết nối được GAS");
@@ -283,7 +283,7 @@ const handleSaveQuestions = async (dataArray) => {
             onClick={() => handleWordParser(jsonInputWord)}
             className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
           >
-            CẬP NHẬT CÂU HỎI (WORD)
+            Xem trước và sửa
           </button>
           <button 
             disabled={loading}
