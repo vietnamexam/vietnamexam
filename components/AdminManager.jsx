@@ -124,6 +124,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
+  const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
   
   const [currentTab, setCurrentTab] = useState(mode || 'cauhoi');
@@ -456,6 +457,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   // ===== xem chi tiết câu trùng ============ 
 const handleOpenPreview = (item) => {
   setPreviewQuestion(item);
+  setPreviewEdit(item);   // thêm dòng này
   setShowPreview(true);
 };
   const handleDeleteInsidePreview = async (item) => {
@@ -807,12 +809,50 @@ const handleQuickUpdate = async (field, newValue) => {
 
       {/* Nội dung câu hỏi */}
       <div className="p-8 max-h-[70vh] overflow-y-auto">
-        <div className="mb-6">
-          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-black mb-3">CÂU HỎI</span>
-          <div className="text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">
-            {previewQuestion.question}
-          </div>
-        </div>
+        <div className="space-y-4">
+
+  <EditableSection
+    title="Nội dung câu hỏi"
+    value={previewEdit.question}
+    icon="fa-question-circle"
+    onSave={(val) => {
+      setPreviewEdit(prev => ({ ...prev, question: val }));
+      handleQuickUpdate('question', val);
+    }}
+  />
+
+  <EditableSection
+    title="Các phương án (JSON)"
+    value={previewEdit.options}
+    icon="fa-list-ul"
+    onSave={(val) => {
+      setPreviewEdit(prev => ({ ...prev, options: val }));
+      handleQuickUpdate('options', val);
+    }}
+  />
+
+  <EditableSection
+    title="Đáp án đúng"
+    value={previewEdit.answer}
+    icon="fa-check-double"
+    isSmall={true}
+    onSave={(val) => {
+      setPreviewEdit(prev => ({ ...prev, answer: val }));
+      handleQuickUpdate('answer', val);
+    }}
+  />
+
+  <EditableSection
+    title="Lời giải chi tiết"
+    value={previewEdit.loigiai}
+    icon="fa-lightbulb"
+    onSave={(val) => {
+      setPreviewEdit(prev => ({ ...prev, loigiai: val }));
+      handleQuickUpdate('loigiai', val);
+    }}
+  />
+
+</div>
 
         {/* Render danh sách đáp án nếu là MCQ */}
         <div className="space-y-3">
