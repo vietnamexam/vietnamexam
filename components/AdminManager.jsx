@@ -124,7 +124,6 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
-  const [previewData, setPreviewData] = useState([]);
   const [allQuestions, setAllQuestions] = useState([]);  
   
   const [currentTab, setCurrentTab] = useState(mode || 'cauhoi');
@@ -161,66 +160,6 @@ useEffect(() => {
     return () => clearTimeout(timer);
   }
 }, [editForm]);
-
-  const handleUpdateFromPreview = async (updatedItem) => {
-  setLoading(true);
-  try {
-    // 1. Cập nhật vào danh sách đang Preview để thầy thấy kết quả ngay
-    const newList = previewData.map(it =>
-  it.id === updatedItem.id ? updatedItem : it
-    );
-
-    setPreviewData(newList);
-    setJsonInput(JSON.stringify(newList, null, 2));
-
-    // 2. Gọi API updateQuestion (Tận dụng hàm thầy đã viết)
-    // Giả lập logic của handleQuickUpdate nhưng gửi toàn bộ Object
-    const payload = {
-      data: {
-        id: updatedItem.id,
-        classTag: updatedItem.classTag,
-        type: updatedItem.type,
-        part: updatedItem.part,
-        question: updatedItem.question,
-        options: updatedItem.options,
-        answer: updatedItem.answer,
-        loigiai: updatedItem.loigiai,
-        date: new Date().toLocaleString('vi-VN')
-      }
-    };
-
-    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await res.json();
-    if (result.status === 'success') {
-      alert("🚀 Đã cập nhật câu hỏi lên Sheet thành công!");
-    } else {
-      alert("Lỗi: " + result.message);
-    }
-  } catch (error) {
-    alert("Không kết nối được server");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// --- TRONG PHẦN RENDER TAB WORD ---
-
-  // edit từng câu
- const handleEditFromPreview = (item) => {
-  setEditForm({
-    ...item,
-    idquestion: item.id || item.idquestion // Nạp ID để ô tìm kiếm hiển thị đúng
-  });
-  setCurrentTab('cauhoi'); // Chuyển sang tab Sửa câu hỏi
-  // Cuộn lên đầu trang cho dễ nhìn
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};  
   // Bất cứ khi nào nhận data từ server:
 const chuan_hoa = (data) => ({
   ...data,
@@ -334,8 +273,7 @@ const chuan_hoa = (data) => ({
     }
   }).filter(Boolean);
 
- setPreviewData(results);
- setJsonInput(JSON.stringify(results, null, 2));
+  setJsonInput(JSON.stringify(results, null, 2));
 };
 // ===================================load ngân hàng đề =====================
   const handleLoadQuestions = async () => {
@@ -352,33 +290,31 @@ const chuan_hoa = (data) => ({
 
 // ======================================================================================Ghi câu hoi ngân hàng=========
   
-const handleSaveQuestions = async () => {
-  if (!previewData || previewData.length === 0)
-    return alert("Chưa có dữ liệu!");
-
+ const handleSaveQuestions = async () => {
+  if (!jsonInput) return alert("Chưa có dữ liệu!");
   setLoading(true);
   try {
-    const dataArray = previewData; // ✅ LẤY DATA ĐÃ CHỈNH SỬA
-
+    // Phải parse jsonInput thành mảng Object trước khi gửi
+    const dataArray = JSON.parse(jsonInput); 
+    
     const resp = await fetch(`${DANHGIA_URL}?action=saveQuestions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(dataArray)
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify(dataArray) 
     });
-
+    
     const res = await resp.json();
-    if (res.status === 'success') {
-      alert(`🚀 Đã chèn ${dataArray.length} câu hỏi vào ngân hàng.`);
-      setJsonInput('');
-      setPreviewData([]);
+    if (res.status === 'success') { 
+      alert(`🚀 Thành công! Đã chèn thêm ${dataArray.length} câu hỏi vào ngân hàng .`); 
+      setJsonInput(''); 
     } else {
       alert("Lỗi: " + res.message);
     }
-  } catch (e) {
+  } catch (e) { 
     console.error(e);
-    alert("Lỗi gửi dữ liệu!");
-  } finally {
-    setLoading(false);
+    alert("Lỗi gửi dữ liệu! Thầy kiểm tra dữ liệu đầu vào có chuẩn mảng JSON không nhé."); 
+  } finally { 
+    setLoading(false); 
   }
 };
 // Up lG
@@ -417,7 +353,7 @@ const handleUploadLG = async () => {
 };
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
-  const handleVerifyAdminOTP = async () => {
+ const handleVerifyAdminOTP = async () => {
   if (!otp) return alert("Vui lòng nhập mật khẩu!");
   
   setLoading(true); // Tận dụng state loading có sẵn
@@ -746,7 +682,7 @@ const handleQuickUpdate = async (field, newValue) => {
             
             <button 
               onClick={handleSaveQuestions} 
-              disabled={previewData.length === 0 || loading}
+              disabled={!jsonInput || loading} 
               className="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-black text-xs shadow-lg hover:shadow-orange-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale transition-all flex items-center gap-2"
             >
               {loading ? (
@@ -761,11 +697,8 @@ const handleQuickUpdate = async (field, newValue) => {
           </div>
 
           <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
-           {previewData.length > 0 ? (
-              <QuestionPreviewBlock 
-              data={previewData}
-              onChange={setPreviewData}
-              />
+            {jsonInput ? (
+              <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-2">
                 <i className="fa-solid fa-eye-slash text-2xl"></i>
