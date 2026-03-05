@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { DANHGIA_URL, API_ROUTING } from '../config';
 
 const TeacherWordTask = ({ onBack }) => {
+  const [parsedQuestions, setParsedQuestions] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [idgv, setIdgv] = useState('');
   const [customLink, setCustomLink] = useState(''); // Để dự phòng nếu cần dán trực tiếp link
@@ -47,6 +49,7 @@ const TeacherWordTask = ({ onBack }) => {
       const obj = new Function(`return (${block})`)();
 
       return {
+       
         id: obj.id || Date.now() + index,
         classTag: (obj.classTag || "1001.a").trim(),
         type: obj.type || "short-answer",
@@ -57,14 +60,19 @@ const TeacherWordTask = ({ onBack }) => {
       return null;
     }
   }).filter(Boolean);
-
+    setParsedQuestions(results); 
   if (!results.length) {
     alert("Parse xong nhưng không có câu nào hợp lệ!");
     return;
   }
 
   // 3️⃣ Gửi thẳng sang GAS
-  handleSaveQuestions(results);
+  handleSaveQuestions(parsedQuestions);
+};
+  const handleEditQuestion = (index, value) => {
+  const updated = [...parsedQuestions];
+  updated[index].question = value;
+  setParsedQuestions(updated);
 };
 
 
@@ -299,8 +307,7 @@ const handleSaveQuestions = async (dataArray) => {
         </div>
       </div>
 
-      {/* KHU VỰC TEXTAREA */}
-     {/* KHU VỰC TEXTAREA */}
+      {/* KHU VỰC TEXTAREA */}     
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
   <div className="group">
     <label className="text-xs font-bold text-slate-500 ml-4 group-focus-within:text-orange-500 transition-colors uppercase">Nội dung câu hỏi</label>
@@ -324,6 +331,48 @@ const handleSaveQuestions = async (dataArray) => {
 />
   </div>
 </div>
+      {parsedQuestions.length > 0 && (
+  <div className="mt-8 space-y-4">
+    <div className="font-black text-lg text-slate-700">
+      REVIEW CÂU HỎI ({parsedQuestions.length})
+    </div>
+
+    {parsedQuestions.map((q, i) => (
+      <div key={i} className="p-4 border rounded-xl bg-slate-50">
+
+        <div className="flex justify-between mb-2">
+          <div className="font-bold">
+            Câu {i + 1} | {q.type}
+          </div>
+
+          <button
+            onClick={() =>
+              setEditingIndex(editingIndex === i ? null : i)
+            }
+            className="px-3 py-1 bg-orange-500 text-white rounded"
+          >
+            {editingIndex === i ? "Đóng" : "Sửa"}
+          </button>
+        </div>
+
+        {editingIndex === i ? (
+          <textarea
+            className="w-full h-40 p-3 border rounded"
+            value={q.question}
+            onChange={(e) =>
+              handleEditQuestion(i, e.target.value)
+            }
+          />
+        ) : (
+          <pre className="text-xs overflow-x-auto">
+            {q.question}
+          </pre>
+        )}
+
+      </div>
+    ))}
+  </div>
+)}
     </div>
   );
 };
