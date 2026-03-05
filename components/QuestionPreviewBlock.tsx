@@ -1,5 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 const QuestionPreviewBlock = ({ data }) => {
+
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editData, setEditData] = useState({});
+
   useEffect(() => {
     if (window.MathJax) {
       const timer = setTimeout(() => {
@@ -7,13 +12,29 @@ const QuestionPreviewBlock = ({ data }) => {
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [data]);
+  }, [data, editData]);
 
   if (!data || data.length === 0) return null;
 
+  const startEdit = (index, item) => {
+    setEditingIndex(index);
+    setEditData({ ...item });
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setEditData({});
+  };
+
+  const saveEdit = (index) => {
+    data[index] = editData;
+    setEditingIndex(null);
+    setEditData({});
+  };
+
   const renderOptions = (item) => {
     try {
-      // 1. XỬ LÝ CÂU TRẢ LỜI NGẮN (SA)
+
       const isShortAnswer = !item.options || item.options === "" || item.options === "[]";
       if (isShortAnswer) {
         return (
@@ -26,7 +47,6 @@ const QuestionPreviewBlock = ({ data }) => {
 
       const options = typeof item.options === 'string' ? JSON.parse(item.options) : item.options;
 
-      // 2. XỬ LÝ CÂU ĐÚNG/SAI (TF)
       if (Array.isArray(options) && typeof options[0] === 'object') {
         return (
           <div className="space-y-2 mt-4">
@@ -43,7 +63,6 @@ const QuestionPreviewBlock = ({ data }) => {
         );
       }
 
-      // 3. XỬ LÝ CÂU TRẮC NGHIỆM (MCQ)
       const labels = ['A', 'B', 'C', 'D'];
       const entries = Array.isArray(options) ? options : Object.values(options);
       
@@ -62,14 +81,12 @@ const QuestionPreviewBlock = ({ data }) => {
               );
             })}
           </div>
-          
-          {/* Ô KẾT QUẢ TỔNG HỢP CHO MCQ */}
-          {/* Ô ĐÁP ÁN CHO MCQ */}
-        <div className="flex items-center justify-end">
-          <div className="bg-rose-600 text-white px-6 py-2 rounded-2xl shadow-lg shadow-rose-200 flex items-center gap-3 animate-bounce-short">
-            <b className="text-2xl font-black">ĐÁP ÁN: {item.answer}</b>
+
+          <div className="flex items-center justify-end">
+            <div className="bg-rose-600 text-white px-6 py-2 rounded-2xl shadow-lg shadow-rose-200 flex items-center gap-3 animate-bounce-short">
+              <b className="text-2xl font-black">ĐÁP ÁN: {item.answer}</b>
+            </div>
           </div>
-        </div>
         </div>
       );
     } catch (e) {
@@ -79,33 +96,113 @@ const QuestionPreviewBlock = ({ data }) => {
 
   return (
     <div className="h-full space-y-8 overflow-y-auto pr-4 no-scrollbar scroll-smooth">
-      {data.map((item, index) => (
-        <div key={index} className="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm relative animate-fade-in group">
-          {/* Header câu hỏi */}
-          <div className="absolute top-0 left-0 flex items-center">
-            <div className="bg-slate-900 text-white px-6 py-2 rounded-br-[1.5rem] font-black text-xs uppercase tracking-widest">
-              Câu {index + 1}
+      {data.map((item, index) => {
+
+        const editing = editingIndex === index;
+
+        return (
+          <div key={index} className="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm relative animate-fade-in group">
+
+            {/* Header */}
+            <div className="absolute top-0 left-0 flex items-center">
+              <div className="bg-slate-900 text-white px-6 py-2 rounded-br-[1.5rem] font-black text-xs uppercase tracking-widest">
+                Câu {index + 1}
+              </div>
+
+              <div className="px-4 text-[10px] font-bold text-slate-400">
+                ID: {item.id} • ClassTag: {item.classTag}
+              </div>
+
+              <div className="ml-3 flex gap-2">
+
+                {!editing && (
+                  <button
+                    onClick={() => startEdit(index, item)}
+                    className="text-[10px] px-3 py-1 bg-blue-500 text-white rounded-lg"
+                  >
+                    SỬA
+                  </button>
+                )}
+
+                {editing && (
+                  <>
+                    <button
+                      onClick={() => saveEdit(index)}
+                      className="text-[10px] px-3 py-1 bg-emerald-500 text-white rounded-lg"
+                    >
+                      LƯU
+                    </button>
+
+                    <button
+                      onClick={cancelEdit}
+                      className="text-[10px] px-3 py-1 bg-slate-400 text-white rounded-lg"
+                    >
+                      HỦY
+                    </button>
+                  </>
+                )}
+
+              </div>
             </div>
-            <div className="px-4 text-[10px] font-bold text-slate-400">
-              ID: {item.id} • ClassTag: {item.classTag}
+
+            {/* QUESTION */}
+            <div className="mt-8 text-slate-800 font-medium leading-relaxed preview-content text-lg">
+
+              {editing ? (
+                <textarea
+                  className="w-full border rounded-xl p-3"
+                  value={editData.question}
+                  onChange={(e)=>setEditData({...editData, question:e.target.value})}
+                />
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: item.question }} />
+              )}
+
             </div>
+
+            {/* OPTIONS */}
+            {editing ? (
+              <textarea
+                className="w-full border rounded-xl p-3 mt-4"
+                value={editData.options}
+                onChange={(e)=>setEditData({...editData, options:e.target.value})}
+              />
+            ) : (
+              renderOptions(item)
+            )}
+
+            {/* ANSWER */}
+            {editing && (
+              <div className="mt-4">
+                <textarea
+                  className="w-full border rounded-xl p-3"
+                  value={editData.answer}
+                  onChange={(e)=>setEditData({...editData, answer:e.target.value})}
+                />
+              </div>
+            )}
+
+            {/* LOIGIAI */}
+            {editing ? (
+              <textarea
+                className="w-full border rounded-xl p-3 mt-4"
+                value={editData.loigiai || ""}
+                onChange={(e)=>setEditData({...editData, loigiai:e.target.value})}
+              />
+            ) : (
+              item.loigiai && (
+                <div className="mt-6 p-6 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+                  <span className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-[0.2em]">
+                    Hướng dẫn giải
+                  </span>
+                  <div className="text-sm text-slate-600 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: item.loigiai }} />
+                </div>
+              )
+            )}
+
           </div>
-
-          {/* Nội dung câu hỏi */}
-          <div className="mt-8 text-slate-800 font-medium leading-relaxed preview-content text-lg" dangerouslySetInnerHTML={{ __html: item.question }} />
-          
-          {/* Các phương án */}
-          {renderOptions(item)}
-
-          {/* Lời giải */}
-          {item.loigiai && (
-            <div className="mt-6 p-6 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-              <span className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-[0.2em]">Hướng dẫn giải</span>
-              <div className="text-sm text-slate-600 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: item.loigiai }} />
-            </div>
-          )}
-        </div>
-      ))}
+        );
+      })}
       <div className="h-20"></div>
     </div>
   );
