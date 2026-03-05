@@ -3,57 +3,42 @@ import React, { useState } from "react";
 
 export default function ReviewEditor({ questions, onSave }) {
 
-  const [data, setData] = useState(
-    questions.map(q => {
-      try {
-        const obj = JSON.parse(q.question);
-        return { ...q, parsed: obj };
-      } catch {
-        return { ...q, parsed: {} };
-      }
-    })
-  );
+  const [data, setData] = useState(questions || []);
 
- const updateField = (idx, field, value) => {
+  const updateField = (idx, field, value) => {
+    const copy = [...data];
 
-  const copy = [...data];
-
-  copy[idx] = {
-    ...copy[idx],
-    parsed: {
-      ...copy[idx].parsed,
+    copy[idx] = {
+      ...copy[idx],
       [field]: value
-    }
-  };
+    };
 
-  setData(copy);
-};
+    setData(copy);
+  };
 
   const updateOption = (idx, optIdx, value) => {
 
-  const copy = [...data];
+    const copy = [...data];
 
-  const options = [...(copy[idx].parsed.o || ["","","",""])];
+    const options = [...(copy[idx].o || ["", "", "", ""])];
 
-  options[optIdx] = value;
+    options[optIdx] = value;
 
-  copy[idx] = {
-    ...copy[idx],
-    parsed: {
-      ...copy[idx].parsed,
+    copy[idx] = {
+      ...copy[idx],
       o: options
-    }
+    };
+
+    setData(copy);
   };
 
-  setData(copy);
-};
-
   const handleSave = () => {
+
     const result = data.map(q => ({
       id: q.id,
       classTag: q.classTag,
       type: q.type,
-      question: JSON.stringify(q.parsed)
+      question: JSON.stringify(q)
     }));
 
     onSave(result);
@@ -64,28 +49,28 @@ export default function ReviewEditor({ questions, onSave }) {
 
       {data.map((q, idx) => {
 
-        const obj = q.parsed || {};
-        const type = obj.type || q.type;
+        const obj = q || {};
+        const type = obj.type;
 
         return (
           <div key={idx} className="border p-6 rounded-xl bg-white shadow">
 
             <div className="font-bold mb-2 flex justify-between">
-            <span>Câu {idx + 1}</span>
-            <span className="text-xs text-gray-500">{type}</span>
+              <span>Câu {idx + 1}</span>
+              <span className="text-xs text-gray-500">{type}</span>
             </div>
 
             {/* QUESTION */}
             <textarea
-  className="w-full border p-3 rounded mb-4 min-h-[160px] font-mono text-sm"
-  value={obj.question || ""}
-  onChange={e =>
-    updateField(idx, "question", e.target.value)
-  }
-/>
+              className="w-full border p-3 rounded mb-4 min-h-[160px] font-mono text-sm"
+              value={obj.question || ""}
+              onChange={e =>
+                updateField(idx, "question", e.target.value)
+              }
+            />
 
             {/* MCQ */}
-            {type === "mcq" && (
+            {(type === "mcq" || type === "multiple-choice") && (
               <div className="space-y-2">
 
                 {(obj.o || ["", "", "", ""]).map((opt, i) => (
@@ -106,7 +91,7 @@ export default function ReviewEditor({ questions, onSave }) {
                   </div>
                 ))}
 
-                <div className="mt-2">
+                <div className="mt-3">
                   Answer:
 
                   <select
