@@ -161,19 +161,15 @@ useEffect(() => {
   }
 }, [editForm]);
   // edit từng câu
-  const handleEditFromPreview = (item) => {
-  // 1. Nạp dữ liệu vào form sửa
+ const handleEditFromPreview = (item) => {
   setEditForm({
     ...item,
-    idquestion: item.id // Đảm bảo ID được nạp vào ô tìm kiếm
+    idquestion: item.id || item.idquestion // Nạp ID để ô tìm kiếm hiển thị đúng
   });
-  
-  // 2. Chuyển sang tab "Sửa câu hỏi"
-  setCurrentTab('cauhoi');
-  
-  // 3. Thông báo cho thầy biết
-  console.log("Đã nạp câu hỏi ID " + item.id + " để chỉnh sửa.");
-};
+  setCurrentTab('cauhoi'); // Chuyển sang tab Sửa câu hỏi
+  // Cuộn lên đầu trang cho dễ nhìn
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};  
   // Bất cứ khi nào nhận data từ server:
 const chuan_hoa = (data) => ({
   ...data,
@@ -713,6 +709,7 @@ const handleQuickUpdate = async (field, newValue) => {
           <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
             {jsonInput ? (
               <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
+              onEditSingle={handleEditFromPreview}
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-2">
                 <i className="fa-solid fa-eye-slash text-2xl"></i>
