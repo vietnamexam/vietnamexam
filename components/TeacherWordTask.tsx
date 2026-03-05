@@ -388,26 +388,35 @@ const handleSaveQuestions = async (dataArray) => {
                         </div>
                       )}
 
-                      {/* Đúng/Sai TF */}
-                      {content.s && Array.isArray(content.s) && (
-                        <div className="space-y-2 mb-3">
-                          <div className="text-[10px] text-blue-500 font-bold italic">Dạng Đúng/Sai:</div>
-                          {content.s.map((sub, sIdx) => {
-                            const ans = Array.isArray(content.a) ? content.a[sIdx] : null;
-                            return (
-                              <div key={sIdx} className="text-xs p-2 bg-blue-50/50 rounded-lg border border-blue-100 flex flex-col gap-1">
-                                <div className="flex gap-2">
-                                  <b className="text-blue-600">{String.fromCharCode(97 + sIdx)})</b>
-                                  <div dangerouslySetInnerHTML={{ __html: sub.text || sub }} />
-                                </div>
-                                <div className="ml-5 font-bold text-[10px]">
-                                  {ans === true || ans === "true" ? <span className="text-emerald-600">● ĐÚNG</span> : <span className="text-red-600">● SAI</span>}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                     {/* Đúng/Sai TF - Bản sửa lỗi khớp đáp án từ trong mảng s */}
+{content.s && Array.isArray(content.s) && (
+  <div className="space-y-2 mb-3">
+    <div className="text-[10px] text-blue-500 font-bold italic">Dạng Đúng/Sai:</div>
+    {content.s.map((sub, sIdx) => {
+      // THAY ĐỔI Ở ĐÂY: Lấy đáp án trực tiếp từ sub.a thay vì content.a[sIdx]
+      const ans = sub.a; 
+      
+      return (
+        <div key={sIdx} className="text-xs p-2 bg-blue-50/50 rounded-lg border border-blue-100 flex flex-col gap-1">
+          <div className="flex gap-2">
+            <b className="text-blue-600">{String.fromCharCode(97 + sIdx)})</b>
+            <div dangerouslySetInnerHTML={{ __html: sub.text || sub }} />
+          </div>
+          <div className="ml-5 font-bold text-[10px]">
+            {/* Kiểm tra giá trị ans */}
+            {(ans === true || ans === "true") ? (
+              <span className="text-emerald-600">● ĐÚNG</span>
+            ) : (ans === false || ans === "false") ? (
+              <span className="text-red-600">● SAI</span>
+            ) : (
+              <span className="text-slate-400 font-normal">Chưa xác định: {JSON.stringify(ans)}</span>
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
 
                       {/* Điền khuyết SA */}
                       {content.type === "short-answer" && !content.o && !content.s && (
