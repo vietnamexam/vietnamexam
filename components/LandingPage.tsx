@@ -207,14 +207,13 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
  useEffect(() => {
   const saved = localStorage.getItem('idgv');
   if (saved) {
-    setIdgv(atob(saved));
+    try {
+      setIdgv(atob(saved));
+    } catch (e) {
+      console.error("Lỗi giải mã IDGV");
+    }
   }
-}, []);
- useEffect(() => {
-  if (idgv) {
-    localStorage.setItem('idgv', btoa(idgv));
-  }
-}, [idgv]);
+}, []); 
   useEffect(() => {
   if (!showResetModal) return;
   if (!idgv || !resetType) return;
@@ -1862,12 +1861,15 @@ const handleRedirect = () => {
       </h2>
 
       {/* IDGV - nếu đã lưu thì disable */}
-      <input
-        placeholder="ID Giáo viên"
-        className="w-full border p-2 mb-3 rounded-lg"
-        value={idgv}
-        disabled
-      />
+      <div className="space-y-1 mb-3">
+  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">ID Giáo viên</label>
+  <input
+    placeholder="ID Giáo viên"
+    className="w-full border-2 p-3 rounded-xl bg-slate-50 font-mono text-blue-600 focus:border-blue-500 outline-none"
+    value={idgv}
+    onChange={(e) => setIdgv(e.target.value)} // Cho phép sửa trực tiếp tại đây
+  />
+</div>
 
       <input
         type="password"
@@ -1927,45 +1929,55 @@ const handleRedirect = () => {
 )}
       
       {showIdgvModal && (
-  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div className="bg-slate-900 p-6 rounded-2xl w-full max-w-sm space-y-4">
-
-      <h2 className="text-white font-bold text-lg">
-        🔐 Nhập IDGV (chỉ 1 lần)
+  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="bg-slate-900 p-6 rounded-2xl w-full max-w-sm space-y-4 border border-slate-700">
+      <h2 className="text-white font-bold text-lg flex items-center gap-2">
+        🔐 {idgv ? "Đổi ID Giáo viên" : "Nhập IDGV"}
       </h2>
 
       <input
         type="text"
-        placeholder="Nhập IDGV..."
-        onChange={(e) => setIdgv(e.target.value)}
-        className="w-full p-2 rounded bg-slate-800 text-white"
+        placeholder="Nhập IDGV mới..."
+        defaultValue={idgv} // Dùng defaultValue để hiện giá trị cũ nhưng vẫn cho sửa
+        id="temp_idgv_input" // Đặt ID để lấy value thủ công
+        className="w-full p-3 rounded-xl bg-slate-800 text-white border border-slate-600 focus:ring-2 ring-blue-500 outline-none"
       />
 
-      <button
-        onClick={() => {
-          if (!idgv) return alert("Nhập IDGV!");
-          setShowIdgvModal(false);
-          setShowResetMenu(true);
-        }}
-        className="w-full bg-green-600 py-2 rounded text-white"
-      >
-        Xác nhận
-      </button>
-
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowIdgvModal(false)}
+          className="flex-1 bg-slate-700 py-3 rounded-xl text-white font-bold"
+        >
+          Hủy
+        </button>
+        <button
+          onClick={() => {
+            const newVal = document.getElementById('temp_idgv_input').value.trim();
+            if (!newVal) return alert("Vui lòng nhập ID!");
+            
+            // Lưu chính thức vào State và LocalStorage
+            setIdgv(newVal);
+            localStorage.setItem('idgv', btoa(newVal));
+            
+            setShowIdgvModal(false);
+            setShowResetMenu(true);
+            alert("✅ Đã cập nhật IDGV: " + newVal);
+          }}
+          className="flex-1 bg-blue-600 py-3 rounded-xl text-white font-bold hover:bg-blue-700"
+        >
+          Xác nhận
+        </button>
+      </div>
     </div>
   </div>
 )}
       {idgv && (
   <button
-    onClick={() => {
-      localStorage.removeItem('idgv');
-      setIdgv('');
-      setShowResetMenu(false);
-      setShowIdgvModal(true);
-    }}
-    className="text-xs text-gray-400 underline mt-2"
+    onClick={() => setShowIdgvModal(true)}
+    className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-500 transition-colors mt-3 mx-auto"
   >
-    Đổi IDGV
+    <i className="fa-solid fa-arrows-rotate"></i>
+    Đổi IDGV hiện tại ({idgv})
   </button>
 )}
 
