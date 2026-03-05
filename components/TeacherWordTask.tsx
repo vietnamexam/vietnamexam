@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DANHGIA_URL, API_ROUTING } from '../config';
 
 const TeacherWordTask = ({ onBack }) => {
