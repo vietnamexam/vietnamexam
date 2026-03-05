@@ -3,6 +3,7 @@ import { DANHGIA_URL, API_ROUTING } from '../config';
 
 const TeacherWordTask = ({ onBack }) => {
   // Thêm vào cùng các state khác
+  const [searchId, setSearchId] = useState(''); // Lưu ID câu hỏi cần sửa lẻ
 const [previewData, setPreviewData] = useState([]);
 const [isReviewing, setIsReviewing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,6 +30,39 @@ const [isReviewing, setIsReviewing] = useState(false);
       window.MathJax.typesetPromise();
     }
   }, [isReviewing, previewData]);
+  //==================== sửa lẻ =============================================================================================================
+  const handleEditSingleQuestion = async () => {
+  if (!idgv || !examCode || !searchId) {
+    alert("Thầy cần nhập đủ: IDGV, Mã đề và ID câu hỏi muốn sửa!");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const targetUrl = API_ROUTING[idgv];
+    // Gọi action lấy 1 câu hỏi (Thầy cần thêm action này bên GAS nếu chưa có)
+    const resp = await fetch(`${targetUrl}?action=getSingleQuestion&examCode=${examCode}&questionId=${searchId}`);
+    const res = await resp.json();
+
+    if (res.status === 'success' && res.data) {
+      // Ép kiểu dữ liệu về dạng mảng để dùng chung Modal Review
+      const singleData = [{
+        id: res.data.id,
+        classTag: res.data.classTag,
+        type: res.data.type,
+        question: JSON.stringify(res.data, null, 2) // Làm đẹp mã luôn
+      }];
+      setPreviewData(singleData);
+      setIsReviewing(true);
+    } else {
+      alert("Không tìm thấy câu hỏi này trong đề, thầy kiểm tra lại ID nhé!");
+    }
+  } catch (e) {
+    alert("Lỗi kết nối khi lấy câu hỏi lẻ!");
+  } finally {
+    setLoading(false);
+  }
+};
  
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
@@ -283,15 +317,27 @@ const handleSaveQuestions = async (dataArray) => {
             onClick={() => handleWordParser(jsonInputWord)}
             className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
           >
-            Xem trước và sửa
+            XEM TRƯỚC VÀ SỬA
           </button>
-          <button 
-            disabled={loading}
-            onClick={() => handleWordParser(jsonInputWord)}
-            className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
-          >
-            SỬA CÂU HỎI (WORD)
-          </button>
+         <div className="flex flex-col gap-2 p-3 bg-slate-800/50 rounded-2xl border border-slate-700">
+  <div className="text-[10px] text-orange-400 font-bold uppercase ml-1">Sửa nhanh câu lẻ</div>
+  <div className="flex gap-2">
+    <input 
+      type="text"
+      placeholder="ID CÂU..."
+      className="flex-1 bg-slate-900 text-white p-2 rounded-lg text-xs border border-slate-700 outline-none focus:border-orange-500"
+      value={searchId}
+      onChange={e => setSearchId(e.target.value)}
+    />
+    <button 
+      disabled={loading}
+      onClick={handleEditSingleQuestion}
+      className="px-4 py-2 bg-orange-600 text-white rounded-lg font-bold text-[10px] hover:bg-orange-700 active:scale-95 transition-all shadow-lg"
+    >
+      SỬA CÂU HỎI
+    </button>
+  </div>
+</div>
           <button
           disabled={loading}
           onClick={handleUpdateSolutions}
