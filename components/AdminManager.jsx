@@ -911,7 +911,10 @@ const handleQuickUpdate = async (field, newValue) => {
 
   {/* NÚT QUAY LẠI */}
   <button 
-    onClick={() => setShowPreview(false)}
+   onClick={() => {
+  setShowPreview(false);
+  setPreviewEdit(null);
+}}
     className="py-3 bg-slate-200 text-slate-600 rounded-2xl font-black text-[10px] uppercase hover:bg-slate-300 transition-all"
   >
     <i className="fa-solid fa-arrow-left mr-1"></i> Quay lại
