@@ -300,7 +300,7 @@ setPreviewData(results);
   setLoading(true);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
-    const dataArray = JSON.parse(jsonInput); 
+    const dataArray = previewData;
     
     const resp = await fetch(`${DANHGIA_URL}?action=saveQuestions`, {
       method: 'POST',
