@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-const QuestionPreviewBlock = ({ data }) => {
+
+const QuestionPreviewBlock = ({ data, onEditSingle }) => {
   useEffect(() => {
     if (window.MathJax) {
       const timer = setTimeout(() => {
@@ -62,14 +63,11 @@ const QuestionPreviewBlock = ({ data }) => {
               );
             })}
           </div>
-          
-          {/* Ô KẾT QUẢ TỔNG HỢP CHO MCQ */}
-          {/* Ô ĐÁP ÁN CHO MCQ */}
-        <div className="flex items-center justify-end">
-          <div className="bg-rose-600 text-white px-6 py-2 rounded-2xl shadow-lg shadow-rose-200 flex items-center gap-3 animate-bounce-short">
-            <b className="text-2xl font-black">ĐÁP ÁN: {item.answer}</b>
+          <div className="flex items-center justify-end">
+            <div className="bg-rose-600 text-white px-6 py-2 rounded-2xl shadow-lg shadow-rose-200 flex items-center gap-3">
+              <b className="text-2xl font-black">ĐÁP ÁN: {item.answer}</b>
+            </div>
           </div>
-        </div>
         </div>
       );
     } catch (e) {
@@ -81,6 +79,15 @@ const QuestionPreviewBlock = ({ data }) => {
     <div className="h-full space-y-8 overflow-y-auto pr-4 no-scrollbar scroll-smooth">
       {data.map((item, index) => (
         <div key={index} className="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm relative animate-fade-in group">
+          
+          {/* NÚT SỬA NHANH - THÊM MỚI Ở ĐÂY */}
+          <button 
+            onClick={() => onEditSingle(item)}
+            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-2xl font-black text-[10px] transition-all hover:scale-105 active:scale-95 shadow-xl shadow-blue-200 z-10"
+          >
+            <i className="fa-solid fa-pen-to-square"></i> SỬA CÂU NÀY
+          </button>
+
           {/* Header câu hỏi */}
           <div className="absolute top-0 left-0 flex items-center">
             <div className="bg-slate-900 text-white px-6 py-2 rounded-br-[1.5rem] font-black text-xs uppercase tracking-widest">
@@ -91,13 +98,10 @@ const QuestionPreviewBlock = ({ data }) => {
             </div>
           </div>
 
-          {/* Nội dung câu hỏi */}
           <div className="mt-8 text-slate-800 font-medium leading-relaxed preview-content text-lg" dangerouslySetInnerHTML={{ __html: item.question }} />
           
-          {/* Các phương án */}
           {renderOptions(item)}
 
-          {/* Lời giải */}
           {item.loigiai && (
             <div className="mt-6 p-6 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
               <span className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-[0.2em]">Hướng dẫn giải</span>
