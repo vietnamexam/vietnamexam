@@ -343,7 +343,7 @@ const handleSaveQuestions = async (dataArray) => {
       onClick={handleEditSingleQuestion}
       className="px-4 py-2 bg-orange-600 text-white rounded-lg font-bold text-[10px] hover:bg-orange-700 active:scale-95 transition-all shadow-lg"
     >
-      SỬA CÂU HỎI
+     TÌM KIẾM
     </button>
   </div>
 </div>
