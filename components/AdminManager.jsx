@@ -166,8 +166,11 @@ useEffect(() => {
   setLoading(true);
   try {
     // 1. Cập nhật vào danh sách đang Preview để thầy thấy kết quả ngay
-    const currentList = JSON.parse(jsonInput);
-    const newList = currentList.map(it => it.id === updatedItem.id ? updatedItem : it);
+    const newList = previewData.map(it =>
+  it.id === updatedItem.id ? updatedItem : it
+    );
+
+    setPreviewData(newList);
     setJsonInput(JSON.stringify(newList, null, 2));
 
     // 2. Gọi API updateQuestion (Tận dụng hàm thầy đã viết)
@@ -331,8 +334,8 @@ const chuan_hoa = (data) => ({
     }
   }).filter(Boolean);
 
-  setJsonInput(JSON.stringify(results, null, 2));
-  setPreviewData(results);
+ setPreviewData(results);
+ setJsonInput(JSON.stringify(results, null, 2));
 };
 // ===================================load ngân hàng đề =====================
   const handleLoadQuestions = async () => {
@@ -743,7 +746,7 @@ const handleQuickUpdate = async (field, newValue) => {
             
             <button 
               onClick={handleSaveQuestions} 
-              disabled={!jsonInput || loading} 
+              disabled={previewData.length === 0 || loading}
               className="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-black text-xs shadow-lg hover:shadow-orange-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale transition-all flex items-center gap-2"
             >
               {loading ? (
