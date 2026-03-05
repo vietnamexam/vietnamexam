@@ -30,32 +30,49 @@ const [isReviewing, setIsReviewing] = useState(false);
       window.MathJax.typesetPromise();
     }
   }, [isReviewing, previewData]);
-  //==================== sửa lẻ =============================================================================================================
-  if (action === "getSingleQuestion") {
-  const sheet = ss.getSheetByName("exam_data");
-  const examCodeParam = (e.parameter.examCode || "").toString().trim().toUpperCase();
-  const questionIdParam = (e.parameter.questionId || "").toString().trim();
-  
-  const data = sheet.getDataRange().getValues();
-  
-  for (let i = 1; i < data.length; i++) {
-    const rowExam = data[i][0].toString().trim().toUpperCase();
-    const rowId = data[i][1].toString().trim();
-    
-    if (rowExam === examCodeParam && rowId === questionIdParam) {
-      // Trả về đúng cấu trúc mà React đang chờ
-      const result = {
-        id: data[i][1],
-        classTag: data[i][2],
-        type: data[i][3],
-        question: data[i][4], // Nội dung JSON câu hỏi
-        loigiai: data[i][5]
-      };
-      return createResponse("success", result);
+ // ==================== HÀM SỬA CÂU LẺ (REACT) ====================
+  const handleEditSingleQuestion = async () => {
+    if (!idgv || !examCode || !searchId) {
+      alert("Thầy cần nhập đủ: IDGV, Mã đề và ID câu hỏi muốn sửa!");
+      return;
     }
-  }
-  return createResponse("error", "Không tìm thấy ID " + questionIdParam);
-}
+
+    setLoading(true);
+    try {
+      const targetUrl = API_ROUTING[idgv];
+      const resp = await fetch(`${targetUrl}?action=getSingleQuestion&examCode=${examCode}&questionId=${searchId}`, {
+        method: 'GET',
+        redirect: 'follow'
+      });
+      const res = await resp.json();
+
+      if (res.status === 'success' && res.data) {
+        // Parse câu hỏi nếu nó đang ở dạng string để hiển thị đẹp
+        let questionParsed;
+        try {
+            questionParsed = typeof res.data.question === 'string' ? JSON.parse(res.data.question) : res.data.question;
+        } catch (e) {
+            questionParsed = res.data;
+        }
+
+        const singleData = [{
+          id: res.data.id,
+          classTag: res.data.classTag,
+          type: res.data.type,
+          question: JSON.stringify(questionParsed, null, 2) 
+        }];
+        setPreviewData(singleData);
+        setIsReviewing(true);
+      } else {
+        alert(res.message || "Không tìm thấy câu hỏi này!");
+      }
+    } catch (e) {
+      alert("Lỗi kết nối: " + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+ 
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
   const handleWordParser = (text) => {
