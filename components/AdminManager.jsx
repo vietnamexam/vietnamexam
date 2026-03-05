@@ -124,6 +124,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
+  const [previewData, setPreviewData] = useState([]);
   const [allQuestions, setAllQuestions] = useState([]);  
   
   const [currentTab, setCurrentTab] = useState(mode || 'cauhoi');
@@ -331,6 +332,7 @@ const chuan_hoa = (data) => ({
   }).filter(Boolean);
 
   setJsonInput(JSON.stringify(results, null, 2));
+  setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
   const handleLoadQuestions = async () => {
@@ -347,31 +349,33 @@ const chuan_hoa = (data) => ({
 
 // ======================================================================================Ghi câu hoi ngân hàng=========
   
- const handleSaveQuestions = async () => {
-  if (!jsonInput) return alert("Chưa có dữ liệu!");
+const handleSaveQuestions = async () => {
+  if (!previewData || previewData.length === 0)
+    return alert("Chưa có dữ liệu!");
+
   setLoading(true);
   try {
-    // Phải parse jsonInput thành mảng Object trước khi gửi
-    const dataArray = JSON.parse(jsonInput); 
-    
+    const dataArray = previewData; // ✅ LẤY DATA ĐÃ CHỈNH SỬA
+
     const resp = await fetch(`${DANHGIA_URL}?action=saveQuestions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' }, 
-      body: JSON.stringify(dataArray) 
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(dataArray)
     });
-    
+
     const res = await resp.json();
-    if (res.status === 'success') { 
-      alert(`🚀 Thành công! Đã chèn thêm ${dataArray.length} câu hỏi vào ngân hàng .`); 
-      setJsonInput(''); 
+    if (res.status === 'success') {
+      alert(`🚀 Đã chèn ${dataArray.length} câu hỏi vào ngân hàng.`);
+      setJsonInput('');
+      setPreviewData([]);
     } else {
       alert("Lỗi: " + res.message);
     }
-  } catch (e) { 
+  } catch (e) {
     console.error(e);
-    alert("Lỗi gửi dữ liệu! Thầy kiểm tra dữ liệu đầu vào có chuẩn mảng JSON không nhé."); 
-  } finally { 
-    setLoading(false); 
+    alert("Lỗi gửi dữ liệu!");
+  } finally {
+    setLoading(false);
   }
 };
 // Up lG
@@ -754,9 +758,11 @@ const handleQuickUpdate = async (field, newValue) => {
           </div>
 
           <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
-            {jsonInput ? (
-              <QuestionPreviewBlock data={JSON.parse(jsonInput)} />
-              onUpdateSingle={handleUpdateFromPreview} 
+           {previewData.length > 0 ? (
+              <QuestionPreviewBlock 
+              data={previewData}
+              onChange={setPreviewData}
+              />
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-2">
                 <i className="fa-solid fa-eye-slash text-2xl"></i>
