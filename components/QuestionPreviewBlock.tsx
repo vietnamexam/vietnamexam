@@ -218,8 +218,8 @@ const QuestionPreviewBlock = ({ data, onUpdate }) => {
               {editing ? (
                <textarea
   className="w-full border rounded-xl p-4 mt-4 min-h-[200px] font-mono text-sm leading-relaxed resize-y"
-  value={editData.options}
-  onChange={(e)=>setEditData({...editData, options:e.target.value})}
+  value={editData.question}
+  onChange={(e)=>setEditData({...editData, question:e.target.value})}
 />
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: item.question }} />
