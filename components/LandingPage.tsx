@@ -1733,11 +1733,12 @@ const handleRedirect = () => {
 )}
      {/* 4. MODAL ĐĂNG NHẬP THI LẺ */}
         {showStudentLogin && (
-          <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-[110] p-4">
-            <div className="bg-slate-900 border-2 border-emerald-500/30 p-8 rounded-[2rem] w-full max-w-sm shadow-2xl animate-in zoom-in duration-300">
-              <div className="text-emerald-400 font-black text-center mb-6 text-sm uppercase tracking-tighter">
-                <i className="fas fa-user-shield mr-2"></i> Hệ thống thi lẻ
-              </div>
+            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+              <div className="bg-white w-full max-w-[450px] rounded-[2.5rem] p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+                <h2 className="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tight">
+                  Hệ thống thi lẻ
+                </h2>
+
               
               <div className="space-y-3">
                 <input 
