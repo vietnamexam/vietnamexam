@@ -30,11 +30,10 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   let  = String(value);
 
   // 1. Tự động hiển thị ảnh nếu nội dung là link ảnh
-  const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
-  if (!.includes('<img') && imgRegex.test()) {
-     = .replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
+   const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
+  if (!content.includes('<img') && imgRegex.test(content)) {
+    content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
   }
-
   // 2. Hiển thị ĐÁP ÁN ĐÚNG dạng Badge gọn gàng (Đã xóa chữ ĐÁP ÁN/KẾT QUẢ thừa)
   if (title.toLowerCase().includes("đáp án")) {
     return `
