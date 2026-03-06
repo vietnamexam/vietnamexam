@@ -393,7 +393,7 @@ if (!isAdminVerified) {
         <h2 className="text-2xl font-black mb-8">ADMIN SECURITY</h2>
         
         <input 
-          type="text" 
+          type="password" 
           className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
           value={otp} 
           onChange={e => setOtp(e.target.value)} 
