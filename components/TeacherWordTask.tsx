@@ -32,56 +32,84 @@ const [isReviewing, setIsReviewing] = useState(false);
   }, [isReviewing, previewData]);
  // ==================== HÀM SỬA CÂU LẺ (REACT) ====================
   const handleEditSingleQuestion = async () => {
-    if (!idgv || !examCode || !searchId) {
-      alert("Thầy cần nhập đủ: IDGV, Mã đề và ID câu hỏi muốn sửa!");
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const targetUrl = API_ROUTING[idgv];
-      const resp = await fetch(`${targetUrl}?action=getSingleQuestion&examCode=${examCode}&questionId=${searchId}`, {
-        method: 'GET',
-        redirect: 'follow'
-      });
-      const res = await resp.json();
-
-      // Thay đoạn xử lý trong if (res.status === 'success' && res.data)
-if (res.status === 'success' && res.data) {
-  let questionString = "";
-  
-  // Nếu question là Object, biến nó thành chuỗi JSON đẹp
-  if (typeof res.data.question === 'object') {
-    questionString = JSON.stringify(res.data.question, null, 2);
-  } else {
-    // Nếu là chuỗi, kiểm tra xem chuỗi đó có phải là JSON không
-    try {
-      const parsed = JSON.parse(res.data.question);
-      questionString = JSON.stringify(parsed, null, 2);
-    } catch (e) {
-      questionString = res.data.question; // Chuỗi thô
-    }
+  if (!idgv || !examCode || !searchId) {
+    alert("Thầy cần nhập đủ: IDGV, Mã đề và ID câu hỏi muốn sửa!");
+    return;
   }
 
-  const singleData = [{
-    id: res.data.id,
-    classTag: res.data.classTag,
-    type: res.data.type,
-    question: questionString // Truyền chuỗi vào đây
-  }];
-  
-  setPreviewData(singleData);
-  setIsReviewing(true);
+  const targetUrl = API_ROUTING[idgv];
 
-      } else {
-        alert(res.message || "Không tìm thấy câu hỏi này!");
-      }
-    } catch (e) {
-      alert("Lỗi kết nối: " + e.message);
-    } finally {
-      setLoading(false);
+  if (!targetUrl) {
+    alert("❌ Không tìm thấy API của giáo viên này!");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    const url =
+      `${targetUrl}?action=getSingleQuestion`
+      + `&examCode=${encodeURIComponent(examCode)}`
+      + `&questionId=${encodeURIComponent(searchId)}`;
+
+    const resp = await fetch(url, { method: "GET" });
+
+    const text = await resp.text();
+
+    let res;
+
+    try {
+      res = JSON.parse(text);
+    } catch {
+      throw new Error("API không trả JSON: " + text.substring(0,100));
     }
-  };
+
+    if (res.status === "success" && res.data) {
+
+      let questionString = "";
+
+      if (typeof res.data.question === "object") {
+        questionString = JSON.stringify(res.data.question, null, 2);
+      } else {
+
+        try {
+          const parsed = JSON.parse(res.data.question);
+          questionString = JSON.stringify(parsed, null, 2);
+        } catch {
+          questionString = res.data.question;
+        }
+
+      }
+
+      const singleData = [{
+        id: res.data.id,
+        classTag: res.data.classTag,
+        type: res.data.type,
+        question: questionString
+      }];
+
+      setPreviewData(singleData);
+      setIsReviewing(true);
+
+    } else {
+
+      alert(res.message || "Không tìm thấy câu hỏi này!");
+
+    }
+
+  } catch (e) {
+
+    console.error(e);
+    alert("❌ Lỗi kết nối API: " + e.message);
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
  
   // Tái sử dụng hàm bóc tách của thầy
   // =========================================================================================================================================
