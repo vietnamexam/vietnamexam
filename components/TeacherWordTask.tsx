@@ -46,23 +46,33 @@ const [isReviewing, setIsReviewing] = useState(false);
       });
       const res = await resp.json();
 
-      if (res.status === 'success' && res.data) {
-        // Parse câu hỏi nếu nó đang ở dạng string để hiển thị đẹp
-        let questionParsed;
-        try {
-            questionParsed = typeof res.data.question === 'string' ? JSON.parse(res.data.question) : res.data.question;
-        } catch (e) {
-            questionParsed = res.data;
-        }
+      // Thay đoạn xử lý trong if (res.status === 'success' && res.data)
+if (res.status === 'success' && res.data) {
+  let questionString = "";
+  
+  // Nếu question là Object, biến nó thành chuỗi JSON đẹp
+  if (typeof res.data.question === 'object') {
+    questionString = JSON.stringify(res.data.question, null, 2);
+  } else {
+    // Nếu là chuỗi, kiểm tra xem chuỗi đó có phải là JSON không
+    try {
+      const parsed = JSON.parse(res.data.question);
+      questionString = JSON.stringify(parsed, null, 2);
+    } catch (e) {
+      questionString = res.data.question; // Chuỗi thô
+    }
+  }
 
-        const singleData = [{
-          id: res.data.id,
-          classTag: res.data.classTag,
-          type: res.data.type,
-          question: JSON.stringify(questionParsed, null, 2) 
-        }];
-        setPreviewData(singleData);
-        setIsReviewing(true);
+  const singleData = [{
+    id: res.data.id,
+    classTag: res.data.classTag,
+    type: res.data.type,
+    question: questionString // Truyền chuỗi vào đây
+  }];
+  
+  setPreviewData(singleData);
+  setIsReviewing(true);
+}
       } else {
         alert(res.message || "Không tìm thấy câu hỏi này!");
       }
