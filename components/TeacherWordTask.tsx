@@ -197,6 +197,9 @@ const handleSaveQuestions = async (dataArray) => {
 
     if (result.status === "success") {
       alert("✅ Ngon lành: " + result.message);
+       setPreviewData([]);
+       setIsReviewing(false);
+      window.location.replace("https://vietnamexam.vercel.app/");
     } else {
       alert("❌ Lỗi Script: " + result.message);
     }
@@ -456,8 +459,9 @@ const handleSaveQuestions = async (dataArray) => {
                 <button 
                   onClick={() => handleSaveQuestions(previewData)} 
                   className="px-6 py-2 bg-emerald-500 rounded-lg font-bold hover:bg-emerald-600 transition-colors"
+                 
                 >
-                  LƯU VÀO SHEET
+                   {loading ? "ĐANG LƯU..." : "LƯU VÀO SHEET"}
                 </button>
               </div>
             </div>
