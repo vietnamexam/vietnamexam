@@ -27,13 +27,14 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   // --- HÀM XỬ LÝ NỘI DUNG TỔNG LỰC ---
   const getHtmlContent = () => {
   if (!value) return '<span class="opacity-30 italic">Trống...</span>';
-  let  = String(value);
+  let content = String(value);
 
   // 1. Tự động hiển thị ảnh nếu nội dung là link ảnh
-   const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
+  const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
   if (!content.includes('<img') && imgRegex.test(content)) {
     content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
   }
+
   // 2. Hiển thị ĐÁP ÁN ĐÚNG dạng Badge gọn gàng (Đã xóa chữ ĐÁP ÁN/KẾT QUẢ thừa)
   if (title.toLowerCase().includes("đáp án")) {
     return `
@@ -358,46 +359,30 @@ const handleUploadLG = async () => {
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
  const handleVerifyAdminOTP = async () => {
-
   if (!otp) return alert("Vui lòng nhập mật khẩu!");
-
-  setLoading(true);
-
+  
+  setLoading(true); // Tận dụng state loading có sẵn
   try {
-
-    const resp = await fetch(DANHGIA_URL, {
-      method: "POST",
-      mode: 'cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: new URLSearchParams({
-        action: "checkAdminOTP",
-        pass: otp
-      })
-    });
-
+    // Gọi lên Google Sheets để lấy pass ở ô E2
+    const resp = await fetch(`${DANHGIA_URL}?action=checkAdminOTP`);
     const res = await resp.json();
-
+    
     if (res.status === "success") {
-
-      setIsAdminVerified(true);
-
+      // So sánh mã người dùng nhập với mã lấy từ ô E2
+      if (otp.trim() === res.pass.toString().trim()) {
+        setIsAdminVerified(true);
+      } else {
+        alert("Mã OTP không chính xác. Thầy kiểm tra lại ô E2 Sheet(idgv) nhé!");
+      }
     } else {
-
-      alert("Mật khẩu admin không đúng!");
-
+      alert("Không thể kết nối với dữ liệu admin!");
     }
-
   } catch (e) {
-
     console.error(e);
-    alert("Lỗi kết nối server!");
-
+    alert("Lỗi kết nối server khi xác minh!");
   } finally {
-
     setLoading(false);
-
   }
-
 };
   // Tìm đến đoạn này trong code của bạn (khoảng dòng 270-280)
 if (!isAdminVerified) {
