@@ -72,7 +72,7 @@ if (res.status === 'success' && res.data) {
   
   setPreviewData(singleData);
   setIsReviewing(true);
-}
+
       } else {
         alert(res.message || "Không tìm thấy câu hỏi này!");
       }
