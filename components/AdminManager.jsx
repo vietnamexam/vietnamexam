@@ -27,12 +27,12 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   // --- HÀM XỬ LÝ NỘI DUNG TỔNG LỰC ---
   const getHtmlContent = () => {
   if (!value) return '<span class="opacity-30 italic">Trống...</span>';
-  let content = String(value);
+  let  = String(value);
 
   // 1. Tự động hiển thị ảnh nếu nội dung là link ảnh
   const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
-  if (!content.includes('<img') && imgRegex.test(content)) {
-    content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
+  if (!.includes('<img') && imgRegex.test()) {
+     = .replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
   }
 
   // 2. Hiển thị ĐÁP ÁN ĐÚNG dạng Badge gọn gàng (Đã xóa chữ ĐÁP ÁN/KẾT QUẢ thừa)
@@ -368,9 +368,7 @@ const handleUploadLG = async () => {
 
     const resp = await fetch(DANHGIA_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
+      headers: { 'Content-Type': 'text/plain' },
       body: new URLSearchParams({
         action: "checkAdminOTP",
         pass: otp
