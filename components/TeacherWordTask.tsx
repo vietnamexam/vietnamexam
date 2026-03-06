@@ -336,7 +336,7 @@ const handleSaveQuestions = async (dataArray) => {
             onClick={() => handleWordParser(jsonInputWord)}
             className="py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg hover:bg-orange-700 active:scale-95 disabled:opacity-50 transition-all text-sm border-b-4 border-orange-800"
           >
-            TÌM KIẾM
+            REVIEW VÀ LƯU CÂU HỎI
           </button>
          <div className="flex flex-col gap-2 p-3 bg-slate-800/50 rounded-2xl border border-slate-700">
   <div className="text-[10px] text-orange-400 font-bold uppercase ml-1">Sửa nhanh câu lẻ</div>
