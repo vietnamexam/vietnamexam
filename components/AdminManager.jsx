@@ -368,6 +368,7 @@ const handleUploadLG = async () => {
 
     const resp = await fetch(DANHGIA_URL, {
       method: "POST",
+      mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
       body: new URLSearchParams({
         action: "checkAdminOTP",
