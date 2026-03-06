@@ -175,6 +175,17 @@ export default function ExamRoom({ 
     });
   }, [startTime, minSubmitTime, questions, answers, scoreMCQ, scoreTF, scoreSA, onFinish]);
    const [currentIdx, setCurrentIdx] = useState(0); 
+  // Thêm vào trong ExamRoom component
+useEffect(() => {
+  const activeBtn = document.getElementById(`q-btn-${currentIdx}`);
+  if (activeBtn) {
+    activeBtn.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
+}, [currentIdx]);
   // 3. RENDER MATHJAX (Để công thức không bị lỗi "trơ" mã LaTeX)
   useEffect(() => {
   const runMathJax = async () => {
@@ -248,58 +259,61 @@ useEffect(() => {
   return (  
   <div className="min-h-screen bg-slate-950 pb-20">
       {/* HEADER: DANH SÁCH CÂU HỎI VÀ THÔNG TIN */}
-      <header className="flex flex-col gap-4 p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-2xl">
-        <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
-          <div className="flex flex-col">
-            <span className="text-white font-bold text-base leading-tight">Name: {studentInfo.name}
-            </span>
-            <div className="flex gap-3 text-[10px] uppercase tracking-wider font-semibold">
-              <span className="text-slate-400">Lớp: {studentInfo.className}</span>
-              <span className="text-emerald-400">SBD: {studentInfo.sbd}</span>
-              <span className={`${tabSwitches >= maxTabSwitches ? 'text-red-500 animate-bounce' : 'text-amber-400'}`}>
-                Tab: {tabSwitches}/{maxTabSwitches}
-              </span>
-            </div>
-          </div>
+      <header className="flex flex-col bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-2xl">
+  {/* TẦNG 1: THÔNG TIN SINH VIÊN & ĐỒNG HỒ */}
+  <div className="flex items-center justify-between p-3 max-w-7xl mx-auto w-full">
+    <div className="flex flex-col max-w-[60%]">
+      <span className="text-white font-bold text-sm truncate uppercase">
+        {studentInfo.name}
+      </span>
+      <div className="flex gap-2 text-[9px] font-semibold text-slate-400">
+        <span>SBD: <span className="text-emerald-400">{studentInfo.sbd}</span></span>
+        <span>|</span>
+        <span className={tabSwitches >= maxTabSwitches ? 'text-red-500' : ''}>
+          Tab: {tabSwitches}/{maxTabSwitches}
+        </span>
+      </div>
+    </div>
 
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-800 px-3 py-1 rounded-lg font-mono text-xl text-emerald-400 border border-slate-700">
-              {formatTime(timeLeft)}
-            </div>
-            <button 
-              onClick={() => handleFinish(false)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
-            >
-              NỘP BÀI
-            </button>
-          </div>
-        </div>
-
-        {/* Danh sách nút số câu hỏi */}
-        {/* Header: Danh sách nút số câu hỏi */}
-<div className="flex items-center gap-2 flex-wrap overflow-y-auto max-h-32 pb-2 justify-center border-t border-slate-800/50 pt-3 px-4">
-  {questions.map((_, idx) => {
-    const isDone = answers[idx] !== undefined && answers[idx] !== null;
-    const isCurrent = currentIdx === idx;
-    
-    return (
-      <button
-        key={idx}
-        onClick={() => setCurrentIdx(idx)}
-        className={`flex-shrink-0 w-9 h-9 rounded-xl text-xs font-black transition-all duration-300 ${
-          isCurrent 
-            ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-110' 
-            : isDone 
-              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' 
-              : 'bg-slate-800 text-slate-500 border border-slate-700 hover:border-slate-600'
-        }`}
+    <div className="flex items-center gap-2">
+      <div className="bg-slate-800 px-2 py-1 rounded-lg font-mono text-lg text-emerald-400 border border-slate-700">
+        {formatTime(timeLeft)}
+      </div>
+      <button 
+        onClick={() => handleFinish(false)}
+        className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs active:scale-95"
       >
-        {idx + 1}
+        NỘP
       </button>
-    );
-  })}
-</div>
-      </header>
+    </div>
+  </div>
+
+  {/* TẦNG 2: DANH SÁCH CÂU HỎI - ÉP CỨNG 1 DÒNG ĐỂ TIẾT KIỆM DIỆN TÍCH */}
+  <div className="flex items-center gap-2 overflow-x-auto py-2 px-3 border-t border-slate-800/50 no-scrollbar touch-pan-x bg-slate-900/50">
+    {questions.map((_, idx) => {
+      const isDone = answers[idx] !== undefined && answers[idx] !== null;
+      const isCurrent = currentIdx === idx;
+      
+      return (
+        <button
+          key={idx}
+          id={`q-btn-${idx}`} // Thêm ID để tự động cuộn đến
+          onClick={() => setCurrentIdx(idx)}
+          className={`flex-shrink-0 w-9 h-9 rounded-xl text-xs font-black transition-all duration-300 ${
+            isCurrent 
+              ? 'bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)] scale-105' 
+              : isDone 
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' 
+                : 'bg-slate-800 text-slate-500 border border-slate-700'
+          }`}
+        >
+          {idx + 1}
+        </button>
+      );
+    })}
+  </div>
+</header>
+     
 
       {/* NỘI DUNG CÂU HỎI HIỆN TẠI */}
       <main className="max-w-4xl mx-auto p-4 md:p-8 mt-6">
@@ -317,24 +331,22 @@ useEffect(() => {
         )}
 
         {/* Nút điều hướng chân trang */}
-<div className="flex justify-between items-center mt-6">
- <button 
-            type="button"
-            disabled={currentIdx === 0}
-            onClick={() => setCurrentIdx(prev => prev - 1)}
-            className="px-6 py-3 rounded-2xl bg-slate-800 text-slate-100 font-bold disabled:opacity-20 transition-all hover:bg-slate-700"
-          >
-            ← Câu trước
-          </button>
-  
-  <button 
-            type="button"
-            disabled={currentIdx === questions.length - 1} 
-            onClick={() => setCurrentIdx(prev => prev + 1)}
-            className="px-6 py-3 rounded-2xl bg-slate-800 text-slate-100 font-bold disabled:opacity-20 transition-all hover:bg-slate-700 border border-slate-700"
-          >
-            Câu tiếp →
-          </button>
+      <div className="grid grid-cols-2 gap-4 mt-6">
+  <button 
+    disabled={currentIdx === 0}
+    onClick={() => setCurrentIdx(prev => prev - 1)}
+    className="py-4 rounded-2xl bg-slate-800 text-white font-bold disabled:opacity-20 flex items-center justify-center gap-2"
+  >
+    <i className="fa-solid fa-chevron-left"></i> Câu trước
+  </button>
+  
+  <button 
+    disabled={currentIdx === questions.length - 1} 
+    onClick={() => setCurrentIdx(prev => prev + 1)}
+    className="py-4 rounded-2xl bg-blue-600 text-white font-bold disabled:opacity-20 flex items-center justify-center gap-2"
+  >
+    Câu tiếp <i className="fa-solid fa-chevron-right"></i>
+  </button>
 </div>
       </main>
     </div>
