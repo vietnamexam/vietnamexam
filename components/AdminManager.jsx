@@ -359,30 +359,47 @@ const handleUploadLG = async () => {
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
  const handleVerifyAdminOTP = async () => {
+
   if (!otp) return alert("Vui lòng nhập mật khẩu!");
-  
-  setLoading(true); // Tận dụng state loading có sẵn
+
+  setLoading(true);
+
   try {
-    // Gọi lên Google Sheets để lấy pass ở ô E2
-    const resp = await fetch(`${DANHGIA_URL}?action=checkAdminOTP`);
+
+    const resp = await fetch(DANHGIA_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: "checkAdminOTP",
+        pass: otp
+      })
+    });
+
     const res = await resp.json();
-    
+
     if (res.status === "success") {
-      // So sánh mã người dùng nhập với mã lấy từ ô E2
-      if (otp.trim() === res.pass.toString().trim()) {
-        setIsAdminVerified(true);
-      } else {
-        alert("Mã OTP không chính xác. Thầy kiểm tra lại ô E2 Sheet(idgv) nhé!");
-      }
+
+      setIsAdminVerified(true);
+
     } else {
-      alert("Không thể kết nối với dữ liệu admin!");
+
+      alert("Mật khẩu admin không đúng!");
+
     }
+
   } catch (e) {
+
     console.error(e);
-    alert("Lỗi kết nối server khi xác minh!");
+    alert("Lỗi kết nối server!");
+
   } finally {
+
     setLoading(false);
+
   }
+
 };
   // Tìm đến đoạn này trong code của bạn (khoảng dòng 270-280)
 if (!isAdminVerified) {
