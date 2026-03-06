@@ -162,37 +162,54 @@ const [isReviewing, setIsReviewing] = useState(false);
   // ==============================================================================================================================================
    
 const handleSaveQuestions = async (dataArray) => {
-  // 1. Kiểm tra dữ liệu đầu vào
+
   if (!dataArray || (Array.isArray(dataArray) && dataArray.length === 0)) {
     alert("Chưa có dữ liệu để nạp!");
     return;
   }
-  
+
   setLoading(true);
+
   try {
-    const targetUrl = API_ROUTING[idgv]; 
+
+    const targetUrl = API_ROUTING[idgv];
+
+    // ⭐ Convert question thành JSON string
+    const formattedData = dataArray.map(q => ({
+      ...q,
+      question: typeof q.question === "object"
+        ? JSON.stringify(q.question)
+        : q.question
+    }));
+
     const response = await fetch(targetUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({
-        action: "saveOnlyQuestions", // Thầy nhớ check bên GAS tên action này nhé
+        action: "saveOnlyQuestions",
         examCode: examCode,
         idgv: idgv,
-        questions: dataArray // ĐÃ SỬA: Dùng đúng tên tham số dataArray
+        questions: formattedData
       }),
     });
 
     const result = await response.json();
+
     if (result.status === "success") {
       alert("✅ Ngon lành: " + result.message);
     } else {
       alert("❌ Lỗi Script: " + result.message);
     }
+
   } catch (error) {
+
     console.error("Lỗi fetch:", error);
-    alert("Không kết nối được với Script, thầy kiểm tra lại link GAS!");
+    alert("Không kết nối được với Script!");
+
   } finally {
+
     setLoading(false);
+
   }
 };
   // 1.  =====================================================================================================
