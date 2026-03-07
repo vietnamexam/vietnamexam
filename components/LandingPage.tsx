@@ -831,9 +831,11 @@ const handleRedirect = () => {
         
        {/* CỘT TRÁI: MENU CHỨC NĂNG (NÚT + LABEL) */}
         <div className="lg:col-span-3 flex lg:flex-col overflow-x-auto lg:overflow-visible gap-3 order-1 lg:order-1">
-          <div className="text-xs font-black text-slate-400 uppercase ml-2 mb-1">Tiện ích học tập</div>
+         <div className="w-full text-[10px] font-black text-slate-400 uppercase ml-2">
+      Tiện ích học tập
+      </div>
           
-          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-users"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Đăng ký học Toán</span>
@@ -841,7 +843,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-600">Hot</span>
           </button>
 
-          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-robot"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Trợ lý học tập AI</span>
@@ -849,7 +851,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-500">AI</span>
           </button>
 
-          <button onClick={() => setShowSubjectModal(true)} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => setShowSubjectModal(true)} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-purple-600 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-book"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Chọn môn học khác</span>
@@ -857,7 +859,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-600">New</span>
           </button>
 
-          <button onClick={() => setshowLichOptions(true)} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => setshowLichOptions(true)} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-purple-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-calendar-alt"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Lịch học Toán</span>
@@ -865,7 +867,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-500">Schedules</span>
           </button>
 
-          <button onClick={() => setShowVipOptions(true)} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => setShowVipOptions(true)} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-amber-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-gem"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Nâng cấp VIP</span>
