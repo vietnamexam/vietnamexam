@@ -150,19 +150,19 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 font-sans">
+    <div className="max-w-6xl mx-auto bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 font-sans">
       {/* Header */}
-      <div className="bg-blue-700 p-8 text-white flex justify-between items-center border-b-8 border-blue-900">
+      <div className="bg-blue-700 p-4 md:p-8 text-white flex flex-col md:flex-row gap-3 md:gap-0 justify-between items-start md:items-center border-b-8 border-blue-900">
         <div>
-          <h2 className="text-3xl font-black uppercase">Xác Minh Danh Tính</h2>
+          <h2 className="text-xl md:text-3xl font-black uppercase">Xác Minh Danh Tính</h2>
           <p className="opacity-80 font-bold uppercase text-xs tracking-widest">Khối {grade} - Thiết lập bài thi</p>
         </div>
         <button onClick={onBack} className="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full font-black">QUAY LẠI</button>
       </div>
 
-      <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
         {/* Cột 1: Xác minh */}
-        <div className="space-y-6">
+        <div className="space-y-6 order-1">
           <h3 className="text-xl font-black border-l-8 border-blue-600 pl-4 uppercase">Thí sinh</h3>
           <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-200 space-y-4">
             <input type="text" placeholder="ID GIÁO VIÊN" className="w-full p-4 rounded-xl border font-black uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
@@ -261,11 +261,11 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 </div>
 
         {/* Cột 2: Chọn mã đề */}
-<div className="space-y-6">
+<div className="space-y-6 order-2">
   <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
   <div className="space-y-4">
     <div className="relative">
-      <select className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
+      <select className="w-full p-4 md:p-5 min-h-[44px] bg-slate-50 border-2 border-slate-100 rounded-2xl md:rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
         <option value="">-- CHỌN MÃ ĐỀ --</option>
         {allAvailableCodes.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
       </select>
@@ -322,13 +322,13 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 </div>
 
         {/* Cột 3: Chuyên đề */}
-        <div className="space-y-6">
+        <div className="space-y-6 order-3">
           <h3 className="text-xl font-black border-l-8 border-blue-600 pl-4 uppercase">Kiến thức</h3>
-          <div className="bg-slate-50 rounded-[2rem] p-4 border border-slate-200 h-[350px] overflow-y-auto no-scrollbar shadow-inner">
+          <div className="bg-slate-50 rounded-[2rem] p-4 border border-slate-200 h-[250px] md:h-[350px] overflow-y-auto no-scrollbar shadow-inner">
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-3">
                 {combinedTopics.map(t => (
-                  <label key={t.id} className={`flex items-start gap-3 p-3 rounded-xl border-2 transition-all cursor-pointer ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white'}`}>
+                  <label key={t.id} className={`flex items-start gap-3 p-3 min-h-[44px] rounded-xl border-2 transition-all cursor-pointer ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white'}`}>
                     <input type="checkbox" className="hidden" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
                     <span className="text-[10px] font-black leading-tight">
                       <span className="bg-slate-200 text-slate-700 px-1 rounded mr-2 uppercase">K{t.grade}</span>
@@ -360,8 +360,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       </div>
 
       {/* Footer Button */}
-      <div className="p-10 border-t bg-slate-50 flex justify-center">
-        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-xl py-5 bg-blue-700 text-white rounded-full font-black text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
+      <div className="p-4 md:p-10 border-t bg-slate-50 flex justify-center sticky bottom-0">
+        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-xl py-4 md:py-5 bg-blue-700 text-white rounded-2xl md:rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
           BẮT ĐẦU LÀM BÀI
         </button>
       </div>
