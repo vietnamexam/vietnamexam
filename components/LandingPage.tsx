@@ -830,7 +830,7 @@ const handleRedirect = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
        {/* CỘT TRÁI: MENU CHỨC NĂNG (NÚT + LABEL) */}
-        <div className="lg:col-span-3 flex lg:flex-col overflow-x-auto lg:overflow-visible gap-3 order-1 lg:order-1">
+        <div className="lg:col-span-3 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible order-1 lg:order-1">
          <div className="w-full text-[10px] font-black text-slate-400 uppercase ml-2">
       Tiện ích học tập
       </div>
@@ -924,7 +924,7 @@ const handleRedirect = () => {
       {/* CỘT GIỮA: CAROUSEL & TIN TỨC */}
 <div className="lg:col-span-6 flex flex-col gap-6 order-1 lg:order-2">
   {/* PHẦN CAROUSEL */}
-  <div className="relative h-[380px] rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white bg-slate-100">
+  <div className="relative h-[240px] sm:h-[320px] lg:h-[380px] rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white bg-slate-100">
     {carouselImages.length > 0 ? (
       carouselImages.map((img, idx) => (
         <img 
