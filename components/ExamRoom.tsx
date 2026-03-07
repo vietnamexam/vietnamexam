@@ -47,7 +47,7 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
   console.log("TYPE:", typeof q.question, q.question);
   const qType = q.type ? q.type.toString().trim().toLowerCase() : "";
   return (
-    <div className="bg-slate-900 border-2 border-slate-800 p-5 sm:p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl relative overflow-hidden mb-10">
+    <div className="bg-slate-900 border-2 border-slate-800 p-4 sm:p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl relative overflow-hidden mb-10">
       <div className="flex items-center gap-4 mb-8">
         <span className="bg-emerald-600 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black">{idx + 1}</span>
         <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest bg-slate-800 px-4 py-1 rounded-full">
@@ -55,7 +55,7 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
         </span>
       </div>
      <div 
-  className="text-lg sm:text-xl md:text-2xl leading-relaxed mb-8 font-bold text-slate-100 whitespace-normal overflow-visible" 
+  className="text-base sm:text-xl md:text-2xl leading-relaxed mb-8 font-bold text-slate-100 whitespace-normal overflow-visible" 
   style={{ minHeight: 'fit-content' }}
   dangerouslySetInnerHTML={{ __html: formatContent(q.question) }} 
 />
@@ -106,7 +106,10 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
       {(qType === 'sa' || qType === 'short-answer') && (
         <div className="mt-4 p-6 bg-slate-800/50 rounded-[2rem] border-2 border-slate-700 flex flex-col md:flex-row items-center gap-4">
           <span className="font-black text-emerald-400 shrink-0">ĐÁP ÁN:</span>
-          <input type="text" className="w-full bg-slate-900 border-2 border-slate-700 p-4 rounded-xl text-white font-bold focus:border-emerald-500 outline-none text-lg sm:text-xl md:text-2xl font-mono" placeholder="Dùng dấu (.) thay (,) nhé.Ví dụ: 6.32" value={answer || ''} onChange={(e) => onSelect(idx, e.target.value)} />
+          <input 
+            type="text" 
+            inputMode="decimal"
+            className="w-full bg-slate-900 border-2 border-slate-700 p-4 rounded-xl text-white font-bold focus:border-emerald-500 outline-none text-base sm:text-xl md:text-2xl font-mono" placeholder="Dùng dấu (.) thay (,) nhé.Ví dụ: 6.32" value={answer || ''} onChange={(e) => onSelect(idx, e.target.value)} />
         </div>
       )}
     </div>
@@ -261,9 +264,9 @@ useEffect(() => {
       {/* HEADER: DANH SÁCH CÂU HỎI VÀ THÔNG TIN */}
       <header className="flex flex-col bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-2xl">
   {/* TẦNG 1: THÔNG TIN SINH VIÊN & ĐỒNG HỒ */}
- <div className="flex items-center justify-between p-2 sm:p-3 max-w-7xl mx-auto w-full">
+<div className="flex items-center justify-between px-2 py-1.5 sm:p-3 max-w-7xl mx-auto w-full">
     <div className="flex flex-col max-w-[60%]">
-      <span className="text-white font-bold text-sm truncate uppercase">
+      <span className="text-white font-bold text-xs sm:text-sm truncate uppercase">
         {studentInfo.name}
       </span>
       <div className="flex gap-2 text-[9px] font-semibold text-slate-400">
@@ -276,7 +279,7 @@ useEffect(() => {
     </div>
 
     <div className="flex items-center gap-2">
-      <div className="bg-slate-800 px-2 py-1 rounded-lg font-mono text-lg text-emerald-400 border border-slate-700">
+      <div className="bg-slate-800 px-2 py-1 rounded-lg font-mono text-base sm:text-lg text-emerald-400 border border-slate-700">
         {formatTime(timeLeft)}
       </div>
       <button 
@@ -299,7 +302,7 @@ useEffect(() => {
           key={idx}
           id={`q-btn-${idx}`} // Thêm ID để tự động cuộn đến
           onClick={() => setCurrentIdx(idx)}
-          className={`flex-shrink-0 w-10 h-10 rounded-xl text-sm font-black transition-all duration-300 ${
+          className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-sm font-black transition-all duration-300 ${
             isCurrent 
               ? 'bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)] scale-105' 
               : isDone 
@@ -331,7 +334,7 @@ useEffect(() => {
         )}
 
         {/* Nút điều hướng chân trang */}
-      <div className="grid grid-cols-2 gap-4 mt-6">
+      <div className="grid grid-cols-2 gap-4 mt-6 sticky bottom-2">
   <button 
     disabled={currentIdx === 0}
     onClick={() => setCurrentIdx(prev => prev - 1)}
