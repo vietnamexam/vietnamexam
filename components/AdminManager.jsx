@@ -8,17 +8,14 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   useEffect(() => { setTempValue(value); }, [value]);
 
   // Ép MathJax quét lại sau khi render hoặc sửa xong
-  useEffect(() => {
-    if (!isEditing && window.MathJax) {
-      // Dùng Delay một chút để HTML kịp đổ vào DOM
-      const timer = setTimeout(() => {
-        if (window.MathJax.typesetPromise) {
-          window.MathJax.typesetPromise().catch((err) => console.log(err));
-        }
-      }, 200);
-      return () => clearTimeout(timer);
+ useEffect(() => {
+  if (!isEditing && window.MathJax?.typesetPromise) {
+    const el = document.querySelector('.mathjax-content');
+    if (el) {
+      window.MathJax.typesetPromise([el]);
     }
-  }, [isEditing, value]);
+  }
+}, [isEditing, value]);
 
   const handleSave = () => {
   onSave(tempValue);
@@ -30,7 +27,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   let content = String(value);
 
   // 1. Tự động hiển thị ảnh nếu nội dung là link ảnh
-  const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi;
+  const imgRegex = /(https?:\/\/[^\s]+?\.(png|jpg|jpeg|gif|webp))/gi;
   if (!content.includes('<img') && imgRegex.test(content)) {
     content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
   }
@@ -531,7 +528,7 @@ const handleQuickUpdate = async (field, newValue) => {
   {/* Nút Sửa câu hỏi */}
   <button 
     onClick={() => setCurrentTab('cauhoi')} 
-    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+    className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
       currentTab === 'cauhoi' 
       ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
       : 'text-slate-500 hover:bg-slate-100'
@@ -543,7 +540,7 @@ const handleQuickUpdate = async (field, newValue) => {
   {/* Nút Import Word */}
   <button 
     onClick={() => setCurrentTab('word')} 
-    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+    className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
       currentTab === 'word' 
       ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 scale-105' 
       : 'text-slate-500 hover:bg-slate-100'
@@ -554,7 +551,7 @@ const handleQuickUpdate = async (field, newValue) => {
          {/* Nút Import LG - Thêm mới tại đây */}
 <button 
   onClick={() => {setCurrentTab('lg'); setJsonInput('');}} 
-  className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+  className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
     currentTab === 'lg' 
     ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-105' 
     : 'text-slate-500 hover:bg-slate-100'
@@ -565,7 +562,7 @@ const handleQuickUpdate = async (field, newValue) => {
         {/* Nút tìm câu trùng: */}
 <button 
   onClick={handleFindDuplicates} 
-  className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+  className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
     currentTab === 'duplicate' 
     ? 'bg-red-500 text-white shadow-lg shadow-red-200 scale-105' 
     : 'text-slate-500 hover:bg-slate-100'
@@ -580,7 +577,7 @@ const handleQuickUpdate = async (field, newValue) => {
   {/* Nút Thoát ra - Rực rỡ và an toàn */}
   <button 
     onClick={onBack} 
-    className="flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs uppercase text-red-500 hover:bg-red-50 hover:scale-105 transition-all active:scale-95"
+    className="flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase text-red-500 hover:bg-red-50 hover:scale-105 transition-all active:scale-95"
   >
     <i className="fa-solid fa-right-from-bracket"></i> Thoát ra
   </button>
@@ -670,7 +667,7 @@ const handleQuickUpdate = async (field, newValue) => {
             1. Dán nội dung từ Word
           </label>
           <textarea 
-            className="w-full h-[600px] p-6 bg-white rounded-[2rem] shadow-inner text-sm outline-none focus:ring-2 ring-orange-400 transition-all" 
+            className="w-full h-[300px] lg:h-[600px] p-6 bg-white rounded-[2rem] shadow-inner text-sm outline-none focus:ring-2 ring-orange-400 transition-all" 
             placeholder="Dán nội dung dạng {id: 601...}# vào đây..." 
             onChange={(e) => handleWordParser(e.target.value)} 
           />
@@ -679,7 +676,7 @@ const handleQuickUpdate = async (field, newValue) => {
 
       {/* CỘT 2: XEM TRƯỚC (CHIẾM 6 PHẦN) */}
       <div className="lg:col-span-6 space-y-4">
-        <div className="bg-white p-5 rounded-[2.5rem] border-2 border-slate-100 shadow-sm min-h-[600px] flex flex-col">
+        <div className="bg-white p-5 rounded-[2.5rem] border-2 border-slate-100 shadow-sm min-h-[300px] lg:h-[600px] flex flex-col">
           
           {/* HEADER CỦA CỘT REVIEW: CHỨA TIÊU ĐỀ VÀ NÚT LƯU */}
           <div className="flex items-center justify-between mb-4 px-2">
@@ -877,7 +874,7 @@ const handleQuickUpdate = async (field, newValue) => {
         
         <button
           onClick={() => handleDeleteInsidePreview(previewQuestion)}
-          className="px-6 py-3 bg-red-100 text-red-600 rounded-2xl font-bold text-xs hover:bg-red-600 hover:text-white transition-all"
+          className="px-4 py-2 text-[10px] bg-red-100 text-red-600 rounded-2xl font-bold text-xs hover:bg-red-600 hover:text-white transition-all"
         >
           <i className="fa-solid fa-trash mr-2"></i> XÓA CÂU NÀY
         </button>
@@ -887,7 +884,7 @@ const handleQuickUpdate = async (field, newValue) => {
             setShowPreview(false);
             setPreviewEdit(null);
           }}
-          className="px-6 py-3 bg-slate-200 text-slate-600 rounded-2xl font-bold text-xs hover:bg-slate-300 transition-all"
+          className="px-4 py-2 text-[10px] bg-slate-200 text-slate-600 rounded-2xl font-bold text-xs hover:bg-slate-300 transition-all"
         >
           ĐÓNG
         </button>
