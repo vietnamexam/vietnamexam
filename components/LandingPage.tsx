@@ -924,7 +924,7 @@ const handleRedirect = () => {
       {/* CỘT GIỮA: CAROUSEL & TIN TỨC */}
 <div className="lg:col-span-6 flex flex-col gap-6 order-1 lg:order-2">
   {/* PHẦN CAROUSEL */}
-  <div className="relative h-[240px] sm:h-[320px] lg:h-[380px] rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white bg-slate-100">
+  <div className="relative h-[160px] sm:h-[320px] lg:h-[380px] rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white bg-slate-100">
     {carouselImages.length > 0 ? (
       carouselImages.map((img, idx) => (
         <img 
