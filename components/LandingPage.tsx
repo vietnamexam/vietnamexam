@@ -769,12 +769,12 @@ const handleRedirect = () => {
       
      {/* 1. TOP NAV (Style SmartEdu - Đã tích hợp VIP lấp lánh) */}
       <div className="bg-white/90 backdrop-blur-md sticky top-0 z-[100] border-b border-slate-200 px-6 py-3 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="max-w-7xl mx-auto flex flex-wrap gap-2 justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 text-white p-2 rounded-xl shadow-lg shadow-blue-100">
                <i className="fas fa-graduation-cap"></i>
             </div>
-            <span className="text-2xl font-black text-slate-800 tracking-tighter">Smart<span className="text-blue-600">Edu</span></span>
+            <span className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black text-slate-800 tracking-tighter">Smart<span className="text-blue-600">Edu</span></span>
           </div>
 
           <div className="flex gap-3 items-center">
@@ -782,13 +782,13 @@ const handleRedirect = () => {
              {!useracc ? (
                <button 
                 onClick={() => setAuthMode('login')} 
-                className="bg-slate-100 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-full text-[11px] font-black uppercase transition-all"
+                className="bg-slate-100 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-full text-sm font-black uppercase transition-all"
                >
                  Học sinh đăng nhập
                </button>
              ) : (
                /* Nếu ĐÃ đăng nhập: Hiện số điện thoại và VIP lấp lánh */
-               <div className={`relative px-4 py-2 rounded-full text-[11px] font-black uppercase transition-all flex items-center gap-2 shadow-sm border ${
+               <div className={`relative px-4 py-2 rounded-full text-sm font-black uppercase transition-all flex items-center gap-2 shadow-sm border ${
                  useracc.vip !== "VIP0" 
                  ? "bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-400 text-red-900 border-yellow-500 animate-pulse shadow-yellow-100 ring-2 ring-yellow-200" 
                  : "bg-slate-100 text-slate-600 border-slate-200"
@@ -831,44 +831,44 @@ const handleRedirect = () => {
         
         {/* CỘT TRÁI: MENU CHỨC NĂNG (NÚT + LABEL) */}
         <div className="lg:col-span-3 flex flex-col gap-3 order-2 lg:order-1">
-          <div className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Tiện ích học tập</div>
+          <div className="text-xs font-black text-slate-400 uppercase ml-2 mb-1">Tiện ích học tập</div>
           
-          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="group flex items-center justify-between w-full p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95">
+          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-users"></i></div>
-              <span className="text-[13px] font-black text-slate-700 uppercase text-left">Đăng ký học Toán</span>
+              <span className="text-sm font-black text-slate-700 uppercase text-left">Đăng ký học Toán</span>
             </div>
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-600">Hot</span>
           </button>
 
-          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="group flex items-center justify-between w-full p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95">
+          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-500 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-robot"></i></div>
-              <span className="text-[13px] font-black text-slate-700 uppercase text-left">Trợ lý học tập AI</span>
+              <span className="text-sm font-black text-slate-700 uppercase text-left">Trợ lý học tập AI</span>
             </div>
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-500">AI</span>
           </button>
 
-          <button onClick={() => setShowSubjectModal(true)} className="group flex items-center justify-between w-full p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95">
+          <button onClick={() => setShowSubjectModal(true)} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95">
             <div className="flex items-center gap-3">
               <div className="bg-purple-600 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-book"></i></div>
-              <span className="text-[13px] font-black text-slate-700 uppercase text-left">Chọn môn học khác</span>
+              <span className="text-sm font-black text-slate-700 uppercase text-left">Chọn môn học khác</span>
             </div>
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-600">New</span>
           </button>
 
-          <button onClick={() => setshowLichOptions(true)} className="group flex items-center justify-between w-full p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95">
+          <button onClick={() => setshowLichOptions(true)} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95">
             <div className="flex items-center gap-3">
               <div className="bg-purple-500 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-calendar-alt"></i></div>
-              <span className="text-[13px] font-black text-slate-700 uppercase text-left">Lịch học Toán</span>
+              <span className="text-sm font-black text-slate-700 uppercase text-left">Lịch học Toán</span>
             </div>
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-500">Schedules</span>
           </button>
 
-          <button onClick={() => setShowVipOptions(true)} className="group flex items-center justify-between w-full p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95">
+          <button onClick={() => setShowVipOptions(true)} className="group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95">
             <div className="flex items-center gap-3">
               <div className="bg-amber-500 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-gem"></i></div>
-              <span className="text-[13px] font-black text-slate-700 uppercase text-left">Nâng cấp VIP</span>
+              <span className="text-sm font-black text-slate-700 uppercase text-left">Nâng cấp VIP</span>
             </div>
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-amber-500">Vip</span>
           </button>
@@ -877,11 +877,11 @@ const handleRedirect = () => {
           <div className="relative mt-2">
             <button 
               onClick={() => setShowAppList(!showAppList)}
-              className="flex items-center justify-between w-full p-4 bg-teal-600 text-white rounded-2xl shadow-lg border-b-4 border-teal-800 transition-all active:scale-95"
+              className="flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-teal-600 text-white rounded-2xl shadow-lg border-b-4 border-teal-800 transition-all active:scale-95"
             >
               <div className="flex items-center gap-3">
                 <i className="fas fa-th-large"></i>
-                <span className="text-[13px] font-black uppercase">Ứng dụng khác</span>
+                <span className="text-sm font-black uppercase">Ứng dụng khác</span>
               </div>
               <i className={`fas fa-chevron-${showAppList ? 'down' : 'right'} text-xs opacity-50 transition-transform`}></i>
             </button>
@@ -906,11 +906,11 @@ const handleRedirect = () => {
                       className="flex items-center gap-3 p-3 hover:bg-teal-50 rounded-xl transition-colors group"
                     >
                       <i className={`${app.icon || 'fas fa-link'} text-teal-600 w-5 text-center`}></i>
-                      <span className="text-[10px] font-black text-slate-700 uppercase group-hover:text-teal-700">{app.name}</span>
+                      <span className="text-xs font-black text-slate-700 uppercase group-hover:text-teal-700">{app.name}</span>
                     </a>
                   ))
                 ) : (
-                  <div className="p-4 text-center text-[10px] font-bold text-slate-400 italic">
+                  <div className="p-4 text-center text-xs font-bold text-slate-400 italic">
                     Đang tải dữ liệu...
                   </div>
                 )}
@@ -940,8 +940,8 @@ const handleRedirect = () => {
     
     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
     <div className="absolute bottom-8 left-8 text-white">
-       <div className="bg-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase mb-2 inline-block shadow-lg">Khơi nguồn đam mê</div>
-       <h2 className="text-2xl font-black uppercase leading-tight">Toán học là môn thể dục của trí tuệ!</h2>
+       <div className="bg-blue-600 px-3 py-1 rounded-full text-xs font-black uppercase mb-2 inline-block shadow-lg">Khơi nguồn đam mê</div>
+       <h2 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black uppercase leading-tight">Toán học là môn thể dục của trí tuệ!</h2>
     </div>
   </div>
 
@@ -993,9 +993,9 @@ const handleRedirect = () => {
     href={`https://thayhabacninh.vercel.app/?grade=${g}`}
     target="_blank"
     rel="noopener noreferrer"
-    className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-blue-800 transition-all active:scale-95 flex items-center justify-center gap-2"
+    className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 flex items-center justify-center gap-2"
   >
-    <i className="fas fa-graduation-cap text-[10px]"></i>
+    <i className="fas fa-graduation-cap text-xs"></i>
     <span>Lớp {g}</span>
   </a>
 ))}
@@ -1005,26 +1005,26 @@ const handleRedirect = () => {
 {/* Nút Thi đề lẻ - Chốt ngay sau Lớp 12 */}
 <button 
   onClick={() => setShowStudentLogin(true)} 
-  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-emerald-800 transition-all active:scale-95 flex items-center justify-center gap-2"
+  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 flex items-center justify-center gap-2"
 >
-  <i className="fas fa-user-edit text-[10px]"></i> 
+  <i className="fas fa-user-edit text-xs"></i> 
   <span>Thi đề lẻ</span>
 </button>
              {/* Nút xem điểm */}
 <button 
   onClick={() => setShowScoreModal(true)}
-  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-emerald-800 transition-all active:scale-95 flex items-center justify-center gap-2"
+  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 flex items-center justify-center gap-2"
 >
-  <i className="fas fa-user-edit text-[10px]"></i> 
+  <i className="fas fa-user-edit text-xs"></i> 
   <span>Xem điểm</span>
 </button>
 
 {/* Nút Lời giải - Nằm bên dưới */}
 <button 
   onClick={() => setShowModal(true)}
-  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-orange-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-orange-700 transition-all active:scale-95 flex items-center justify-center gap-2"
 >
-  <i className="fas fa-search text-[10px]"></i> 
+  <i className="fas fa-search text-xs"></i> 
   <span>Lời giải</span>
 </button>
             <div className="relative w-full">
@@ -1133,10 +1133,10 @@ const handleRedirect = () => {
 
             {/* QUẢN TRỊ */}
             <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3 w-full">
-              <button onClick={() => setView('word')} className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-emerald-800 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 group">
+              <button onClick={() => setView('word')} className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 min-h-[56px] rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-emerald-800 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 group">
                 <i className="fas fa-chalkboard-teacher text-lg"></i>
                 <div className="flex flex-col items-start text-left">
-                  <span className="leading-none mb-1 text-[11px]">Tạo đề từ Word</span>
+                  <span className="leading-none mb-1 text-sm">Tạo đề từ Word</span>
                   <span className="text-[7px] opacity-70 uppercase">Cần xác minh Giáo viên!!</span>
                 </div>
               </button>
@@ -1155,7 +1155,7 @@ const handleRedirect = () => {
 
           {/* TOP 10 CAO THỦ */}
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[480px]">
-            <div className="bg-slate-900 p-4 text-white font-black text-[10px] uppercase text-center tracking-widest flex items-center justify-center gap-2 font-black">
+            <div className="bg-slate-900 p-4 text-white font-black text-xs uppercase text-center tracking-widest flex items-center justify-center gap-2 font-black">
               <i className="fas fa-crown text-yellow-400"></i> Bảng Vàng Cao Thủ
             </div>
             <div className="p-2 space-y-2 flex-grow overflow-y-auto no-scrollbar scroll-smooth bg-slate-50/50">
@@ -1163,7 +1163,7 @@ const handleRedirect = () => {
                 <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform active:scale-95">
                   <div className={`w-8 text-center text-[14px] font-black ${index < 3 ? 'text-yellow-600' : 'text-slate-300'}`}>{index + 1}</div>
                   <div className="flex-1 overflow-hidden">
-                    <div className="text-[11px] font-black uppercase truncate text-slate-700">{item.name}</div>
+                    <div className="text-sm font-black uppercase truncate text-slate-700">{item.name}</div>
                     <div className="text-[9px] text-slate-400 font-bold italic">{item.idPhone}</div>
                   </div>
                   <div className="text-right shrink-0">
@@ -1267,19 +1267,19 @@ const handleRedirect = () => {
                             <p className="text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">Trắc nghiệm MC (Phần I)</p>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Số câu hỏi (numMC)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Số câu hỏi (numMC)</label>
                                     <input value={maTranForm.numMC} onChange={e => setMaTranForm({...maTranForm, numMC: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" placeholder="Ví dụ: 5, 5, 5"/>
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Điểm mỗi câu (scoreMC)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Điểm mỗi câu (scoreMC)</label>
                                     <input value={maTranForm.scoreMC} onChange={e => setMaTranForm({...maTranForm, scoreMC: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" placeholder="0.25"/>
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Mức L3 (mcL3)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Mức L3 (mcL3)</label>
                                     <input value={maTranForm.mcL3} onChange={e => setMaTranForm({...maTranForm, mcL3: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Mức L4 (mcL4)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Mức L4 (mcL4)</label>
                                     <input value={maTranForm.mcL4} onChange={e => setMaTranForm({...maTranForm, mcL4: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                             </div>
@@ -1290,19 +1290,19 @@ const handleRedirect = () => {
                             <p className="text-xs font-bold text-green-600 mb-2 uppercase tracking-wider">Trắc nghiệm TF (Phần II)</p>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Số câu hỏi (numTF)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Số câu hỏi (numTF)</label>
                                     <input value={maTranForm.numTF} onChange={e => setMaTranForm({...maTranForm, numTF: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Điểm mỗi câu (scoreTF)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Điểm mỗi câu (scoreTF)</label>
                                     <input value={maTranForm.scoreTF} onChange={e => setMaTranForm({...maTranForm, scoreTF: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Mức L3 (tfL3)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Mức L3 (tfL3)</label>
                                     <input value={maTranForm.tfL3} onChange={e => setMaTranForm({...maTranForm, tfL3: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Mức L4 (tfL4)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Mức L4 (tfL4)</label>
                                     <input value={maTranForm.tfL4} onChange={e => setMaTranForm({...maTranForm, tfL4: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                             </div>
@@ -1313,19 +1313,19 @@ const handleRedirect = () => {
                             <p className="text-xs font-bold text-orange-600 mb-2 uppercase tracking-wider">Trắc nghiệm SA (Phần III)</p>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Số câu hỏi (numSA)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Số câu hỏi (numSA)</label>
                                     <input value={maTranForm.numSA} onChange={e => setMaTranForm({...maTranForm, numSA: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Điểm mỗi câu (scoreSA)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Điểm mỗi câu (scoreSA)</label>
                                     <input value={maTranForm.scoreSA} onChange={e => setMaTranForm({...maTranForm, scoreSA: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Mức L3 (saL3)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Mức L3 (saL3)</label>
                                     <input value={maTranForm.saL3} onChange={e => setMaTranForm({...maTranForm, saL3: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-[11px] text-gray-500 block mb-1">Mức L4 (saL4)</label>
+                                    <label className="text-sm text-gray-500 block mb-1">Mức L4 (saL4)</label>
                                     <input value={maTranForm.saL4} onChange={e => setMaTranForm({...maTranForm, saL4: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
                                 </div>
                             </div>
@@ -1392,7 +1392,7 @@ const handleRedirect = () => {
       {showVipBenefits && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4">
           <div className="bg-white rounded-[2rem] p-8 w-full max-w-md relative animate-in slide-in-from-bottom-4 duration-300">
-            <h3 className="text-2xl font-black text-orange-600 mb-4 uppercase text-center italic">Đặc quyền VIP</h3>
+            <h3 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black text-orange-600 mb-4 uppercase text-center italic">Đặc quyền VIP</h3>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-3 font-bold text-slate-700">
                 <i className="fas fa-check-circle text-green-500 text-xl"></i> Mở khóa toàn bộ kho đề thi 10, 11, 12.
@@ -1448,7 +1448,7 @@ const handleRedirect = () => {
           Calendar
         </div>
         <i className="fas fa-calendar-alt text-4xl mb-2 relative z-10"></i>
-        <h3 className="text-2xl font-black uppercase tracking-tighter relative z-10">
+        <h3 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black uppercase tracking-tighter relative z-10">
           Lịch Học Offline
         </h3>
         <p className="text-orange-100 font-bold relative z-10 text-xs">Cập nhật mới nhất! Liên hệ thầy Hà để tham gia lớp học nhé</p>
@@ -1469,7 +1469,7 @@ const handleRedirect = () => {
                     {item.grade.replace(/\D/g, '') || "!"}
                   </div>
                   <div className="ml-4">
-                    <div className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{item.grade}</div>
+                    <div className="text-slate-400 text-xs font-black uppercase tracking-widest">{item.grade}</div>
                     <div className="text-slate-800 font-black text-lg leading-tight">{item.time}</div>
                   </div>
                 </div>
@@ -1503,10 +1503,10 @@ const handleRedirect = () => {
       <div className="grid grid-cols-2 gap-4 overflow-hidden">
         {/* CỘT MÔN HỌC */}
         <div className="flex flex-col overflow-hidden">
-          <div className="bg-indigo-50 p-2 font-black text-indigo-600 text-center uppercase text-[11px] rounded-t-xl">Môn học</div>
+          <div className="bg-indigo-50 p-2 font-black text-indigo-600 text-center uppercase text-sm rounded-t-xl">Môn học</div>
           <div className="overflow-y-auto space-y-1 mt-2 pr-2 no-scrollbar bg-slate-50/50 p-1 rounded-b-xl">
             {dynamicSubjects.map(sub => (
-              <button key={sub} onClick={() => setSelectedSubject(sub)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-bold transition-all ${selectedSubject === sub ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white border-slate-100 hover:border-indigo-200'}`}>
+              <button key={sub} onClick={() => setSelectedSubject(sub)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-bold transition-all ${selectedSubject === sub ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white border-slate-100 hover:border-indigo-200'}`}>
                 <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSubject === sub ? 'bg-white text-indigo-600' : 'bg-slate-100'}`}>
                   {selectedSubject === sub && <i className="fas fa-check text-[8px]"></i>}
                 </div> {sub}
@@ -1517,10 +1517,10 @@ const handleRedirect = () => {
 
         {/* CỘT CẤP HỌC */}
         <div className="flex flex-col overflow-hidden">
-          <div className="bg-orange-50 p-2 font-black text-orange-600 text-center uppercase text-[11px] rounded-t-xl">Cấp học</div>
+          <div className="bg-orange-50 p-2 font-black text-orange-600 text-center uppercase text-sm rounded-t-xl">Cấp học</div>
           <div className="overflow-y-auto space-y-1 mt-2 pr-2 no-scrollbar bg-slate-50/50 p-1 rounded-b-xl">
             {dynamicLevels.map(lvl => (
-              <button key={lvl} onClick={() => setSelectedLevel(lvl)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-bold transition-all ${selectedLevel === lvl ? 'bg-orange-500 text-white border-orange-500 shadow-md' : 'bg-white border-slate-100 hover:border-orange-200'}`}>
+              <button key={lvl} onClick={() => setSelectedLevel(lvl)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-bold transition-all ${selectedLevel === lvl ? 'bg-orange-500 text-white border-orange-500 shadow-md' : 'bg-white border-slate-100 hover:border-orange-200'}`}>
                 <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedLevel === lvl ? 'bg-white text-orange-600' : 'bg-slate-100'}`}>
                   {selectedLevel === lvl && <i className="fas fa-check text-[8px]"></i>}
                 </div> {lvl}
@@ -1548,7 +1548,7 @@ const handleRedirect = () => {
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative border border-slate-100 overflow-y-auto max-h-[90vh]">
-            <h2 className="text-2xl font-black text-orange-500 mb-6 uppercase text-center">
+            <h2 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black text-orange-500 mb-6 uppercase text-center">
               {quizMode === 'gift' ? '🎁 Chế độ Quà QuiZ' : quizMode === 'free' ? '🎮 QuiZ Tự Do' : '🚀 Chọn chế độ chơi'}
             </h2>
 
@@ -1614,7 +1614,7 @@ const handleRedirect = () => {
 
                 {quizMode === 'gift' && (
                   <div className="p-4 bg-orange-50 rounded-2xl space-y-3 border border-orange-100">
-                    <p className="text-[10px] font-black text-orange-400 uppercase text-center">Thông tin nhận thưởng</p>
+                    <p className="text-xs font-black text-orange-400 uppercase text-center">Thông tin nhận thưởng</p>
                     <input required placeholder="Số tài khoản ngân hàng" className="w-full p-3 bg-white rounded-xl font-bold" value={bankInfo.stk} onChange={e=>setBankInfo({...bankInfo, stk: e.target.value})} />
                    <select required className="w-full p-3 bg-white rounded-xl font-bold" onChange={(e) => {
   const val = e.target.value;
@@ -1643,18 +1643,18 @@ const handleRedirect = () => {
       {authMode && (
         <div className="fixed inset-0 z-[500] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
           <div className="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl border-4 border-blue-50 relative animate-in zoom-in duration-300">
-            <h2 className="text-2xl font-black text-center uppercase mb-6 text-slate-800 tracking-tighter">
+            <h2 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black text-center uppercase mb-6 text-slate-800 tracking-tighter">
               {authMode === 'login' ? 'Đăng Nhập' : 'Tạo Tài Khoản'}
             </h2>
             <form onSubmit={handleAuth} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase ml-2 text-slate-400">Số điện thoại</label>
+                <label className="text-xs font-black uppercase ml-2 text-slate-400">Số điện thoại</label>
                 <input required type="tel" placeholder="0988..." 
                   className="w-full p-4 bg-slate-100 rounded-2xl font-bold border-2 border-transparent focus:border-blue-500 outline-none transition-all" 
                   value={authForm.phone} onChange={e => setAuthForm({...authForm, phone: e.target.value})} />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase ml-2 text-slate-400">Mật khẩu</label>
+                <label className="text-xs font-black uppercase ml-2 text-slate-400">Mật khẩu</label>
                 <input required type="password" placeholder="••••••" 
                   className="w-full p-4 bg-slate-100 rounded-2xl font-bold border-2 border-transparent focus:border-blue-500 outline-none transition-all" 
                   value={authForm.pass} onChange={e => setAuthForm({...authForm, pass: e.target.value})} />
@@ -1666,11 +1666,11 @@ const handleRedirect = () => {
             
             <button 
               onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} 
-              className="w-full mt-4 text-[10px] font-bold text-blue-500 uppercase hover:underline"
+              className="w-full mt-4 text-xs font-bold text-blue-500 uppercase hover:underline"
             >
               {authMode === 'login' ? 'Chưa có tài khoản? Đăng ký tại đây' : 'Đã có tài khoản? Đăng nhập'}
             </button>
-            <button onClick={() => setAuthMode(null)} className="w-full mt-4 text-slate-400 text-[10px] font-bold uppercase">Bỏ qua</button>
+            <button onClick={() => setAuthMode(null)} className="w-full mt-4 text-slate-400 text-xs font-bold uppercase">Bỏ qua</button>
           </div>
         </div>
       )}
@@ -1681,7 +1681,7 @@ const handleRedirect = () => {
       
       {/* Header Cam Rực Rỡ */}
       <div className="bg-orange-500 p-8 text-white flex justify-between items-center border-b-8 border-orange-600">
-        <h3 className="text-2xl font-black uppercase tracking-widest flex items-center gap-3">
+        <h3 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black uppercase tracking-widest flex items-center gap-3">
           <i className="fa-solid fa-lightbulb text-3xl"></i> Lời giải chi tiết
         </h3>
         <button onClick={() => {setShowModal(false); setFoundLG(null); setSearchId("");}} className="hover:rotate-90 transition-all bg-white/20 p-2 rounded-full">
@@ -1726,7 +1726,7 @@ const handleRedirect = () => {
       </div>
 
       <div className="bg-slate-50 p-4 text-center">
-         <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Hỗ trợ MathJax & Render sạch nội dung</p>
+         <p className="text-xs text-slate-400 font-black uppercase tracking-widest">Hỗ trợ MathJax & Render sạch nội dung</p>
       </div>
     </div>
   </div>
@@ -1763,8 +1763,8 @@ const handleRedirect = () => {
                 />
                 
                 <div className="grid grid-cols-2 gap-3 mt-6">
-                  <button onClick={() => setShowStudentLogin(false)} className="py-3 bg-slate-800 text-slate-400 rounded-xl font-bold text-[10px] hover:bg-slate-700 transition-colors">HỦY</button>
-                  <button onClick={handleStudentSubmit} className="py-3 bg-emerald-600 text-white rounded-xl font-black text-[10px] shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition-all active:scale-95">VÀO THI</button>
+                  <button onClick={() => setShowStudentLogin(false)} className="py-3 bg-slate-800 text-slate-400 rounded-xl font-bold text-xs hover:bg-slate-700 transition-colors">HỦY</button>
+                  <button onClick={handleStudentSubmit} className="py-3 bg-emerald-600 text-white rounded-xl font-black text-xs shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition-all active:scale-95">VÀO THI</button>
                 </div>
               </div>
             </div>
@@ -1863,7 +1863,7 @@ const handleRedirect = () => {
 
       {/* IDGV - nếu đã lưu thì disable */}
       <div className="space-y-1 mb-3">
-  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">ID Giáo viên</label>
+  <label className="text-xs font-bold text-slate-400 uppercase ml-1">ID Giáo viên</label>
   <input
     placeholder="ID Giáo viên"
     className="w-full border-2 p-3 rounded-xl bg-slate-50 font-mono text-blue-600 focus:border-blue-500 outline-none"
