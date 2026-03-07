@@ -107,7 +107,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
       <div className="mathjax-content">
         {isEditing ? (
          <textarea
-  className={`w-full p-5 bg-slate-50 rounded-2xl outline-none border-2 border-blue-200 text-sm font-medium transition-all focus:bg-white resize-y ${isSmall ? 'min-h-[120px]' : 'min-h-[260px]'}`}
+  className={`w-full p-4 md:p-5 bg-slate-50 rounded-2xl text-sm md:text-base outline-none border-2 border-blue-200 text-sm font-medium transition-all focus:bg-white resize-y ${isSmall ? 'min-h-[120px]' : 'min-h-[260px]'}`}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
             autoFocus
@@ -523,7 +523,7 @@ const handleQuickUpdate = async (field, newValue) => {
   }
 };
   return (
- <div className="p-4 md:p-8 bg-white rounded-[3rem] shadow-xl max-w-6xl mx-auto my-6 border border-slate-50">
+ <div className="p-3 md:p-8 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl max-w-6xl mx-auto my-4 md:my-6 border border-slate-50">
       <div className="flex items-center gap-2 mb-8 bg-white/50 backdrop-blur-md p-2 rounded-3xl w-fit shadow-sm border border-slate-200">
   {/* Nút Sửa câu hỏi */}
   <button 
@@ -661,13 +661,13 @@ const handleQuickUpdate = async (field, newValue) => {
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
       
       {/* CỘT 1: NHẬP LIỆU (CHIẾM 4 PHẦN) */}
-      <div className="lg:col-span-4 space-y-4">
+     <div className="lg:col-span-4 space-y-4 order-2 lg:order-1">
         <div className="bg-slate-100 p-5 rounded-[2.5rem] border border-slate-200">
           <label className="block text-[10px] font-black text-slate-500 mb-2 ml-2 uppercase tracking-wider">
             1. Dán nội dung từ Word
           </label>
           <textarea 
-            className="w-full h-[300px] lg:h-[600px] p-6 bg-white rounded-[2rem] shadow-inner text-sm outline-none focus:ring-2 ring-orange-400 transition-all" 
+            className="w-full min-h-[220px] md:h-[600px] p-4 md:p-6 bg-white rounded-[2rem] text-sm shadow-inner text-sm outline-none focus:ring-2 ring-orange-400 transition-all" 
             placeholder="Dán nội dung dạng {id: 601...}# vào đây..." 
             onChange={(e) => handleWordParser(e.target.value)} 
           />
@@ -675,7 +675,7 @@ const handleQuickUpdate = async (field, newValue) => {
       </div>
 
       {/* CỘT 2: XEM TRƯỚC (CHIẾM 6 PHẦN) */}
-      <div className="lg:col-span-6 space-y-4">
+      <div className="lg:col-span-6 space-y-4 order-1 lg:order-2">
         <div className="bg-white p-5 rounded-[2.5rem] border-2 border-slate-100 shadow-sm min-h-[300px] lg:h-[600px] flex flex-col">
           
           {/* HEADER CỦA CỘT REVIEW: CHỨA TIÊU ĐỀ VÀ NÚT LƯU */}
@@ -801,7 +801,7 @@ const handleQuickUpdate = async (field, newValue) => {
 {showPreview && previewQuestion && (
   <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
     
-    <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+    <div className="bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
       
       {/* Header */}
       <div className="p-6 bg-slate-50 border-b flex justify-between items-center">
@@ -824,7 +824,7 @@ const handleQuickUpdate = async (field, newValue) => {
       </div>
 
       {/* Body */}
-      <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
+      <div className="p-4 md:p-6 flex-1 overflow-y-auto space-y-4">
 
                <EditableSection
           title="Nội dung câu hỏi"
@@ -900,7 +900,7 @@ const handleQuickUpdate = async (field, newValue) => {
   </div>
 )}
   {loading && (
-  <div className="fixed inset-0 bg-white/50 backdrop-blur-[2px] z-[1000] flex items-center justify-center">
+  <div className="fixed inset-0 bg-white/50 backdrop-blur-[2px] z-[1000] flex items-center justify-center touch-none">
     <div className="flex flex-col items-center gap-3">
       <i className="fa-solid fa-spinner animate-spin text-4xl text-blue-600"></i>
       <span className="font-black text-xs text-blue-600 tracking-widest animate-pulse">ĐANG CẬP NHẬT... KAKA</span>
