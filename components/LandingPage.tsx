@@ -1186,7 +1186,7 @@ const handleRedirect = () => {
 
 {isMatrixOpen && (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+        <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
             
             {/* Header: Tiêu đề và nút đóng */}
             <div className="bg-gradient-to-r from-blue-700 to-indigo-800 p-5 flex justify-between items-center text-white">
@@ -1501,7 +1501,7 @@ const handleRedirect = () => {
       {/* Chọn môn */}
      {showSubjectModal && (
   <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-    <div className="bg-white w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="bg-white w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
       <h3 className="text-xl font-black text-indigo-700 uppercase text-center mb-6 italic">Hệ thống học liệu đa năng</h3>
       
       <div className="grid grid-cols-2 gap-4 overflow-hidden">
@@ -1551,7 +1551,7 @@ const handleRedirect = () => {
   {/* 6.MODAL QUIZ (Sửa lỗi step-by-step) */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative border border-slate-100 overflow-y-auto max-h-[90vh]">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative border border-slate-100 overflow-y-auto max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-xl sm:text-2xl font-black text-orange-500 mb-6 uppercase text-center">
               {quizMode === 'gift' ? '🎁 Chế độ Quà QuiZ' : quizMode === 'free' ? '🎮 QuiZ Tự Do' : '🚀 Chọn chế độ chơi'}
             </h2>
