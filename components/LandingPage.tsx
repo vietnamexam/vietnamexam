@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, API_ROUTING, fetchApiRouting } from '../config';
+import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, API_ROUTING, DEFAULT_API_URL, fetchApiRouting } from '../config';
 import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
@@ -604,9 +604,10 @@ fetchSchedules();
   // Nếu chưa tải xong ảnh từ Sheet thì không chạy đếm giây
   if (carouselImages.length === 0) return;
 
-  const interval = setInterval(() => {
-    setCurrentImg(prev => (prev + 1) % carouselImages.length);
-  }, 4000);
+ const interval = setInterval(() => {
+  if (document.hidden) return;
+  setCurrentImg(prev => (prev + 1) % carouselImages.length);
+}, 4000);
 
   return () => clearInterval(interval);
 }, [carouselImages]); // Sẽ chạy lại mỗi khi danh sách ảnh từ Sheet thay đổi
@@ -827,15 +828,15 @@ const handleRedirect = () => {
       </div>
 
       {/* 3. LAYOUT CHÍNH */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
        {/* CỘT TRÁI: MENU CHỨC NĂNG (NÚT + LABEL) */}
-        <div className="lg:col-span-3 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible order-1 lg:order-1">
+        <div className="lg:col-span-3 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible snap-x snap-mandatory order-1 lg:order-1">
          <div className="w-full text-[10px] font-black text-slate-400 uppercase ml-2">
       Tiện ích học tập
       </div>
           
-          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-users"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Đăng ký học Toán</span>
@@ -843,7 +844,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-600">Hot</span>
           </button>
 
-          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-robot"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Trợ lý học tập AI</span>
@@ -851,7 +852,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-500">AI</span>
           </button>
 
-          <button onClick={() => setShowSubjectModal(true)} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => setShowSubjectModal(true)} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-purple-600 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-book"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Chọn môn học khác</span>
@@ -859,7 +860,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-600">New</span>
           </button>
 
-          <button onClick={() => setshowLichOptions(true)} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => setshowLichOptions(true)} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-purple-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-calendar-alt"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Lịch học Toán</span>
@@ -867,7 +868,7 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-500">Schedules</span>
           </button>
 
-          <button onClick={() => setShowVipOptions(true)} className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95 touch-manipulation">
+          <button onClick={() => setShowVipOptions(true)} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
               <div className="bg-amber-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-gem"></i></div>
               <span className="text-sm font-black text-slate-700 uppercase text-left">Nâng cấp VIP</span>
@@ -930,6 +931,7 @@ const handleRedirect = () => {
         <img 
           key={idx} 
           src={img} 
+          loading="lazy"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === (currentImg % carouselImages.length) ? 'opacity-100' : 'opacity-0'}`} 
           alt="Carousel" 
         />
@@ -995,7 +997,7 @@ const handleRedirect = () => {
     href={`https://thayhabacninh.vercel.app/?grade=${g}`}
     target="_blank"
     rel="noopener noreferrer"
-    className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+    className="bg-blue-600 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
   >
     <i className="fas fa-graduation-cap text-xs"></i>
     <span>Lớp {g}</span>
@@ -1007,7 +1009,7 @@ const handleRedirect = () => {
 {/* Nút Thi đề lẻ - Chốt ngay sau Lớp 12 */}
 <button 
   onClick={() => setShowStudentLogin(true)} 
-  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+  className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
   <span>Thi đề lẻ</span>
@@ -1015,7 +1017,7 @@ const handleRedirect = () => {
              {/* Nút xem điểm */}
 <button 
   onClick={() => setShowScoreModal(true)}
-  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+  className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
   <span>Xem điểm</span>
@@ -1024,7 +1026,7 @@ const handleRedirect = () => {
 {/* Nút Lời giải - Nằm bên dưới */}
 <button 
   onClick={() => setShowModal(true)}
-  className="bg-orange-500 text-white p-2.5 rounded-xl font-black text-xs uppercase border-b-4 border-orange-700 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+  className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-orange-700 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-search text-xs"></i> 
   <span>Lời giải</span>
@@ -1156,7 +1158,7 @@ const handleRedirect = () => {
           </div>
 
           {/* TOP 10 CAO THỦ */}
-          <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[480px]">
+          <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[420px] lg:h-[480px]">
             <div className="bg-slate-900 p-4 text-white font-black text-xs uppercase text-center tracking-widest flex items-center justify-center gap-2 font-black">
               <i className="fas fa-crown text-yellow-400"></i> Bảng Vàng Cao Thủ
             </div>
