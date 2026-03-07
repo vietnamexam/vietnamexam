@@ -66,7 +66,7 @@ React.useEffect(() => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-6 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-slate-100 sticky bottom-0 bg-white pb-4">
           <button onClick={() => setShowReview(!showReview)} className={btnStyle}>
             {showReview ? 'ĐÓNG XEM CHI TIẾT' : 'XEM LẠI BÀI LÀM'}
           </button>
