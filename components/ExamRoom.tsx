@@ -300,27 +300,43 @@ useEffect(() => {
 
   {/* TẦNG 2: DANH SÁCH CÂU HỎI - ÉP CỨNG 1 DÒNG ĐỂ TIẾT KIỆM DIỆN TÍCH */}
   <div className="flex items-center gap-2 overflow-x-auto scroll-smooth py-2 px-3 border-t border-slate-800/50 no-scrollbar touch-pan-x bg-slate-900/50">
-    {questions.map((_, idx) => {
-      const isDone = answers[idx] !== undefined && answers[idx] !== null;
-      const isCurrent = currentIdx === idx;
-      
-      return (
-        <button
-          key={idx}
-          id={`q-btn-${idx}`} // Thêm ID để tự động cuộn đến
-          onClick={() => setCurrentIdx(idx)}
-          className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-sm font-black transition-all duration-300 ${
-            isCurrent 
-              ? 'bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)] scale-105' 
-              : isDone 
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' 
-                : 'bg-slate-800 text-slate-500 border border-slate-700'
-          }`}
-        >
-          {idx + 1}
-        </button>
-      );
-    })}
+    {questions.map((q, idx) => {
+  const isDone = answers[idx] !== undefined && answers[idx] !== null;
+  const isCurrent = currentIdx === idx;
+
+  const type = (q.type || "").toLowerCase();
+
+  let partColor = "bg-slate-800 text-slate-400 border border-slate-700";
+
+  if (type === "mcq")
+    partColor = "bg-blue-100 text-blue-700 border border-blue-300";
+
+  else if (type === "true-false")
+    partColor = "bg-orange-100 text-orange-700 border border-orange-300";
+
+  else if (type === "sa" || type === "short-answer")
+    partColor = "bg-purple-100 text-purple-700 border border-purple-300";
+
+  return (
+    <button
+      key={idx}
+      id={`q-btn-${idx}`}
+      onClick={() => setCurrentIdx(idx)}
+      className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-sm font-black transition-all duration-300
+
+      ${
+        isCurrent
+          ? "bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)] scale-105"
+          : isDone
+          ? "bg-blue-700 text-white border border-blue-800"
+          : partColor
+      }
+      `}
+    >
+      {idx + 1}
+    </button>
+  );
+})}
   </div>
 </header>
      
