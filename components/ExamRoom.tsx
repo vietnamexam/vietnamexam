@@ -300,13 +300,7 @@ useEffect(() => {
 
   {/* TẦNG 2: DANH SÁCH CÂU HỎI - ÉP CỨNG 1 DÒNG ĐỂ TIẾT KIỆM DIỆN TÍCH */}
   <div className="flex items-center gap-2 overflow-x-auto scroll-smooth py-2 px-3 border-t border-slate-800/50 no-scrollbar touch-pan-x bg-slate-900/50">
-    <div className="flex items-center gap-2 overflow-x-auto scroll-smooth py-2 px-3 border-t border-slate-800/50 no-scrollbar touch-pan-x bg-slate-900/50">
-    <div className="text-[10px] text-slate-400 flex gap-3 px-3 pb-1">
-  <span className="text-blue-400">■ Phần I</span>
-  <span className="text-orange-400">■ Phần II</span>
-  <span className="text-purple-400">■ Phần III</span>
-</div>
-    
+      
     {questions.map((q, idx) => {
   const isDone = answers[idx] !== undefined && answers[idx] !== null;
   const isCurrent = currentIdx === idx;
