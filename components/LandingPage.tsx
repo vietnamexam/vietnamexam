@@ -752,7 +752,6 @@ const handleRedirect = () => {
       scoreMCQ={scoreMCQ}
       scoreTF={scoreTF}
       scoreSA={scoreSA}
-      isStarted={!showNotice}
       onFinish={async (resultData) => {
   setExamStarted(false);
   const targetUrl = API_ROUTING[studentInfo.idgv];
