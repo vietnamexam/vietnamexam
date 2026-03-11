@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { scoreWord } from '../scoreWord';
+import useExamSecurity from "../hooks/useExamSecurity";
+import Watermark from "./Watermark";
+import WarningToast from "./WarningToast";
 interface Question {
   id: string;
   type: 'mcq' | 'true-false' | 'sa' | 'short-answer'; 
@@ -29,17 +32,11 @@ interface ExamRoomProps {
 }
 const formatContent = (text: any) => {
   if (!text) return "";
-
   let clean = String(text);
 
-  // Sửa ${f}' → f'
-  clean = clean.replace(/\$\{([^}]+)\}'/g, '$$$1\'');
-  
-  // Sửa {{ → {
-  clean = clean.replace(/\{\{/g, '{');
-  clean = clean.replace(/\}\}/g, '}');
-
-  clean = clean.replace(/\\n/g, "<br />");
+  // Chỉ nên replace xuống dòng bên ngoài khối toán học, 
+  // nhưng tốt nhất hãy để MathJax tự xử lý.
+  // clean = clean.replace(/\\n/g, "<br />"); 
 
   return clean.trim();
 };
@@ -55,7 +52,7 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
         </span>
       </div>
      <div 
-  className="text-base sm:text-xl md:text-2xl leading-relaxed mb-8 font-bold text-slate-100 whitespace-normal overflow-visible" 
+  className="text-base sm:text-xl md:text-2xl leading-relaxed mb-8 font-semibold text-slate-200 whitespace-normal overflow-visible" 
   style={{ minHeight: 'fit-content' }}
   dangerouslySetInnerHTML={{ __html: formatContent(q.question) }} 
 />
@@ -69,7 +66,7 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
               <button key={i} onClick={() => onSelect(idx, label)} className={`p-3 sm:p-4 md:p-5 rounded-2xl md:rounded-3xl text-left border-2 transition-all flex items-center gap-4 sm:gap-5 ${isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-800 bg-slate-800/50 hover:border-slate-700'}`}>
                 <span className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl font-black ${isSelected ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-400'}`}>{label}</span>
                 <div 
-  className="text-lg font-bold text-white shadow-sm" // Thay text-slate-400 bằng text-white hoặc text-slate-100
+  className="text-lg font-medium text-slate-300 shadow-sm" // Thay text-slate-400 bằng text-white hoặc text-slate-100
   dangerouslySetInnerHTML={{ __html: formatContent(opt) }} 
 />
               </button>
@@ -85,7 +82,7 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
             const content = typeof sub === 'string' ? sub : (sub.text || "");
             return (
               <div key={sIdx} className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-slate-800 rounded-2xl bg-slate-800/30 gap-4">
-                <div className="flex-1 text-slate-200">
+                <div className="flex-1 text-slate-300 font-medium">
                   <span className="font-bold text-emerald-500 mr-2">{subLabel}.</span>
                   <span dangerouslySetInnerHTML={{ __html: formatContent(content) }} />
                 </div>
@@ -112,7 +109,7 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
     inputMode="decimal"
     autoCorrect="off"
     autoCapitalize="off"
-    placeholder="Ví dụ: 6.32 (dùng dấu (.) nhé"
+    placeholder="Ví dụ: 6.32 (dùng dấu (.) nhé)"
     value={answer || ''}
     onChange={(e) => onSelect(idx, e.target.value)}
     className="w-full bg-slate-900 border-2 border-slate-700 p-4 min-h-[44px] rounded-xl text-white font-bold text-center focus:border-emerald-500 outline-none text-base sm:text-xl md:text-2xl font-mono"
@@ -121,7 +118,10 @@ const QuestionCard = React.memo(({ q, idx, answer, onSelect }: any) => {
       )}
     </div>
   );
-}, (prev, next) => JSON.stringify(prev.answer) === JSON.stringify(next.answer));
+}, (prev, next) => 
+    prev.idx === next.idx && 
+    JSON.stringify(prev.answer) === JSON.stringify(next.answer)
+);
 const parseCloseDate = (s?: string) => {
   if (!s) return null;
   const d = new Date(s + "T23:59:59");
@@ -143,47 +143,260 @@ export default function ExamRoom({ 
   scoreMCQ = 0.25, // THÊM DÒNG NÀY
   scoreTF = 1.0,   // THÊM DÒNG NÀY
   scoreSA = 0.5,   // THÊM DÒNG NÀY
-  onFinish
-}: ExamRoomProps) {
+  isStarted,
+  onFinish,
+  ...props
+}: ExamRoomProps & { isStarted: boolean }) {
+  const maxViolations = 4;
+ useExamSecurity({
+  forceFullscreen: true,
+  blockCopy: true,
+  blockDevTools: true,
+  maxViolations,
+  studentId: studentInfo?.sbd,
+  onAutoSubmit: () => handleFinish(true),
+  onWarning: (msg, count) => {
+    setWarning({ message: msg, count });
+
+    setTimeout(() => setWarning(null), 3000);
+  }
+});
+  const [tabPopup,setTabPopup] = useState(false)
+  const [countdown,setCountdown] = useState(10)
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [answers, setAnswers] = useState<Record<number, any>>({});
   const [startTime] = useState(new Date());
   const [tabSwitches, setTabSwitches] = useState(0);
   const [tabWarning, setTabWarning] = useState<number | null>(null);
   const [hasAutoSubmitted, setHasAutoSubmitted] = useState(false);
+  const answersRef = useRef(answers);
+  const isSubmitting = useRef(false); // Chốt an toàn
+  const [warning, setWarning] = useState<{
+  message: string;
+  count: number;
+} | null>(null);
+  // chống mở 2 tab
+useEffect(() => {
+  if (!isStarted) return; 
 
-  const handleFinish = useCallback((isAuto = false) => {
-    const timeNow = new Date().getTime();
-    const startTimeMs = startTime.getTime();
-    const timeSpentMin = Math.floor((timeNow - startTimeMs) / 60000);
-    const timeTakenSeconds = Math.floor((timeNow - startTimeMs) / 1000);
-    if (!isAuto) {
-      if (timeSpentMin < minSubmitTime) {
-        alert(`Cần tối thiểu ${minSubmitTime} phút để nộp. Còn ${minSubmitTime - timeSpentMin} phút.`);
-        return;
-      }
-    }
+  const lockKey = `lock_${studentInfo.sbd}`;
 
-    // 1. GỌI SCOREWORD ĐỂ CHẤM ĐIỂM NGAY TỨC THÌ
-    // Lấy điểm từ props: scoreMCQ (Cột D), scoreTF (Cột F), scoreSA (Cột H)
-    const result = scoreWord(
-      questions, 
-      answers, 
-      Number(scoreMCQ) || 0.25, 
-      Number(scoreTF) || 1.0, 
-      Number(scoreSA) || 0.5
-    );
+  if (localStorage.getItem(lockKey)) {
+    // Gọi nộp bài tự động với lý do cụ thể
+    handleFinish(true, "Hệ thống phát hiện mở 2 tab thi cùng lúc"); 
+    return;
+  }
 
-    alert(isAuto ? "Tự động nộp bài!" : "Nộp bài thành công!");
+  localStorage.setItem(lockKey, "active");
 
-    // 2. GỬI DỮ LIỆU ĐÃ CHẤM VỀ HÀM CHA
-    onFinish({
-      tongdiem: result.totalScore.toString().replace('.', ','), // Chuyển dấu phẩy cho Sheets
-      time: timeTakenSeconds,                                  // Số giây cho cột G
-      timestamp: new Date().toLocaleString('vi-VN'),            // Cột A
-      details: result.details                                   // Chi tiết nếu cần
-    });
-  }, [startTime, minSubmitTime, questions, answers, scoreMCQ, scoreTF, scoreSA, onFinish]);
+  const releaseLock = () => localStorage.removeItem(lockKey);
+  window.addEventListener("beforeunload", releaseLock);
+  return () => {
+    releaseLock();
+    window.removeEventListener("beforeunload", releaseLock);
+  };
+}, [isStarted, studentInfo.sbd, handleFinish]);
+  
+  // lưu bài khi mỗi 2s
+  useEffect(() => {
+
+  const timer = setInterval(() => {
+    localStorage.setItem(
+      "exam_answers_" + studentInfo.sbd,
+      JSON.stringify(answers)
+    );
+  }, 2000);
+
+  return () => clearInterval(timer);
+
+}, [answers]);
+  useEffect(() => {
+
+  const saved = localStorage.getItem(
+    "exam_answers_" + studentInfo.sbd
+  );
+
+  if (saved) {
+    setAnswers(JSON.parse(saved));
+  }
+
+}, []);
+  // xác nhận khi F5 hay đóng Tab
+  useEffect(() => {
+  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    // Lưu bài một lần cuối trước khi reload/đóng tab
+    localStorage.setItem("exam_answers_" + studentInfo.sbd, JSON.stringify(answersRef.current));
+    
+    e.preventDefault();
+    e.returnValue = ""; // Trình duyệt hiện đại sẽ tự hiển thị thông báo cảnh báo mặc định
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+}, [studentInfo.sbd]);
+  
+
+// Mỗi khi answers thay đổi, cập nhật Ref ngay lập tức
+useEffect(() => {
+  answersRef.current = answers;
+}, [answers]);
+  useEffect(()=>{
+ localStorage.setItem(
+   "exam_" + studentInfo.sbd,
+   JSON.stringify(answers)
+ );
+},[answers]);
+  useEffect(()=>{
+ const saved = localStorage.getItem("exam_" + studentInfo.sbd);
+ if(saved){
+   setAnswers(JSON.parse(saved));
+ }
+},[]);
+  useEffect(()=>{
+
+ const remain = Math.max(0, maxTabSwitches - tabSwitches);
+
+ if(remain < 3 && remain > 0){
+   setTabPopup(true)
+   setCountdown(10)
+ }
+
+},[tabSwitches])
+  useEffect(()=>{
+
+ if(!tabPopup) return
+
+ const timer = setInterval(()=>{
+   setCountdown(v=>{
+     if(v<=1){
+       clearInterval(timer)
+       setTabPopup(false)
+       return 0
+     }
+     return v-1
+   })
+ },1000)
+
+ return ()=> clearInterval(timer)
+
+},[tabPopup])
+  // Reload
+useEffect(() => {
+  const reloadKey = `reload_count_${studentInfo.sbd}`;
+  const count = Number(localStorage.getItem(reloadKey) || 0) + 1;
+  localStorage.setItem(reloadKey, count.toString());
+
+  if (count > 1) {
+    // Nếu reload, tính như một lần chuyển tab để răn đe thay vì nộp luôn
+    setTabSwitches(prev => prev + 1);
+    setWarning({ 
+      message: `Cảnh báo: Bạn vừa tải lại trang! (Lần ${count}), bị tính 1 lần chuyển tab`, 
+      count: count 
+    });
+  }
+}, []);
+
+  
+  useEffect(() => {
+  const handleBlur = () => {
+    setTabSwitches(v => {
+      const next = v + 1;
+      if (next < maxTabSwitches) {
+        setTabWarning(next);
+      }
+      return next;
+    });
+  };
+
+  window.addEventListener("blur", handleBlur);
+  return () => window.removeEventListener("blur", handleBlur);
+}, [maxTabSwitches]);
+ 
+  const handleFinish = useCallback(async (isAuto = false) => {
+    
+  // Nếu đang nộp rồi thì không chạy lại nữa
+  if (isSubmitting.current) return;
+    isSubmitting.current = true;
+    const timeNow = new Date().getTime();
+  const startTimeMs = startTime?.getTime?.() || timeNow;
+  const timeSpentMin = Math.floor((timeNow - startTimeMs) / 60000);
+  const timeTakenSeconds = Math.floor((timeNow - startTimeMs) / 1000);
+        if (!isAuto && reason === "") {
+      if (timeSpentMin < minSubmitTime) {
+        alert(`Cần tối thiểu ${minSubmitTime} phút để nộp. Còn ${minSubmitTime - timeSpentMin} phút.`);
+          isSubmitting.current = false;
+        return;
+      }
+    }
+
+  
+  try {      
+
+    // Kiểm tra xem scoreWord có tồn tại không để tránh crash
+    if (typeof scoreWord !== 'function') {
+      console.error("Lỗi: Hàm scoreWord chưa được định nghĩa!");
+      isSubmitting.current = false;
+      return;
+    }
+    let resultData;
+
+    if (reason !== "") {
+      // TRƯỜNG HỢP VI PHẠM NẶNG: ÉP 0 ĐIỂM
+      resultData = {
+        tongdiem: "0",
+        time: timeTakenSeconds,
+        timestamp: new Date().toLocaleString('vi-VN'),
+        details: `LỖI VI PHẠM: ${reason}. Toàn bộ đáp án bị hủy.`
+      };
+      alert("Cảnh báo: " + reason + ". Bài thi bị chấm 0 điểm!");
+    } else {
+       const currentAnswers = answersRef.current || {};    
+    console.log("🚀 Bắt đầu chấm điểm...", currentAnswers);
+    const result = scoreWord(
+      questions,
+      currentAnswers,
+      Number(scoreMCQ) || 0.25,
+      Number(scoreTF) || 1.0,
+      Number(scoreSA) || 0.5
+    );
+
+    console.log("✅ Chấm điểm xong:", result.totalScore);
+
+    if (isAuto) alert("Vi phạm quy chế! Hệ thống tự động nộp bài.");
+
+    // Gửi dữ liệu về
+    const resultData = {
+      tongdiem: result.totalScore.toString().replace('.', ','),
+      time: timeTakenSeconds,
+      timestamp: new Date().toLocaleString('vi-VN'),
+      details: result.details
+    };
+   // A. Báo cho các tab khác đóng lại
+    localStorage.setItem(`finished_${studentInfo.sbd}`, "true");
+   
+    const res = await onFinish(resultData);
+
+    if(res?.success !== false){
+      localStorage.removeItem("exam_answers_" + studentInfo.sbd);
+       localStorage.removeItem(`lock_${studentInfo.sbd}`);
+}
+
+  } catch (error) {
+    console.error("❌ Lỗi nghiêm trọng khi nộp bài:", error);
+    isSubmitting.current = false; // Mở khóa nếu lỗi để có thể thử lại
+  }
+}, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish, studentInfo.sbd]);
+useEffect(() => {
+  const handleStorageChange = (e: StorageEvent) => {
+    if (e.key === `finished_${studentInfo.sbd}` && e.newValue === "true") {
+      alert("Hệ thống ghi nhận bạn đã nộp bài ở một cửa sổ khác. Trang này sẽ tự đóng.");
+      window.location.reload(); 
+    }
+  };
+
+  window.addEventListener("storage", handleStorageChange);
+  return () => window.removeEventListener("storage", handleStorageChange);
+}, [studentInfo.sbd]);
    const [currentIdx, setCurrentIdx] = useState(0); 
   // Thêm vào trong ExamRoom component
 useEffect(() => {
@@ -233,7 +446,9 @@ useEffect(() => {
     !hasAutoSubmitted
   ) {
     setHasAutoSubmitted(true);
-    handleFinish(true);
+    setTimeout(() => {
+  handleFinish(true);
+}, 100);
   }
 }, [tabSwitches, maxTabSwitches, hasAutoSubmitted, handleFinish]);
 
@@ -244,6 +459,7 @@ useEffect(() => {
     if (new Date() > deadlineDate) {
       alert("Đề thi này đã đóng rồi bạn nhé! Hãy tìm đề khác để thi");
       onFinish();
+      return;
     }
   }
 }, [deadline, onFinish]);
@@ -265,9 +481,55 @@ useEffect(() => {
   setAnswers(p => ({ ...p, [idx]: finalVal }));
 }, [questions]);
   const currentQuestion = questions[currentIdx];
+  const remain = Math.max(0, maxTabSwitches - tabSwitches)
   
   return (  
- <div className="min-h-screen bg-slate-950 pb-24 sm:pb-20">
+ <div className="min-h-screen bg-slate-950 pb-24 sm:pb-20 relative">
+   {/* WATERMARK CHẠY THEO TÊN HỌC SINH VÀ CÂU HỎI */}
+      <Watermark 
+        text={`${studentInfo.name} - ${studentInfo.sbd}`} 
+        seed={currentIdx} 
+      />
+    {/* Toast cảnh báo */}
+    {warning && (
+      <WarningToast
+        message={warning.message}
+        count={warning.count}
+        max={maxViolations}
+      />
+    )}
+   {tabPopup && (
+<div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40">
+
+<div className="bg-red-600 text-white px-6 py-4 rounded-xl shadow-xl text-center max-w-sm">
+
+<div className="font-bold text-lg">
+⚠️ Cảnh báo chuyển tab
+</div>
+
+<div className="text-sm mt-2">
+Bạn chỉ còn <b>{remain} lần</b> chuyển tab.
+</div>
+
+<div className="text-xs mt-2 opacity-80">
+Bạn phải chờ <b>{countdown}s</b> để cảnh báo tự tắt.
+Bạn cố tình tắt cảnh báo này cũng tính 1 lần vi phạm.
+</div>
+
+<button
+disabled={countdown>0}
+className="mt-3 px-4 py-1 bg-white text-red-600 rounded font-bold disabled:opacity-40"
+onClick={()=>{
+setTabPopup(false)
+setTabSwitches(v=>v+1)
+}}
+>
+Đã hiểu rồi chứ bạn yêu!
+</button>
+
+</div>
+</div>
+)}
       {/* HEADER: DANH SÁCH CÂU HỎI VÀ THÔNG TIN */}
       <header className="flex flex-col bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-2xl">
   {/* TẦNG 1: THÔNG TIN SINH VIÊN & ĐỒNG HỒ */}
@@ -298,8 +560,8 @@ useEffect(() => {
     </div>
   </div>
 
-  {/* TẦNG 2: DANH SÁCH CÂU HỎI - ÉP CỨNG 1 DÒNG ĐỂ TIẾT KIỆM DIỆN TÍCH */}
-  <div className="flex items-center gap-2 overflow-x-auto scroll-smooth py-2 px-3 border-t border-slate-800/50 no-scrollbar touch-pan-x bg-slate-900/50">
+  {/* TẦNG 2: DANH SÁCH CÂU HỎI - ÉP CỨNG 1 DÒNG ĐỂ TIẾT KIỆM DIỆN TÍCH */}  
+    <div className="flex items-center gap-2 overflow-x-auto scroll-smooth py-2 px-3 border-t border-slate-800/50 no-scrollbar touch-pan-x bg-slate-900/50">
       
     {questions.map((q, idx) => {
   const isDone = answers[idx] !== undefined && answers[idx] !== null;
@@ -339,8 +601,7 @@ useEffect(() => {
   );
 })}
   </div>
-</header>
-     
+</header>    
 
       {/* NỘI DUNG CÂU HỎI HIỆN TẠI */}
       <main className="max-w-4xl mx-auto p-4 md:p-8 mt-6">
