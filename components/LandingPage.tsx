@@ -31,6 +31,9 @@ const LandingPage: React.FC<LandingPageProps> = ({
 }) => {
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
+  const [showNotice, setShowNotice] = useState(false); // 110326
+  const [maxthi, setMaxthi] = useState(1); // 110326
+  const [countdown, setCountdown] = useState(20); // 110326
   const [showIdgvModal, setShowIdgvModal] = useState(false);
   const [selectedExam, setSelectedExam] = useState("");
   
@@ -50,6 +53,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   const [minSubmitTime, setMinSubmitTime] = useState(0);
   const [maxTabSwitches, setMaxTabSwitches] = useState(3);
   const [deadline, setDeadline] = useState("");
+  const [openTime, setOpenTime] = useState("");
   const [scoreMCQ, setScoreMCQ] = useState(0.25);
   const [scoreTF, setScoreTF] = useState(1.0);
   const [scoreSA, setScoreSA] = useState(0.5);
@@ -351,12 +355,14 @@ const handleStudentSubmit = async (e) => {
       
       // Lưu tên học sinh và thời gian thi vào state để truyền cho ExamRoom
       const d = result.data;
-  
+      setMaxthi(Number(d.maxthi) || 1);  
+      setCountdown(20);
       setQuestions(d.questions || []);
       setDuration(Number(d.duration) || 90);
-      setMinSubmitTime(Number(d.minSubmitTime) || 0);    // Thêm State này
+      setMinSubmitTime(Number(d.minSubmitTime ?? 0));  // Thêm State này
       setMaxTabSwitches(Number(d.maxTabSwitches) || 99); // Thêm State này
       setDeadline(d.deadline || "");
+      setOpenTime(d.openTime || "");
       // 🔥 2. CẬP NHẬT ĐIỂM SỐ TỪ DATABASE (QUAN TRỌNG NHẤT)
       // Giả sử thầy đã khai báo const [scoreMCQ, setScoreMCQ] = useState(0.25) ở trên
       if (typeof setScoreMCQ === 'function') setScoreMCQ(d.scoreMCQ);
@@ -380,7 +386,7 @@ const handleStudentSubmit = async (e) => {
       setExamStarted(true); 
       setShowStudentLogin(false);
       
-      alert(`Chúc mừng ${nameFromGas}. Bạn hãy bấm Ok để vào thi nhé`);
+     setShowNotice(true);
     } else {
       alert("⚠️ " + result.message);
     }
@@ -544,7 +550,21 @@ const handleAuth = async (e: React.FormEvent) => {
   fetchSubjects();
 }, []);
   
+// đếm ngược
+  useEffect(() => {
+  if (!showNotice) return;
 
+  if (countdown === 0) {
+    setShowNotice(false);
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    setCountdown((c) => c - 1);
+  }, 1000);
+
+  return () => clearTimeout(timer);
+}, [showNotice, countdown]);
 // 2. Trong useEffect hiện có của bạn, hãy thêm đoạn này:
   useEffect(() => {
   const saved = localStorage.getItem('useracc_session');
@@ -732,6 +752,7 @@ const handleRedirect = () => {
       scoreMCQ={scoreMCQ}
       scoreTF={scoreTF}
       scoreSA={scoreSA}
+      isStarted={!showNotice}
       onFinish={async (resultData) => {
   setExamStarted(false);
   const targetUrl = API_ROUTING[studentInfo.idgv];
@@ -1985,9 +2006,46 @@ const handleRedirect = () => {
     Đổi IDGV hiện tại ({idgv})
   </button>
 )}
+      {showNotice && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
+    <div className="bg-white rounded-xl shadow-xl p-6 max-w-md text-center">
 
+      <h2 className="text-xl font-bold text-green-600 mb-3">
+        🎉 Chúc mừng {studentName}
+      </h2>
 
+      <p className="text-blue-600 font-semibold mb-2">
+        🔁 Bạn có {maxthi} lần làm bài
+      </p>
+
+      <p className="text-purple-600 font-semibold mb-2">
+        ⏱ Thời gian làm bài: {duration} phút
+      </p>
+
+      <p className="text-indigo-600 font-semibold mb-3">
+        📄 Số câu hỏi: {questions.length}
+      </p>
+
+      <p className="text-red-500 text-sm mb-4">
+        ⚠️ Đọc kỹ: • F5 sẽ tự nộp bài • Không thoát Fullscreen • Không chuyển Tab • Không chụp màn hình • Không chuột phải • Không mở 2 tab cùng thi...
+      </p>
+
+      <div className="text-lg font-bold text-gray-700 mb-3">
+        Bài thi sẽ tự động bắt đầu sau {countdown}s
+      </div>
+
+      <button
+        onClick={() => setShowNotice(false)}
+        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+      >
+        Vào thi ngay
+      </button>
+
+    </div>
+
+  </div>
+)}
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
