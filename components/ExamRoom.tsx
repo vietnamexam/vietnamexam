@@ -312,36 +312,37 @@ useEffect(() => {
   return () => window.removeEventListener("blur", handleBlur);
 }, [maxTabSwitches]);
  
-  const handleFinish = useCallback(async (isAuto = false) => {
-    
-  // Nếu đang nộp rồi thì không chạy lại nữa
+  const handleFinish = useCallback(async (isAuto = false, reason = "") => {
+  // 1. Chống nộp trùng lặp
   if (isSubmitting.current) return;
-    isSubmitting.current = true;
-    const timeNow = new Date().getTime();
+  isSubmitting.current = true;
+
+  const timeNow = new Date().getTime();
   const startTimeMs = startTime?.getTime?.() || timeNow;
-  const timeSpentMin = Math.floor((timeNow - startTimeMs) / 60000);
   const timeTakenSeconds = Math.floor((timeNow - startTimeMs) / 1000);
-        if (!isAuto && reason === "") {
-      if (timeSpentMin < minSubmitTime) {
-        alert(`Cần tối thiểu ${minSubmitTime} phút để nộp. Còn ${minSubmitTime - timeSpentMin} phút.`);
-          isSubmitting.current = false;
-        return;
-      }
+  const timeSpentMin = Math.floor(timeTakenSeconds / 60);
+
+  // 2. Kiểm tra thời gian nộp tối thiểu
+  if (!isAuto && reason === "") {
+    if (timeSpentMin < minSubmitTime) {
+      alert(`Cần tối thiểu ${minSubmitTime} phút để nộp. Còn ${minSubmitTime - timeSpentMin} phút.`);
+      isSubmitting.current = false;
+      return;
     }
+  }
 
-  
-  try {      
-
-    // Kiểm tra xem scoreWord có tồn tại không để tránh crash
+  try {
+    // 3. Kiểm tra hàm chấm điểm
     if (typeof scoreWord !== 'function') {
       console.error("Lỗi: Hàm scoreWord chưa được định nghĩa!");
       isSubmitting.current = false;
       return;
     }
+
     let resultData;
 
     if (reason !== "") {
-      // TRƯỜNG HỢP VI PHẠM NẶNG: ÉP 0 ĐIỂM
+      // TRƯỜNG HỢP VI PHẠM (Ví dụ: mở 2 tab)
       resultData = {
         tongdiem: "0",
         time: timeTakenSeconds,
@@ -350,40 +351,41 @@ useEffect(() => {
       };
       alert("Cảnh báo: " + reason + ". Bài thi bị chấm 0 điểm!");
     } else {
-       const currentAnswers = answersRef.current || {};    
-    console.log("🚀 Bắt đầu chấm điểm...", currentAnswers);
-    const result = scoreWord(
-      questions,
-      currentAnswers,
-      Number(scoreMCQ) || 0.25,
-      Number(scoreTF) || 1.0,
-      Number(scoreSA) || 0.5
-    );
+      // TRƯỜNG HỢP CHẤM ĐIỂM BÌNH THƯỜNG
+      const currentAnswers = answersRef.current || {};
+      const result = scoreWord(
+        questions,
+        currentAnswers,
+        Number(scoreMCQ) || 0.25,
+        Number(scoreTF) || 1.0,
+        Number(scoreSA) || 0.5
+      );
 
-    console.log("✅ Chấm điểm xong:", result.totalScore);
+      if (isAuto) alert("Vi phạm quy chế hoặc hết giờ! Hệ thống tự động nộp bài.");
 
-    if (isAuto) alert("Vi phạm quy chế! Hệ thống tự động nộp bài.");
+      resultData = {
+        tongdiem: result.totalScore.toString().replace('.', ','),
+        time: timeTakenSeconds,
+        timestamp: new Date().toLocaleString('vi-VN'),
+        details: result.details
+      };
+    }
 
-    // Gửi dữ liệu về
-    const resultData = {
-      tongdiem: result.totalScore.toString().replace('.', ','),
-      time: timeTakenSeconds,
-      timestamp: new Date().toLocaleString('vi-VN'),
-      details: result.details
-    };
-   // A. Báo cho các tab khác đóng lại
+    // 4. Phát tín hiệu đóng các tab khác
     localStorage.setItem(`finished_${studentInfo.sbd}`, "true");
-   
+
+    // 5. Gửi dữ liệu về Server
     const res = await onFinish(resultData);
 
-    if(res?.success !== false){
+    // 6. Dọn dẹp nếu nộp thành công
+    if (res?.success !== false) {
       localStorage.removeItem("exam_answers_" + studentInfo.sbd);
-       localStorage.removeItem(`lock_${studentInfo.sbd}`);
-}
+      localStorage.removeItem(`lock_${studentInfo.sbd}`);
+    }
 
   } catch (error) {
     console.error("❌ Lỗi nghiêm trọng khi nộp bài:", error);
-    isSubmitting.current = false; // Mở khóa nếu lỗi để có thể thử lại
+    isSubmitting.current = false; // Cho phép thử nộp lại nếu lỗi mạng/server
   }
 }, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish, studentInfo.sbd]);
 useEffect(() => {
