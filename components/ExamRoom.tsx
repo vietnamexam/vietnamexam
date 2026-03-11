@@ -28,7 +28,8 @@ interface ExamRoomProps {
   scoreMCQ?: number; // Cột D
   scoreTF?: number;  // Cột F
   scoreSA?: number;  // Cột H
-  onFinish: () => void;
+  isStarted: boolean; 
+  onFinish: (data?: any) => Promise<any>;
 }
 const formatContent = (text: any) => {
   if (!text) return "";
@@ -147,20 +148,8 @@ export default function ExamRoom({ 
   onFinish,
   ...props
 }: ExamRoomProps & { isStarted: boolean }) {
-  const maxViolations = 4;
- useExamSecurity({
-  forceFullscreen: true,
-  blockCopy: true,
-  blockDevTools: true,
-  maxViolations,
-  studentId: studentInfo?.sbd,
-  onAutoSubmit: () => handleFinish(true),
-  onWarning: (msg, count) => {
-    setWarning({ message: msg, count });
-
-    setTimeout(() => setWarning(null), 3000);
-  }
-});
+ 
+  const maxViolations = 4; 
   const [tabPopup,setTabPopup] = useState(false)
   const [countdown,setCountdown] = useState(10)
   const [timeLeft, setTimeLeft] = useState(duration * 60);
@@ -175,6 +164,13 @@ export default function ExamRoom({ 
   message: string;
   count: number;
 } | null>(null);
+   if (!isStarted) {
+  return (
+    <div className="text-white text-center p-10">
+      Đang chờ bắt đầu bài thi...
+    </div>
+  );
+}
   // chống mở 2 tab
 useEffect(() => {
   if (!isStarted) return; 
@@ -198,18 +194,19 @@ useEffect(() => {
 }, [isStarted, studentInfo.sbd, handleFinish]);
   
   // lưu bài khi mỗi 2s
-  useEffect(() => {
+ 
+ useEffect(() => {
 
   const timer = setInterval(() => {
     localStorage.setItem(
       "exam_answers_" + studentInfo.sbd,
-      JSON.stringify(answers)
+      JSON.stringify(answersRef.current)
     );
   }, 2000);
 
   return () => clearInterval(timer);
 
-}, [answers]);
+}, []);
   useEffect(() => {
 
   const saved = localStorage.getItem(
@@ -243,7 +240,7 @@ useEffect(() => {
   
   useEffect(()=>{
 
- const remain = Math.max(0, maxTabSwitches - tabSwitches);
+ const remain = Math.max(0, (maxTabSwitches || 0) - tabSwitches);
 
  if(remain < 3 && remain > 0){
    setTabPopup(true)
@@ -268,9 +265,10 @@ useEffect(() => {
 
  return ()=> clearInterval(timer)
 
-},[tabPopup])
+},[tabPopup]);
   // Reload
 useEffect(() => {
+  if (!isStarted) return;
   const reloadKey = `reload_count_${studentInfo.sbd}`;
   const count = Number(localStorage.getItem(reloadKey) || 0) + 1;
   localStorage.setItem(reloadKey, count.toString());
@@ -283,7 +281,7 @@ useEffect(() => {
       count: count 
     });
   }
-}, []);
+}, [studentInfo.sbd, isStarted]);
 
   
   useEffect(() => {
@@ -377,6 +375,21 @@ useEffect(() => {
     isSubmitting.current = false; // Cho phép thử nộp lại nếu lỗi mạng/server
   }
 }, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish, studentInfo.sbd]);
+useExamSecurity({
+  enabled: isStarted,
+  forceFullscreen: true,
+  blockCopy: true,
+  blockDevTools: true,
+  maxViolations,
+  studentId: studentInfo?.sbd,
+  onAutoSubmit: () => handleFinish(true),
+  onWarning: (msg, count) => {
+    setWarning({ message: msg, count });
+
+    setTimeout(() => setWarning(null), 3000);
+  }
+});
+  
 useEffect(() => {
   const handleStorageChange = (e: StorageEvent) => {
     if (e.key === `finished_${studentInfo.sbd}` && e.newValue === "true") {
@@ -455,11 +468,12 @@ useEffect(() => {
   }
 }, [deadline, onFinish]);
   useEffect(() => {
+      if (!isStarted) return;
     const timer = setInterval(() => {
       setTimeLeft(v => { if (v <= 1) { clearInterval(timer); handleFinish(true); return 0; } return v - 1; });
     }, 1000);
     return () => clearInterval(timer);
-  }, [handleFinish]);
+  }, [handleFinish, isStarted]);
 
   // Tự động đổi dấu phẩy thành dấu chấm khi học sinh nhập
   const handleSelect = useCallback((idx: number, val: any) => {
@@ -513,8 +527,7 @@ className="mt-3 px-4 py-1 bg-white text-red-600 rounded font-bold disabled:opaci
 onClick={()=>{
 setTabPopup(false)
 setTabSwitches(v=>v+1)
-}}
->
+}}>
 Đã hiểu rồi chứ bạn yêu!
 </button>
 
@@ -631,5 +644,4 @@ setTabSwitches(v=>v+1)
     </div>
   );
 }
-
-  
+             
