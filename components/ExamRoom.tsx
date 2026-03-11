@@ -223,35 +223,24 @@ useEffect(() => {
 }, []);
   // xác nhận khi F5 hay đóng Tab
   useEffect(() => {
-  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-    // Lưu bài một lần cuối trước khi reload/đóng tab
-    localStorage.setItem("exam_answers_" + studentInfo.sbd, JSON.stringify(answersRef.current));
-    
-    e.preventDefault();
-    e.returnValue = ""; // Trình duyệt hiện đại sẽ tự hiển thị thông báo cảnh báo mặc định
-  };
+    if (!isStarted) return;
 
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-}, [studentInfo.sbd]);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = ""; // Hiện thông báo xác nhận của trình duyệt
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isStarted]);
   
 
 // Mỗi khi answers thay đổi, cập nhật Ref ngay lập tức
 useEffect(() => {
   answersRef.current = answers;
 }, [answers]);
-  useEffect(()=>{
- localStorage.setItem(
-   "exam_" + studentInfo.sbd,
-   JSON.stringify(answers)
- );
-},[answers]);
-  useEffect(()=>{
- const saved = localStorage.getItem("exam_" + studentInfo.sbd);
- if(saved){
-   setAnswers(JSON.parse(saved));
- }
-},[]);
+  
+  
   useEffect(()=>{
 
  const remain = Math.max(0, maxTabSwitches - tabSwitches);
