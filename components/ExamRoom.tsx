@@ -28,8 +28,7 @@ interface ExamRoomProps {
   scoreMCQ?: number; // Cột D
   scoreTF?: number;  // Cột F
   scoreSA?: number;  // Cột H
-  isStarted: boolean; 
-  onFinish: (data?: any) => Promise<any>;
+  onFinish: () => void;
 }
 const formatContent = (text: any) => {
   if (!text) return "";
@@ -144,12 +143,22 @@ export default function ExamRoom({ 
   scoreMCQ = 0.25, // THÊM DÒNG NÀY
   scoreTF = 1.0,   // THÊM DÒNG NÀY
   scoreSA = 0.5,   // THÊM DÒNG NÀY
-  isStarted,
-  onFinish,
-  ...props
-}: ExamRoomProps & { isStarted: boolean }) {
- 
-  const maxViolations = 4; 
+  onFinish
+}: ExamRoomProps) {
+  const maxViolations = 4;
+ useExamSecurity({
+  forceFullscreen: true,
+  blockCopy: true,
+  blockDevTools: true,
+  maxViolations,
+  studentId: studentInfo?.sbd,
+  onAutoSubmit: () => handleFinish(true),
+  onWarning: (msg, count) => {
+    setWarning({ message: msg, count });
+
+    setTimeout(() => setWarning(null), 3000);
+  }
+});
   const [tabPopup,setTabPopup] = useState(false)
   const [countdown,setCountdown] = useState(10)
   const [timeLeft, setTimeLeft] = useState(duration * 60);
@@ -164,49 +173,41 @@ export default function ExamRoom({ 
   message: string;
   count: number;
 } | null>(null);
-   if (!isStarted) {
-  return (
-    <div className="text-white text-center p-10">
-      Đang chờ bắt đầu bài thi...
-    </div>
-  );
-}
   // chống mở 2 tab
-useEffect(() => {
-  if (!isStarted) return; 
-
-  const lockKey = `lock_${studentInfo.sbd}`;
-
+ useEffect(() => {
+  const lockKey = `exam_lock_${studentInfo.sbd}`;
+  
+  // Nếu đã có lock ở tab khác (dùng localStorage để kiểm tra chéo các tab)
   if (localStorage.getItem(lockKey)) {
-    // Gọi nộp bài tự động với lý do cụ thể
-    handleFinish(true, "Hệ thống phát hiện mở 2 tab thi cùng lúc"); 
+    alert("Bài thi đang được mở ở một tab khác!");
+    onFinish(); // Thoát ra trang ngoài thay vì handleFinish(true) để tránh nộp bài trắng
     return;
   }
 
-  localStorage.setItem(lockKey, "active");
+  localStorage.setItem(lockKey, "locked");
 
+  // Xóa khóa khi tab này bị đóng hoặc reload xong
   const releaseLock = () => localStorage.removeItem(lockKey);
-  window.addEventListener("beforeunload", releaseLock);
+  window.addEventListener("unload", releaseLock);
+  
   return () => {
     releaseLock();
-    window.removeEventListener("beforeunload", releaseLock);
+    window.removeEventListener("unload", releaseLock);
   };
-}, [isStarted, studentInfo.sbd, handleFinish]);
-  
+}, [studentInfo.sbd, onFinish]);
   // lưu bài khi mỗi 2s
- 
- useEffect(() => {
+  useEffect(() => {
 
   const timer = setInterval(() => {
     localStorage.setItem(
       "exam_answers_" + studentInfo.sbd,
-      JSON.stringify(answersRef.current)
+      JSON.stringify(answers)
     );
   }, 2000);
 
   return () => clearInterval(timer);
 
-}, []);
+}, [answers]);
   useEffect(() => {
 
   const saved = localStorage.getItem(
@@ -220,27 +221,38 @@ useEffect(() => {
 }, []);
   // xác nhận khi F5 hay đóng Tab
   useEffect(() => {
-    if (!isStarted) return;
+  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    // Lưu bài một lần cuối trước khi reload/đóng tab
+    localStorage.setItem("exam_answers_" + studentInfo.sbd, JSON.stringify(answersRef.current));
+    
+    e.preventDefault();
+    e.returnValue = ""; // Trình duyệt hiện đại sẽ tự hiển thị thông báo cảnh báo mặc định
+  };
 
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = ""; // Hiện thông báo xác nhận của trình duyệt
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isStarted]);
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+}, [studentInfo.sbd]);
   
 
 // Mỗi khi answers thay đổi, cập nhật Ref ngay lập tức
 useEffect(() => {
   answersRef.current = answers;
 }, [answers]);
-  
-  
+  useEffect(()=>{
+ localStorage.setItem(
+   "exam_" + studentInfo.sbd,
+   JSON.stringify(answers)
+ );
+},[answers]);
+  useEffect(()=>{
+ const saved = localStorage.getItem("exam_" + studentInfo.sbd);
+ if(saved){
+   setAnswers(JSON.parse(saved));
+ }
+},[]);
   useEffect(()=>{
 
- const remain = Math.max(0, (maxTabSwitches || 0) - tabSwitches);
+ const remain = Math.max(0, maxTabSwitches - tabSwitches);
 
  if(remain < 3 && remain > 0){
    setTabPopup(true)
@@ -265,10 +277,9 @@ useEffect(() => {
 
  return ()=> clearInterval(timer)
 
-},[tabPopup]);
+},[tabPopup])
   // Reload
 useEffect(() => {
-  if (!isStarted) return;
   const reloadKey = `reload_count_${studentInfo.sbd}`;
   const count = Number(localStorage.getItem(reloadKey) || 0) + 1;
   localStorage.setItem(reloadKey, count.toString());
@@ -281,7 +292,7 @@ useEffect(() => {
       count: count 
     });
   }
-}, [studentInfo.sbd, isStarted]);
+}, []);
 
   
   useEffect(() => {
@@ -299,102 +310,72 @@ useEffect(() => {
   return () => window.removeEventListener("blur", handleBlur);
 }, [maxTabSwitches]);
  
-  const handleFinish = useCallback(async (isAuto = false, reason = "") => {
-  // 1. Chống nộp trùng lặp
+  const handleFinish = useCallback(async (isAuto = false) => {
+    
+  // Nếu đang nộp rồi thì không chạy lại nữa
   if (isSubmitting.current) return;
-  isSubmitting.current = true;
-
-  const timeNow = new Date().getTime();
+    isSubmitting.current = true;
+    const timeNow = new Date().getTime();
   const startTimeMs = startTime?.getTime?.() || timeNow;
+  const timeSpentMin = Math.floor((timeNow - startTimeMs) / 60000);
   const timeTakenSeconds = Math.floor((timeNow - startTimeMs) / 1000);
-  const timeSpentMin = Math.floor(timeTakenSeconds / 60);
-
-  // 2. Kiểm tra thời gian nộp tối thiểu
-  if (!isAuto && reason === "") {
-    if (timeSpentMin < minSubmitTime) {
-      alert(`Cần tối thiểu ${minSubmitTime} phút để nộp. Còn ${minSubmitTime - timeSpentMin} phút.`);
-      isSubmitting.current = false;
-      return;
+        if (!isAuto) {
+      if (timeSpentMin < minSubmitTime) {
+        alert(`Cần tối thiểu ${minSubmitTime} phút để nộp. Còn ${minSubmitTime - timeSpentMin} phút.`);
+          isSubmitting.current = false;
+        return;
+      }
     }
-  }
 
-  try {
-    // 3. Kiểm tra hàm chấm điểm
+  
+  try {   
+    const currentAnswers = answersRef.current || {};
+    
+    console.log("🚀 Bắt đầu chấm điểm...", currentAnswers);
+
+    // Kiểm tra xem scoreWord có tồn tại không để tránh crash
     if (typeof scoreWord !== 'function') {
       console.error("Lỗi: Hàm scoreWord chưa được định nghĩa!");
       isSubmitting.current = false;
       return;
     }
 
-    let resultData;
+    const result = scoreWord(
+      questions,
+      currentAnswers,
+      Number(scoreMCQ) || 0.25,
+      Number(scoreTF) || 1.0,
+      Number(scoreSA) || 0.5
+    );
 
-    if (reason !== "") {
-      // TRƯỜNG HỢP VI PHẠM (Ví dụ: mở 2 tab)
-      resultData = {
-        tongdiem: "0",
-        time: timeTakenSeconds,
-        timestamp: new Date().toLocaleString('vi-VN'),
-        details: `LỖI VI PHẠM: ${reason}. Toàn bộ đáp án bị hủy.`
-      };
-      alert("Cảnh báo: " + reason + ". Bài thi bị chấm 0 điểm!");
-    } else {
-      // TRƯỜNG HỢP CHẤM ĐIỂM BÌNH THƯỜNG
-      const currentAnswers = answersRef.current || {};
-      const result = scoreWord(
-        questions,
-        currentAnswers,
-        Number(scoreMCQ) || 0.25,
-        Number(scoreTF) || 1.0,
-        Number(scoreSA) || 0.5
-      );
+    console.log("✅ Chấm điểm xong:", result.totalScore);
 
-      if (isAuto) alert("Vi phạm quy chế hoặc hết giờ! Hệ thống tự động nộp bài.");
+    if (isAuto) alert("Vi phạm quy chế! Hệ thống tự động nộp bài.");
 
-      resultData = {
-        tongdiem: result.totalScore.toString().replace('.', ','),
-        time: timeTakenSeconds,
-        timestamp: new Date().toLocaleString('vi-VN'),
-        details: result.details
-      };
-    }
-
-    // 4. Phát tín hiệu đóng các tab khác
-    localStorage.setItem(`finished_${studentInfo.sbd}`, "true");
-
-    // 5. Gửi dữ liệu về Server
+    // Gửi dữ liệu về
+    const resultData = {
+      tongdiem: result.totalScore.toString().replace('.', ','),
+      time: timeTakenSeconds,
+      timestamp: new Date().toLocaleString('vi-VN'),
+      details: result.details
+    };
     const res = await onFinish(resultData);
 
-    // 6. Dọn dẹp nếu nộp thành công
-    if (res?.success !== false) {
+    if(res?.success !== false){
       localStorage.removeItem("exam_answers_" + studentInfo.sbd);
-      localStorage.removeItem(`lock_${studentInfo.sbd}`);
-    }
+}
 
   } catch (error) {
     console.error("❌ Lỗi nghiêm trọng khi nộp bài:", error);
-    isSubmitting.current = false; // Cho phép thử nộp lại nếu lỗi mạng/server
+    isSubmitting.current = false; // Mở khóa nếu lỗi để có thể thử lại
   }
-}, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish, studentInfo.sbd]);
-useExamSecurity({
-  enabled: isStarted,
-  forceFullscreen: true,
-  blockCopy: true,
-  blockDevTools: true,
-  maxViolations,
-  studentId: studentInfo?.sbd,
-  onAutoSubmit: () => handleFinish(true),
-  onWarning: (msg, count) => {
-    setWarning({ message: msg, count });
-
-    setTimeout(() => setWarning(null), 3000);
-  }
-});
-  
-useEffect(() => {
+}, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish]);
+  useEffect(() => {
   const handleStorageChange = (e: StorageEvent) => {
+    // Nếu Tab khác vừa ghi nhận đã nộp bài cho SBD này
     if (e.key === `finished_${studentInfo.sbd}` && e.newValue === "true") {
-      alert("Hệ thống ghi nhận bạn đã nộp bài ở một cửa sổ khác. Trang này sẽ tự đóng.");
-      window.location.reload(); 
+      alert("Hệ thống ghi nhận bạn đã nộp bài ở một cửa sổ khác. Trang này sẽ tự động đóng.");
+      window.location.reload(); // Hoặc điều hướng về trang chủ
     }
   };
 
@@ -468,12 +449,11 @@ useEffect(() => {
   }
 }, [deadline, onFinish]);
   useEffect(() => {
-      if (!isStarted) return;
     const timer = setInterval(() => {
       setTimeLeft(v => { if (v <= 1) { clearInterval(timer); handleFinish(true); return 0; } return v - 1; });
     }, 1000);
     return () => clearInterval(timer);
-  }, [handleFinish, isStarted]);
+  }, [handleFinish]);
 
   // Tự động đổi dấu phẩy thành dấu chấm khi học sinh nhập
   const handleSelect = useCallback((idx: number, val: any) => {
@@ -527,7 +507,8 @@ className="mt-3 px-4 py-1 bg-white text-red-600 rounded font-bold disabled:opaci
 onClick={()=>{
 setTabPopup(false)
 setTabSwitches(v=>v+1)
-}}>
+}}
+>
 Đã hiểu rồi chứ bạn yêu!
 </button>
 
@@ -644,4 +625,5 @@ setTabSwitches(v=>v+1)
     </div>
   );
 }
-             
+
+  
