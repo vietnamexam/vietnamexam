@@ -1280,37 +1280,43 @@ const handleRedirect = () => {
             <div className="bg-orange-50/50 py-1">Số câu</div><div className="bg-orange-50/50 py-1">L3</div><div className="bg-orange-50/50 py-1">L4</div>
           </div>
 
-          {/* Danh sách các dòng chuyên đề */}
-          <div className="space-y-2">
-            {selectedTopics.map((topic, idx) => (
-              <div key={idx} className="grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div className="col-span-3">
-                  <select 
-                    value={topic.idcd} 
-                    onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
-                    className="w-full p-2 text-xs border rounded-lg outline-none bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="">-- Chọn chuyên đề --</option>
-                    {appConfig?.topics?.map(t => (
-                      <option key={t.id} value={t.id}>{t.id} : {t.name}</option>
-                    ))}
-                  </select>
-                </div>
-                {/* Phần I */}
-                <input type="number" value={topic.numMC} onChange={e => updateTopicRow(idx, 'numMC', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
-                <input type="number" value={topic.mcL3} onChange={e => updateTopicRow(idx, 'mcL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
-                <input type="number" value={topic.mcL4} onChange={e => updateTopicRow(idx, 'mcL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
-                {/* Phần II */}
-                <input type="number" value={topic.numTF} onChange={e => updateTopicRow(idx, 'numTF', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
-                <input type="number" value={topic.tfL3} onChange={e => updateTopicRow(idx, 'tfL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
-                <input type="number" value={topic.tfL4} onChange={e => updateTopicRow(idx, 'tfL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
-                {/* Phần III */}
-                <input type="number" value={topic.numSA} onChange={e => updateTopicRow(idx, 'numSA', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
-                <input type="number" value={topic.saL3} onChange={e => updateTopicRow(idx, 'saL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
-                <input type="number" value={topic.saL4} onChange={e => updateTopicRow(idx, 'saL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
-              </div>
-            ))}
-          </div>
+         {/* Danh sách các dòng chuyên đề */}
+<div className="space-y-2">
+  {selectedTopics.map((topic, idx) => (
+    <div key={idx} className="grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm">
+      
+      {/* CỘT SỔ CHỌN: idcd : namecd */}
+      <div className="col-span-3">
+        <select 
+          value={topic.idcd} 
+          onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
+          className="w-full p-2 text-xs border rounded-lg outline-none bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">-- Chọn chuyên đề --</option>
+          {/* Dùng Optional Chaining ?. để không bị trắng trang nếu appConfig chưa có dữ liệu */}
+          {appConfig?.topics?.map((t, tIdx) => (
+            <option key={tIdx} value={t.id}>
+              {t.id} : {t.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* CÁC MỤC NHẬP NGANG HÀNG (Giữ nguyên logic cũ) */}
+      <input type="number" placeholder="numMC" value={topic.numMC} onChange={e => updateTopicRow(idx, 'numMC', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
+      <input type="number" placeholder="mcL3" value={topic.mcL3} onChange={e => updateTopicRow(idx, 'mcL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
+      <input type="number" placeholder="mcL4" value={topic.mcL4} onChange={e => updateTopicRow(idx, 'mcL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
+      
+      <input type="number" placeholder="numTF" value={topic.numTF} onChange={e => updateTopicRow(idx, 'numTF', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
+      <input type="number" placeholder="tfL3" value={topic.tfL3} onChange={e => updateTopicRow(idx, 'tfL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
+      <input type="number" placeholder="tfL4" value={topic.tfL4} onChange={e => updateTopicRow(idx, 'tfL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
+      
+      <input type="number" placeholder="numSA" value={topic.numSA} onChange={e => updateTopicRow(idx, 'numSA', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
+      <input type="number" placeholder="saL3" value={topic.saL3} onChange={e => updateTopicRow(idx, 'saL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
+      <input type="number" placeholder="saL4" value={topic.saL4} onChange={e => updateTopicRow(idx, 'saL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
+    </div>
+  ))}
+</div>
 
           <button 
             onClick={addTopicRow}
