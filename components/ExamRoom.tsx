@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { scoreWord } from '../scoreWord';
-import useExamSecurity from "../hooks/useExamSecurity";
 import Watermark from "./Watermark";
 import WarningToast from "./WarningToast";
 interface Question {
@@ -145,21 +144,6 @@ export default function ExamRoom({ 
   scoreSA = 0.5,   // THÊM DÒNG NÀY
   onFinish
 }: ExamRoomProps) {
-  const maxViolations = 4;
- useExamSecurity({
-  forceFullscreen: false,
-  blockCopy: true,
-  blockDevTools: true,
-  maxViolations,
-  studentId: studentInfo?.sbd,
-  onAutoSubmit: () => handleFinish(true),
-  onWarning: (msg, count) => {
-    
-    setWarning({ message: msg, count });
-
-    setTimeout(() => setWarning(null), 3000);
-  }
-});
   const [tabPopup,setTabPopup] = useState(false)
   const [countdown,setCountdown] = useState(10)
   const [timeLeft, setTimeLeft] = useState(duration * 60);
@@ -493,8 +477,7 @@ useEffect(() => {
     {warning && (
       <WarningToast
         message={warning.message}
-        count={warning.count}
-        max={maxViolations}
+        count={warning.count}        
       />
     )}
    {tabPopup && (
