@@ -151,6 +151,18 @@ const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách 
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
 const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
    useEffect(() => {
+  // Giả sử bạn dùng google.script.run để gọi hàm từ backend GAS
+  if (typeof google !== 'undefined') {
+    google.script.run
+      .withSuccessHandler((data) => {
+        console.log("✅ Đã tải Config:", data);
+        setAppConfig(data);
+      })
+      .execute('getAppConfig');
+  }
+}, []);
+  
+   useEffect(() => {
   if (window.MathJax && foundLG) {
     window.MathJax.typesetPromise();
   }
@@ -1279,7 +1291,7 @@ const handleRedirect = () => {
                     className="w-full p-2 text-xs border rounded-lg outline-none bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="">-- Chọn chuyên đề --</option>
-                    {appConfig.topics.map(t => (
+                    {appConfig?.topics?.map(t => (
                       <option key={t.id} value={t.id}>{t.id} : {t.name}</option>
                     ))}
                   </select>
