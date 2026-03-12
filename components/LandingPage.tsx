@@ -767,6 +767,11 @@ const handleRedirect = () => {
     alert("❌ Lỗi kết nối, không thể lưu điểm. Hãy chụp màn hình kết quả!");
   }
 };
+  const updateTopicRow = (index, field, value) => {
+    const newTopics = [...selectedTopics];
+    newTopics[index][field] = value;
+    setSelectedTopics(newTopics);
+  };
 
   return (
     <>
