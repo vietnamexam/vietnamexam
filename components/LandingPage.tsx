@@ -470,12 +470,7 @@ const addTopicRow = () => {
   setSelectedTopics([...selectedTopics, { idcd: '', numMC: 0, mcL3: 0, mcL4: 0, numTF: 0, tfL3: 0, tfL4: 0, numSA: 0, saL3: 0, saL4: 0 }]);
 };
 
-// Hàm cập nhật giá trị từng ô trong dòng
-const updateTopicRow = (index, field, value) => {
-  const newTopics = [...selectedTopics];
-  newTopics[index][field] = value;
-  setSelectedTopics(newTopics);
-};
+
   // kết thuc form ma trận mới
   // Tìm câu hỏi
 const handleSearchLG = async () => {
