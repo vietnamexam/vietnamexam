@@ -555,11 +555,7 @@ setTabSwitches(v=>v+1)
         {formatTime(timeLeft)}
       </div>
      <button 
-  onClick={() => {
-    if (window.confirm("Bạn có chắc chắn sẽ nộp bài không?")) {
-      handleFinish(false);
-    }
-  }}
+  onClick={() => handleFinish(false)}
   className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs active:scale-95"
 >
   NỘP BÀI
