@@ -21,12 +21,26 @@ const shuffleByTypeParts = (data: Question[]): Question[] => {
 
   data.forEach(q => {
     const type = (q.type || '').toLowerCase().trim();
+     // clone object để tránh mutate dữ liệu gốc
+    const newQ: Question = { ...q };
+
+    // trộn đáp án trắc nghiệm
+    if (type === 'mcq' && Array.isArray(q.o)) {
+      q.o = shuffle(q.o);
+    }
+
+    // trộn mệnh đề đúng sai
+    if (type === 'true-false' && Array.isArray(q.s)) {
+      q.s = shuffle(q.s);
+    }
 
     if (type === 'mcq') mcq.push(q);
-    else if (type === 'true-false') tf.push(q);
-    else if (type === 'short-answer') sa.push(q);
+    else if (type === 'true-false' || type === 'tf') tf.push(q);
+    else if (type === 'short-answer' || type === 'sa') sa.push(q);
     else other.push(q);
   });
+  console.log("MCQ shuffled:", mcq);
+  console.log("TF shuffled:", tf);
 
   return [
     ...shuffle(mcq),
