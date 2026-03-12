@@ -286,22 +286,7 @@ useEffect(() => {
 
  return ()=> clearInterval(timer)
 
-},[tabPopup]) 
-  
-  useEffect(() => {
-  const handleBlur = () => {
-    setTabSwitches(v => {
-      const next = v + 1;
-      if (next < maxTabSwitches) {
-        setTabWarning(next);
-      }
-      return next;
-    });
-  };
-
-  window.addEventListener("blur", handleBlur);
-  return () => window.removeEventListener("blur", handleBlur);
-}, [maxTabSwitches]);
+},[tabPopup])   
  
   // ===== Hàm nộp bài đây nhé
   const handleFinish = useCallback(async (isAuto = false) => {
