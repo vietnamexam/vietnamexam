@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { scoreWord } from '../scoreWord';
+
 import Watermark from "./Watermark";
 import WarningToast from "./WarningToast";
 interface Question {
@@ -144,7 +145,8 @@ export default function ExamRoom({ 
   scoreSA = 0.5,   // THÊM DÒNG NÀY
   onFinish
 }: ExamRoomProps) {
-  const [tabPopup,setTabPopup] = useState(false)
+
+   const [tabPopup,setTabPopup] = useState(false)
   const [countdown,setCountdown] = useState(10)
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [answers, setAnswers] = useState<Record<number, any>>({});
@@ -158,8 +160,57 @@ export default function ExamRoom({ 
   message: string;
   count: number;
 } | null>(null);
-  
-    // 3. TỰ ĐỘNG LƯU & KHÔI PHỤC BÀI LÀM
+  // 1. CƠ CHẾ CHỐNG MỞ 2 TAB (Dùng Heartbeat để tự giải phóng nếu tắt tab đột ngột)
+  useEffect(() => {
+    const lockKey = `exam_active_${studentInfo.sbd}`;
+    const sessionId = Math.random().toString(36).substring(7);
+    
+    const checkLock = () => {
+      const lastActive = localStorage.getItem(lockKey);
+      if (lastActive) {
+        try {
+          const { id, time } = JSON.parse(lastActive);
+          // Nếu khóa chưa quá 5 giây và ID khác hiện tại mới chặn
+          if (id !== sessionId && Date.now() - time < 5000) {
+            alert("Bài thi đang được mở ở một tab khác hoặc phiên cũ chưa thoát hẳn!");
+            onFinish();
+            return false;
+          }
+        } catch (e) { /* Bỏ qua lỗi parse để ghi đè */ }
+      }
+      return true;
+    };
+
+    if (!checkLock()) return;
+
+    // Gửi nhịp tim duy trì mỗi 2s
+    const heartbeat = setInterval(() => {
+      localStorage.setItem(lockKey, JSON.stringify({ id: sessionId, time: Date.now() }));
+    }, 2000);
+
+    return () => {
+      clearInterval(heartbeat);
+      localStorage.removeItem(lockKey);
+    };
+  }, [studentInfo.sbd, onFinish]);
+
+  // 2. LOGIC RELOAD (Chỉ phạt khi F5 trong cùng một trình duyệt)
+  useEffect(() => {
+    const reloadKey = `reload_check_${studentInfo.sbd}`;
+    const isReloaded = sessionStorage.getItem(reloadKey);
+    
+    if (isReloaded) {
+      setTabSwitches(prev => prev + 1);
+      setWarning({ 
+        message: `Bạn vừa tải lại trang! Bị tính 1 lần vi phạm.`, 
+        count: tabSwitches + 1 
+      });
+    } else {
+      sessionStorage.setItem(reloadKey, "true");
+    }
+  }, []);
+
+  // 3. TỰ ĐỘNG LƯU & KHÔI PHỤC BÀI LÀM
   useEffect(() => {
     // Khôi phục ngay khi vào
     const saved = localStorage.getItem("exam_answers_" + studentInfo.sbd);
@@ -267,13 +318,6 @@ useEffect(() => {
           isSubmitting.current = false;
         return;
       }
-          // 3. Nếu đủ thời gian -> Hiện xác nhận nộp bài
-    const isConfirmed = window.confirm("Bạn có chắc chắn sẽ nộp bài không?");
-    if (!isConfirmed) {
-      isSubmitting.current = false; // Reset lại nếu người dùng bấm Hủy
-      return; // Dừng hàm nếu bấm Hủy
-    }
-          console.log("Đang tiến hành nộp bài...");
     }
 
   
@@ -319,7 +363,20 @@ useEffect(() => {
     isSubmitting.current = false; // Mở khóa nếu lỗi để có thể thử lại
   }
 }, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish]);
-    // Thêm vào trong ExamRoom component
+  useEffect(() => {
+  const handleStorageChange = (e: StorageEvent) => {
+    // Nếu Tab khác vừa ghi nhận đã nộp bài cho SBD này
+    if (e.key === `finished_${studentInfo.sbd}` && e.newValue === "true") {
+      alert("Hệ thống ghi nhận bạn đã nộp bài ở một cửa sổ khác. Trang này sẽ tự động đóng.");
+      window.location.reload(); // Hoặc điều hướng về trang chủ
+    }
+  };
+
+  window.addEventListener("storage", handleStorageChange);
+  return () => window.removeEventListener("storage", handleStorageChange);
+}, [studentInfo.sbd]);
+   const [currentIdx, setCurrentIdx] = useState(0); 
+  // Thêm vào trong ExamRoom component
 useEffect(() => {
   const activeBtn = document.getElementById(`q-btn-${currentIdx}`);
   if (activeBtn) {
@@ -415,7 +472,8 @@ useEffect(() => {
     {warning && (
       <WarningToast
         message={warning.message}
-        count={warning.count}        
+        count={warning.count}
+        
       />
     )}
    {tabPopup && (
@@ -475,8 +533,12 @@ setTabSwitches(v=>v+1)
       <div className="bg-slate-800 px-2 py-1 rounded-lg font-mono text-base sm:text-lg text-emerald-400 border border-slate-700">
         {formatTime(timeLeft)}
       </div>
-     <button 
-  onClick={() => handleFinish(false)}
+      <button 
+  onClick={() => {
+    if (window.confirm("Bạn có chắc chắn sẽ nộp bài không?")) {
+      handleFinish(false);
+    }
+  }}
   className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs active:scale-95"
 >
   NỘP BÀI
