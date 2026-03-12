@@ -177,24 +177,32 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
 
 // 1. Nạp cấu hình riêng cho ma trận
 useEffect(() => {
+ useEffect(() => {
   const loadMatrixConfig = async () => {
     try {
+      // 1. Thêm redirect: "follow" để vượt tường lửa CORS của Google
       const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
         method: "GET",
         redirect: "follow" 
       });
-      const result = await response.json();
-      
-      console.log("Dữ liệu thô từ Script:", result); // Kiểm tra xem status có là success không
 
-      if (result.status === "success") {
-        // CHÚ Ý: result.data.topics (vì hàm getAppConfig trả về object lồng)
-        setMatrixTopics(result.data.topics || []);
+      // 2. Chuyển response thành JSON
+      const result = await response.json();
+      console.log("Dữ liệu thực tế nhận được:", result);
+
+      // 3. Kiểm tra cấu trúc: result.status và result.data.topics
+      if (result.status === "success" && result.data && Array.isArray(result.data.topics)) {
+        setMatrixTopics(result.data.topics);
+        console.log("✅ Đã nạp danh sách chuyên đề vào Modal!");
+      } else {
+        console.warn("⚠️ Cấu trúc dữ liệu không đúng hoặc trống:", result);
       }
-    } catch (err) {
-      console.error("❌ Lỗi nạp Config Ma trận:", err);
+
+    } catch (error) {
+      console.error("❌ Lỗi kết nối Google Script:", error);
     }
   };
+
   loadMatrixConfig();
 }, [DANHGIA_URL]);
 
