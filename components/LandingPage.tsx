@@ -2021,13 +2021,16 @@ const handleRedirect = () => {
       <p className="text-purple-600 font-semibold mb-2">
         ⏱ Thời gian làm bài: {duration} phút
       </p>
+       <p className="text-purple-600 font-semibold mb-2">
+        ⏱ Thời gian tối thiểu: {minSubmitTime} phút
+      </p>
 
       <p className="text-indigo-600 font-semibold mb-3">
         📄 Số câu hỏi: {questions.length}
       </p>
 
       <p className="text-red-500 text-sm mb-4">
-        ⚠️ Đọc kỹ: • F5 sẽ tự nộp bài • Không thoát Fullscreen • Không chuyển Tab • Không chụp màn hình • Không chuột phải • Không mở 2 tab cùng thi...
+        ⚠️ Đọc kỹ: • Không nộp bài sớm • F5 sẽ tự nộp bài • Không thoát Fullscreen • Không chuyển Tab • Không chụp màn hình • Không chuột phải • Không mở 2 tab cùng thi...
       </p>
 
       <div className="text-lg font-bold text-gray-700 mb-3">
