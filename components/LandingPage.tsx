@@ -157,6 +157,7 @@ const [authForm, setAuthForm] = useState({ phone: '', pass: '' });
 const [subjectData, setSubjectData] = useState<any[]>([]); // Lưu toàn bộ hàng từ sheet 
 const [dynamicSubjects, setDynamicSubjects] = useState<string[]>([]); // Danh sách môn duy nhất
 const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách cấp học duy nhất
+   const [matrixTopics, setMatrixTopics] = useState([]); // Danh sách chuyên đề cho ma trận
   // ảnh và tin tức
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
 const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
@@ -171,6 +172,45 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
       .execute('getAppConfig');
   }
 }, []);
+
+ 
+
+// 1. Nạp cấu hình riêng cho ma trận
+useEffect(() => {
+  const loadMatrixConfig = async () => {
+    try {
+      const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
+        method: "GET",
+        redirect: "follow" 
+      });
+      const result = await response.json();
+      
+      console.log("Dữ liệu thô từ Script:", result); // Kiểm tra xem status có là success không
+
+      if (result.status === "success") {
+        // CHÚ Ý: result.data.topics (vì hàm getAppConfig trả về object lồng)
+        setMatrixTopics(result.data.topics || []);
+      }
+    } catch (err) {
+      console.error("❌ Lỗi nạp Config Ma trận:", err);
+    }
+  };
+  loadMatrixConfig();
+}, [DANHGIA_URL]);
+
+// 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
+const scoreInfo = (() => {
+  const sMC = parseFloat(maTranForm.scoreMC) || 0;
+  const sTF = parseFloat(maTranForm.scoreTF) || 0;
+  const sSA = parseFloat(maTranForm.scoreSA) || 0;
+  const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
+  const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
+  const tSA = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numSA) || 0), 0);
+  return {
+    total: ((tMC * sMC) + (tTF * sTF) + (tSA * sSA)).toFixed(2),
+    qCount: tMC + tTF + tSA
+  };
+})();
   
    useEffect(() => {
   if (window.MathJax && foundLG) {
@@ -1254,7 +1294,7 @@ const handleRedirect = () => {
 
       {/* --- CÁC MODAL GIỮ NGUYÊN LOGIC CŨ --- */}
      {/* 5. MODALS */}
-      {isMatrixOpen && (
+     {isMatrixOpen && (
   <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 font-sans">
     <div className="bg-white w-full max-w-6xl max-h-[95vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
       
@@ -1270,7 +1310,7 @@ const handleRedirect = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="space-y-1">
             <label className="text-[10px] uppercase font-bold text-blue-300">Mã kiểm tra</label>
             <input value={maTranForm.makiemtra} onChange={e => setMaTranForm({...maTranForm, makiemtra: e.target.value})} className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-300 transition-all" placeholder="KTTX1..."/>
@@ -1285,7 +1325,35 @@ const handleRedirect = () => {
           </div>
           <div className="space-y-1">
             <label className="text-[10px] uppercase font-bold text-yellow-400">Mã số Giáo viên</label>
-            <input value={idgv} onChange={e => setIdgv(e.target.value)} className="w-full bg-yellow-400/10 border border-yellow-400/40 rounded-lg px-3 py-2 text-sm outline-none font-bold text-yellow-300" placeholder="GV-XXX"/>
+            <input value={idgv} readOnly className="w-full bg-yellow-400/10 border border-yellow-400/40 rounded-lg px-3 py-2 text-sm outline-none font-bold text-yellow-300 cursor-not-allowed"/>
+          </div>
+        </div>
+
+        {/* THANH TỔNG ĐIỂM DỰ KIẾN (TỰ ĐỘNG TÍNH) */}
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-around border border-white/20 shadow-inner">
+          <div className="text-center">
+            <p className="text-[10px] uppercase opacity-70">Tổng câu hỏi</p>
+            <p className="text-xl font-black text-yellow-400">
+              {selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0) + (parseInt(t.numTF) || 0) + (parseInt(t.numSA) || 0), 0)}
+            </p>
+          </div>
+          <div className="h-8 w-[1px] bg-white/20"></div>
+          <div className="text-center">
+            <p className="text-[10px] uppercase opacity-70">Tổng điểm dự kiến</p>
+            {(() => {
+              const sMC = parseFloat(maTranForm.scoreMC) || 0;
+              const sTF = parseFloat(maTranForm.scoreTF) || 0;
+              const sSA = parseFloat(maTranForm.scoreSA) || 0;
+              const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
+              const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
+              const tSA = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numSA) || 0), 0);
+              const total = (tMC * sMC) + (tTF * sTF) + (tSA * sSA);
+              return (
+                <p className={`text-2xl font-black ${Math.abs(total - 10) < 0.01 ? 'text-green-400' : 'text-orange-400'}`}>
+                  {total.toFixed(2)} / 10
+                </p>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -1294,11 +1362,11 @@ const handleRedirect = () => {
       <div className="flex-1 overflow-auto p-4 bg-gray-50 custom-scrollbar">
         <div className="min-w-[950px]">
           {/* Header Bảng */}
-          <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center">
-            <div className="text-left font-bold text-gray-400 text-[10px] uppercase px-2">Chuyên đề</div>
-            <div className="col-span-3 py-1 bg-blue-600 text-white rounded-t-lg text-[10px] font-bold uppercase tracking-widest shadow-sm">Phần I (Trắc nghiệm)</div>
-            <div className="col-span-3 py-1 bg-emerald-600 text-white rounded-t-lg text-[10px] font-bold uppercase tracking-widest shadow-sm">Phần II (Đúng/Sai)</div>
-            <div className="col-span-3 py-1 bg-amber-600 text-white rounded-t-lg text-[10px] font-bold uppercase tracking-widest shadow-sm">Phần III (Trả lời ngắn)</div>
+          <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center font-bold text-[10px] uppercase tracking-wider">
+            <div className="text-left px-2 text-gray-400">Chuyên đề</div>
+            <div className="col-span-3 py-1 bg-blue-600 text-white rounded-t-lg">Phần I (Trắc nghiệm)</div>
+            <div className="col-span-3 py-1 bg-emerald-600 text-white rounded-t-lg">Phần II (Đúng/Sai)</div>
+            <div className="col-span-3 py-1 bg-amber-600 text-white rounded-t-lg">Phần III (Trả lời ngắn)</div>
           </div>
 
           <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
@@ -1308,25 +1376,28 @@ const handleRedirect = () => {
             <div className="text-amber-600">Tổng</div><div className="text-amber-600">L3</div><div className="text-amber-600">L4</div>
           </div>
 
-          {/* Render từng dòng chuyên đề */}
+          {/* Danh sách các dòng chuyên đề */}
           <div className="space-y-2 pb-4">
             {selectedTopics.map((topic, idx) => (
               <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all group">
-                {/* SỔ CHỌN CHUYÊN ĐỀ */}
+                {/* SỔ CHỌN CHUYÊN ĐỀ DÙNG matrixTopics MỚI */}
+                {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
                 <select 
                   value={topic.idcd} 
                   onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
                   className="w-full p-2 text-xs border rounded-lg outline-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 font-medium text-blue-800"
                 >
-                  <option value="" className="text-gray-400">-- Chọn chuyên đề --</option>
-                  {appConfig?.topics?.map((t, i) => (
-                    <option key={i} value={t.id} className="text-gray-900">
-                      {t.id} — {t.name}
-                    </option>
-                  ))}
-                </select>
+                  <option value="">-- Chọn chuyên đề --</option>
+  {matrixTopics && matrixTopics.length > 0 ? (
+    matrixTopics.map((t, i) => (
+      <option key={i} value={t.id}>{t.id} — {t.name}</option>
+    ))
+  ) : (
+    <option disabled>Đang tải dữ liệu...</option>
+  )}
+</select>
 
-                {/* Ô nhập liệu các phần */}
+                {/* Ô nhập liệu tự động */}
                 {[ 'numMC', 'mcL3', 'mcL4', 'numTF', 'tfL3', 'tfL4', 'numSA', 'saL3', 'saL4' ].map((field) => (
                   <input 
                     key={field}
@@ -1350,8 +1421,8 @@ const handleRedirect = () => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                 THÊM CHUYÊN ĐỀ
               </button>
-              <p className="text-[11px] text-gray-400 italic font-medium px-2 bg-gray-100 rounded-full py-1">
-                * Các dòng không chọn chuyên đề sẽ tự động bị loại bỏ khi lưu.
+              <p className="text-[11px] text-gray-400 italic px-2 bg-gray-100 rounded-full py-1">
+                * Lưu ý: Các dòng để trống sẽ tự bị loại bỏ khi lưu.
               </p>
             </div>
           </div>
@@ -1359,45 +1430,44 @@ const handleRedirect = () => {
       </div>
 
       {/* HÀNG 3: CẤU HÌNH ĐIỂM & NÚT LƯU (FOOTER) */}
-      <div className="p-4 bg-gray-50 border-t shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+      <div className="p-4 bg-gray-50 border-t">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {/* Nhập điểm Phần I */}
           <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
-            <span className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg font-extrabold text-xs">P.I</span>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm mỗi câu</label>
+            <span className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg font-black text-xs">P.I</span>
+            <div className="flex-1 text-left">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm/Câu</label>
               <input value={maTranForm.scoreMC} onChange={e => setMaTranForm({...maTranForm, scoreMC: e.target.value})} className="w-full font-bold text-blue-700 outline-none text-sm" placeholder="0.25"/>
             </div>
           </div>
+          {/* Nhập điểm Phần II */}
           <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
-            <span className="w-10 h-10 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-lg font-extrabold text-xs">P.II</span>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm mỗi câu</label>
+            <span className="w-10 h-10 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-lg font-black text-xs">P.II</span>
+            <div className="flex-1 text-left">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm/Câu</label>
               <input value={maTranForm.scoreTF} onChange={e => setMaTranForm({...maTranForm, scoreTF: e.target.value})} className="w-full font-bold text-emerald-700 outline-none text-sm" placeholder="1.0"/>
             </div>
           </div>
+          {/* Nhập điểm Phần III */}
           <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
-            <span className="w-10 h-10 flex items-center justify-center bg-amber-100 text-amber-600 rounded-lg font-extrabold text-xs">P.III</span>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm mỗi câu</label>
+            <span className="w-10 h-10 flex items-center justify-center bg-amber-100 text-amber-600 rounded-lg font-black text-xs">P.III</span>
+            <div className="flex-1 text-left">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm/Câu</label>
               <input value={maTranForm.scoreSA} onChange={e => setMaTranForm({...maTranForm, scoreSA: e.target.value})} className="w-full font-bold text-amber-700 outline-none text-sm" placeholder="0.5"/>
             </div>
           </div>
         </div>
 
         <div className="flex gap-4">
-          <button onClick={() => setIsMatrixOpen(false)} className="flex-1 py-3 px-6 border border-gray-300 rounded-xl font-bold text-gray-600 hover:bg-gray-100 active:scale-95 transition-all text-sm">Hủy bỏ</button>
+          <button onClick={() => setIsMatrixOpen(false)} className="flex-1 py-3 px-6 border border-gray-300 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-all">Hủy bỏ</button>
           <button 
             onClick={handleSaveMatrix}
             disabled={loadingMatrix}
             className={`flex-[2] py-3.5 px-6 rounded-xl font-extrabold text-white shadow-lg transition-all flex items-center justify-center gap-3 ${
-              loadingMatrix ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-95'
+              loadingMatrix ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-indigo-800 hover:scale-[1.01]'
             }`}
           >
-            {loadingMatrix ? (
-              <><svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> ĐANG LƯU...</>
-            ) : (
-              <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg> XÁC NHẬN LƯU MA TRẬN đề</>
-            )}
+            {loadingMatrix ? 'ĐANG LƯU...' : 'XÁC NHẬN LƯU MA TRẬN'}
           </button>
         </div>
       </div>
