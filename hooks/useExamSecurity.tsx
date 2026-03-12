@@ -142,8 +142,7 @@ export default function useExamSecurity({
 
     };
 
-    document.addEventListener("fullscreenchange", fsHandler);
-    document.addEventListener("webkitfullscreenchange", fsHandler as any);
+   
 
     return () => {
       document.removeEventListener("click", start);
@@ -280,30 +279,4 @@ export default function useExamSecurity({
 
   }, []);
  
-
-  /* =========================
-     PHÁT HIỆN NHIỀU MÀN HÌNH
-  ========================= */
-
-  useEffect(() => {
-
-    if (isMobile) return;
-
-    const interval = setInterval(() => {
-
-      if (window.screen.availWidth > window.innerWidth + 200) {
-
-        handleViolation(
-          "Phát hiện nhiều màn hình!",
-          "dual_screen"
-        );
-
-      }
-
-    }, 4000);
-
-    return () => clearInterval(interval);
-
-  }, []);
-
-}
+  
