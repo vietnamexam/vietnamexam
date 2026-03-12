@@ -158,57 +158,8 @@ export default function ExamRoom({ 
   message: string;
   count: number;
 } | null>(null);
-  // 1. CƠ CHẾ CHỐNG MỞ 2 TAB (Dùng Heartbeat để tự giải phóng nếu tắt tab đột ngột)
-  useEffect(() => {
-    const lockKey = `exam_active_${studentInfo.sbd}`;
-    const sessionId = Math.random().toString(36).substring(7);
-    
-    const checkLock = () => {
-      const lastActive = localStorage.getItem(lockKey);
-      if (lastActive) {
-        try {
-          const { id, time } = JSON.parse(lastActive);
-          // Nếu khóa chưa quá 5 giây và ID khác hiện tại mới chặn
-          if (id !== sessionId && Date.now() - time < 5000) {
-            alert("Bài thi đang được mở ở một tab khác hoặc phiên cũ chưa thoát hẳn!");
-            onFinish();
-            return false;
-          }
-        } catch (e) { /* Bỏ qua lỗi parse để ghi đè */ }
-      }
-      return true;
-    };
-
-    if (!checkLock()) return;
-
-    // Gửi nhịp tim duy trì mỗi 2s
-    const heartbeat = setInterval(() => {
-      localStorage.setItem(lockKey, JSON.stringify({ id: sessionId, time: Date.now() }));
-    }, 2000);
-
-    return () => {
-      clearInterval(heartbeat);
-      localStorage.removeItem(lockKey);
-    };
-  }, [studentInfo.sbd, onFinish]);
-
-  // 2. LOGIC RELOAD (Chỉ phạt khi F5 trong cùng một trình duyệt)
-  useEffect(() => {
-    const reloadKey = `reload_check_${studentInfo.sbd}`;
-    const isReloaded = sessionStorage.getItem(reloadKey);
-    
-    if (isReloaded) {
-      setTabSwitches(prev => prev + 1);
-      setWarning({ 
-        message: `Bạn vừa tải lại trang! Bị tính 1 lần vi phạm.`, 
-        count: tabSwitches + 1 
-      });
-    } else {
-      sessionStorage.setItem(reloadKey, "true");
-    }
-  }, []);
-
-  // 3. TỰ ĐỘNG LƯU & KHÔI PHỤC BÀI LÀM
+  
+    // 3. TỰ ĐỘNG LƯU & KHÔI PHỤC BÀI LÀM
   useEffect(() => {
     // Khôi phục ngay khi vào
     const saved = localStorage.getItem("exam_answers_" + studentInfo.sbd);
