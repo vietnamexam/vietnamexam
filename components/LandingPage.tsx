@@ -446,6 +446,23 @@ const handleSaveMatrix = async () => {
     alert("❌ Lỗi kết nối! Dữ liệu có thể đã ghi nhưng không nhận được phản hồi.");
   }
 };
+  // Form ma trận mới 12/03/26
+  const [selectedTopics, setSelectedTopics] = useState([
+  { idcd: '', numMC: 0, mcL3: 0, mcL4: 0, numTF: 0, tfL3: 0, tfL4: 0, numSA: 0, saL3: 0, saL4: 0 }
+]);
+
+// Hàm thêm dòng chuyên đề mới
+const addTopicRow = () => {
+  setSelectedTopics([...selectedTopics, { idcd: '', numMC: 0, mcL3: 0, mcL4: 0, numTF: 0, tfL3: 0, tfL4: 0, numSA: 0, saL3: 0, saL4: 0 }]);
+};
+
+// Hàm cập nhật giá trị từng ô trong dòng
+const updateTopicRow = (index, field, value) => {
+  const newTopics = [...selectedTopics];
+  newTopics[index][field] = value;
+  setSelectedTopics(newTopics);
+};
+  // kết thuc form ma trận mới
   // Tìm câu hỏi
 const handleSearchLG = async () => {
   if (!searchId) return alert("Nhập mã ID đã thầy ơi!");
@@ -1204,184 +1221,122 @@ const handleRedirect = () => {
       {/* --- CÁC MODAL GIỮ NGUYÊN LOGIC CŨ --- */}
      {/* 5. MODALS */}
 
-{isMatrixOpen && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
-            
-            {/* Header: Tiêu đề và nút đóng */}
-            <div className="bg-gradient-to-r from-blue-700 to-indigo-800 p-5 flex justify-between items-center text-white">
-                <div>
-                    <h2 className="text-2xl font-bold">⚙️ Thiết Lập Ma Trận Đề Thi</h2>
-                    <p className="text-blue-100 text-sm">Nhập thông tin đề thi và cấu hình các chuyên đề </p>
-                </div>
-                <button onClick={() => setIsMatrixOpen(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            </div>
-
-            {/* Body: Nội dung cuộn được */}
-            <div className="p-6 overflow-y-auto custom-scrollbar">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
-                    {/* KHỐI 1: THÔNG TIN CHUNG */}
-                    <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <h3 className="font-bold text-blue-800 flex items-center gap-2 border-b pb-2">
-                            <span className="bg-blue-100 p-1 rounded">01</span> Thông tin cơ bản
-                        </h3>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Mã kiểm tra (Ví dụ: KTTX1)</label>
-                            <input 
-                                value={maTranForm.makiemtra} 
-                                onChange={e => setMaTranForm({...maTranForm, makiemtra: e.target.value})}
-                                className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                placeholder="Nhập mã định danh đề..."
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Tên kỳ thi</label>
-                            <input 
-                                value={maTranForm.name} 
-                                onChange={e => setMaTranForm({...maTranForm, name: e.target.value})}
-                                className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                placeholder="Ví dụ: Kiểm tra giữa kỳ 1"
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian (phút)</label>
-                                <input type="number" value={maTranForm.duration} onChange={e => setMaTranForm({...maTranForm, duration: e.target.value})} className="w-full p-2.5 border rounded-lg" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1 font-bold text-blue-600">Mã số Giáo viên</label>
-                                <input 
-                                    value={idgv} 
-                                    onChange={e => setIdgv(e.target.value)}
-                                    className="w-full p-2.5 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none text-sm" 
-                                    placeholder="Ví dụ: GV99-2026-XYZ" 
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-blue-700 mb-1 font-bold">Danh sách chuyên đề (Cách nhau dấu phẩy)</label>
-                            <textarea 
-                                value={maTranForm.topics} 
-                                onChange={e => setMaTranForm({...maTranForm, topics: e.target.value})}
-                                className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 min-h-[80px]"
-                                placeholder="1001, 1002, 1003..."
-                            />
-                        </div>
-                      {/* Ảnh minh họa cho đẹp giao diện */}
-          <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 shadow-inner group">
-      <img 
-        src="https://img.freepik.com/free-vector/online-education-concept-illustration_114360-8438.jpg" 
-        alt="Education Illustration" 
-        className="w-full h-32 object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-    />
-</div>
-                    </div>
-
-                    {/* KHỐI 2: CẤU HÌNH SỐ LƯỢNG CÂU HỎI */}
-                    <div className="space-y-4 p-4 bg-indigo-50/30 rounded-xl border border-indigo-100">
-                        <h3 className="font-bold text-indigo-800 flex items-center gap-2 border-b pb-2">
-                            <span className="bg-indigo-100 p-1 rounded">02</span> Cấu hình câu hỏi của đề
-                        </h3>
-
-                        {/* Phần trắc nghiệm 4 lựa chọn */}
-                        <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                            <p className="text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">Trắc nghiệm MC (Phần I)</p>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Số câu hỏi (numMC)</label>
-                                    <input value={maTranForm.numMC} onChange={e => setMaTranForm({...maTranForm, numMC: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" placeholder="Ví dụ: 5, 5, 5"/>
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Điểm mỗi câu (scoreMC)</label>
-                                    <input value={maTranForm.scoreMC} onChange={e => setMaTranForm({...maTranForm, scoreMC: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" placeholder="0.25"/>
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Mức L3 (mcL3)</label>
-                                    <input value={maTranForm.mcL3} onChange={e => setMaTranForm({...maTranForm, mcL3: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Mức L4 (mcL4)</label>
-                                    <input value={maTranForm.mcL4} onChange={e => setMaTranForm({...maTranForm, mcL4: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Phần Đúng Sai */}
-                        <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                            <p className="text-xs font-bold text-green-600 mb-2 uppercase tracking-wider">Trắc nghiệm TF (Phần II)</p>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Số câu hỏi (numTF)</label>
-                                    <input value={maTranForm.numTF} onChange={e => setMaTranForm({...maTranForm, numTF: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Điểm mỗi câu (scoreTF)</label>
-                                    <input value={maTranForm.scoreTF} onChange={e => setMaTranForm({...maTranForm, scoreTF: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Mức L3 (tfL3)</label>
-                                    <input value={maTranForm.tfL3} onChange={e => setMaTranForm({...maTranForm, tfL3: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Mức L4 (tfL4)</label>
-                                    <input value={maTranForm.tfL4} onChange={e => setMaTranForm({...maTranForm, tfL4: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Phần Trả lời ngắn */}
-                        <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                            <p className="text-xs font-bold text-orange-600 mb-2 uppercase tracking-wider">Trắc nghiệm SA (Phần III)</p>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Số câu hỏi (numSA)</label>
-                                    <input value={maTranForm.numSA} onChange={e => setMaTranForm({...maTranForm, numSA: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Điểm mỗi câu (scoreSA)</label>
-                                    <input value={maTranForm.scoreSA} onChange={e => setMaTranForm({...maTranForm, scoreSA: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Mức L3 (saL3)</label>
-                                    <input value={maTranForm.saL3} onChange={e => setMaTranForm({...maTranForm, saL3: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500 block mb-1">Mức L4 (saL4)</label>
-                                    <input value={maTranForm.saL4} onChange={e => setMaTranForm({...maTranForm, saL4: e.target.value})} className="w-full p-1.5 border rounded text-sm outline-none" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Footer: Nút bấm */}
-            <div className="p-5 bg-gray-50 border-t flex gap-4">
-                <button 
-                    onClick={() => setIsMatrixOpen(false)}
-                    className="flex-1 py-3 px-4 border border-gray-300 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-all"
-                >
-                    Hủy bỏ
-                </button>
-                <button
-                    onClick={handleSaveMatrix}
-                    disabled={loadingMatrix}
-                    className={`flex-[2] py-3 px-4 rounded-xl font-bold text-white transition-all ${
-                        loadingMatrix 
-                        ? 'bg-gray-400 cursor-not-allowed' 
-                        : 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:scale-[1.02] active:scale-[0.98] shadow-lg'
-                    }`}
-                >
-                    {loadingMatrix ? "🔄 Đang gửi..." : "🚀 LƯU MA TRẬN"}
-                </button>
-            </div>
+     {isMatrixOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4">
+    <div className="bg-white w-full max-w-6xl max-h-[95vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col">
+      
+      {/* HÀNG 1: THÔNG TIN CHUNG */}
+      <div className="bg-gradient-to-r from-blue-700 to-indigo-800 p-4 text-white">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div>
+            <label className="block text-[10px] uppercase opacity-80">Mã kiểm tra</label>
+            <input value={maTranForm.makiemtra} onChange={e => setMaTranForm({...maTranForm, makiemtra: e.target.value})} className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-sm outline-none focus:bg-white/20" placeholder="KTTX1..."/>
+          </div>
+          <div>
+            <label className="block text-[10px] uppercase opacity-80">Tên kỳ thi</label>
+            <input value={maTranForm.name} onChange={e => setMaTranForm({...maTranForm, name: e.target.value})} className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-sm outline-none focus:bg-white/20" placeholder="Giữa kỳ 1..."/>
+          </div>
+          <div>
+            <label className="block text-[10px] uppercase opacity-80">Thời gian (phút)</label>
+            <input type="number" value={maTranForm.duration} onChange={e => setMaTranForm({...maTranForm, duration: e.target.value})} className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-sm outline-none focus:bg-white/20"/>
+          </div>
+          <div>
+            <label className="block text-[10px] uppercase opacity-80 text-yellow-300 font-bold">Mã Giáo viên</label>
+            <input value={idgv} onChange={e => setIdgv(e.target.value)} className="w-full bg-white/10 border border-yellow-500/50 rounded-lg p-2 text-sm outline-none focus:bg-white/20 text-yellow-200" placeholder="GV..."/>
+          </div>
         </div>
-    </div>
-)}
+      </div>
 
+      {/* HÀNG 2: BẢNG CẤU HÌNH CHI TIẾT */}
+      <div className="flex-1 overflow-auto p-4 custom-scrollbar bg-gray-50">
+        <div className="min-w-[800px]"> {/* Đảm bảo không bị vỡ trên mobile khi cuộn ngang */}
+          {/* Tiêu đề bảng */}
+          <div className="grid grid-cols-12 gap-2 mb-2 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+            <div className="col-span-3 text-left">Chuyên đề</div>
+            <div className="col-span-3 bg-blue-50 text-blue-600 rounded-t-lg py-1 border-x border-t border-blue-100">Phần I (MC)</div>
+            <div className="col-span-3 bg-green-50 text-green-600 rounded-t-lg py-1 border-x border-t border-green-100">Phần II (TF)</div>
+            <div className="col-span-3 bg-orange-50 text-orange-600 rounded-t-lg py-1 border-x border-t border-orange-100">Phần III (SA)</div>
+          </div>
+          
+          {/* Tiêu đề cột nhỏ */}
+          <div className="grid grid-cols-12 gap-2 mb-2 text-center text-[10px] font-medium text-gray-400">
+            <div className="col-span-3 text-left pl-2">Chọn từ danh sách</div>
+            <div className="bg-blue-50/50 py-1">Số câu</div><div className="bg-blue-50/50 py-1">L3</div><div className="bg-blue-50/50 py-1">L4</div>
+            <div className="bg-green-50/50 py-1">Số câu</div><div className="bg-green-50/50 py-1">L3</div><div className="bg-green-50/50 py-1">L4</div>
+            <div className="bg-orange-50/50 py-1">Số câu</div><div className="bg-orange-50/50 py-1">L3</div><div className="bg-orange-50/50 py-1">L4</div>
+          </div>
+
+          {/* Danh sách các dòng chuyên đề */}
+          <div className="space-y-2">
+            {selectedTopics.map((topic, idx) => (
+              <div key={idx} className="grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div className="col-span-3">
+                  <select 
+                    value={topic.idcd} 
+                    onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
+                    className="w-full p-2 text-xs border rounded-lg outline-none bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="">-- Chọn chuyên đề --</option>
+                    {appConfig.topics.map(t => (
+                      <option key={t.id} value={t.id}>{t.id} : {t.name}</option>
+                    ))}
+                  </select>
+                </div>
+                {/* Phần I */}
+                <input type="number" value={topic.numMC} onChange={e => updateTopicRow(idx, 'numMC', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
+                <input type="number" value={topic.mcL3} onChange={e => updateTopicRow(idx, 'mcL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
+                <input type="number" value={topic.mcL4} onChange={e => updateTopicRow(idx, 'mcL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-blue-400 outline-none" />
+                {/* Phần II */}
+                <input type="number" value={topic.numTF} onChange={e => updateTopicRow(idx, 'numTF', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
+                <input type="number" value={topic.tfL3} onChange={e => updateTopicRow(idx, 'tfL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
+                <input type="number" value={topic.tfL4} onChange={e => updateTopicRow(idx, 'tfL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-green-400 outline-none" />
+                {/* Phần III */}
+                <input type="number" value={topic.numSA} onChange={e => updateTopicRow(idx, 'numSA', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
+                <input type="number" value={topic.saL3} onChange={e => updateTopicRow(idx, 'saL3', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
+                <input type="number" value={topic.saL4} onChange={e => updateTopicRow(idx, 'saL4', e.target.value)} className="p-2 border rounded text-center text-xs focus:ring-1 focus:ring-orange-400 outline-none" />
+              </div>
+            ))}
+          </div>
+
+          <button 
+            onClick={addTopicRow}
+            className="mt-4 flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-bold text-sm transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+            THÊM CHUYÊN ĐỀ
+          </button>
+        </div>
+      </div>
+
+      {/* HÀNG 3: ĐIỂM SỐ & NÚT LƯU */}
+      <div className="p-4 bg-white border-t">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg border border-blue-100">
+            <label className="text-xs font-bold text-blue-700 whitespace-nowrap">Điểm Phần I:</label>
+            <input value={maTranForm.scoreMC} onChange={e => setMaTranForm({...maTranForm, scoreMC: e.target.value})} className="w-full p-1.5 border rounded outline-none text-sm font-bold text-center" placeholder="0.25"/>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg border border-green-100">
+            <label className="text-xs font-bold text-green-700 whitespace-nowrap">Điểm Phần II:</label>
+            <input value={maTranForm.scoreTF} onChange={e => setMaTranForm({...maTranForm, scoreTF: e.target.value})} className="w-full p-1.5 border rounded outline-none text-sm font-bold text-center" placeholder="1.0"/>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg border border-orange-100">
+            <label className="text-xs font-bold text-orange-700 whitespace-nowrap">Điểm Phần III:</label>
+            <input value={maTranForm.scoreSA} onChange={e => setMaTranForm({...maTranForm, scoreSA: e.target.value})} className="w-full p-1.5 border rounded outline-none text-sm font-bold text-center" placeholder="0.5"/>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <button onClick={() => setIsMatrixOpen(false)} className="flex-1 py-3 border border-gray-300 rounded-xl font-bold text-gray-500 hover:bg-gray-50">Hủy bỏ</button>
+          <button onClick={handleSaveMatrix} className="flex-[2] py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl font-bold shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+            LƯU MA TRẬN ĐỀ THI
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
       
       {/* MODAL VIP OPTIONS */}
       {showVipOptions && (
