@@ -19,7 +19,9 @@ const [isReviewing, setIsReviewing] = useState(false);
     duration: 90,
     mintime: 60,
     tab: 2,
-    close: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    open: new Date().toISOString().slice(0,16),  // thời gian mở
+    close: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0,16), // thời gian đóng
+    maxthi: 1
   });
 
   const [jsonInputWord, setJsonInputWord] = useState('');
@@ -229,7 +231,11 @@ const handleSaveQuestions = async (dataArray) => {
     const resp = await fetch(`${targetUrl}?action=saveExamConfig`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ idgv, examCode, config, force }) // Thêm force vào đây
+      body: JSON.stringify({ 
+        idgv, 
+        examCode, 
+        config, 
+        force }) // Thêm force vào đây
     });
     const res = await resp.json();
 
@@ -333,12 +339,16 @@ const handleSaveQuestions = async (dataArray) => {
         <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 border-r border-slate-800 pr-4">
           <div className="space-y-3">
             <div className="text-[10px] text-emerald-400 font-bold uppercase ml-2">Xác thực hệ thống</div>
-            <input 
-              className="w-full p-3 md:p-4 min-h-[44px] rounded-xl bg-slate-800 text-white font-bold border border-slate-700 shadow-inner focus:border-emerald-500 outline-none transition-all" 
-              placeholder="ID GIÁO VIÊN..." 
-              value={idgv} 
-              onChange={e => setIdgv(e.target.value)} 
-            />
+            <input
+  type="text"
+  inputMode="numeric"
+  autoComplete="off"
+  pattern="[0-9]*"
+  className="w-full p-3 md:p-4 min-h-[44px] rounded-xl bg-slate-800 text-white font-bold border border-slate-700 shadow-inner focus:border-emerald-500 outline-none transition-all"
+  placeholder="ID GIÁO VIÊN..."
+  value={idgv}
+  onChange={(e) => setIdgv(e.target.value.trim())}
+/>
             <input 
               className="w-full p-4 rounded-xl bg-slate-500 text-white font-black text-center placeholder-slate-300 shadow-inner" 
               placeholder="MÃ ĐỀ KT (EXAMS)..." 
@@ -364,9 +374,11 @@ const handleSaveQuestions = async (dataArray) => {
             <div className="col-span-2 text-orange-400 font-bold uppercase mt-2 border-t border-slate-700 pt-1">Thời gian & Bảo mật</div>
             <div>Phút thi: <input type="number" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-orange-300" value={config.duration} onChange={e => setConfig({...config, duration: e.target.value})}/></div>
             <div>Nộp bài sau: <input type="number" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-orange-300" value={config.mintime} onChange={e => setConfig({...config, mintime: e.target.value})}/></div>
-            
-            <div>Lỗi Tab: <input type="number" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-red-400" value={config.tab} onChange={e => setConfig({...config, tab: e.target.value})}/></div>
-            <div>Ngày đóng: <input type="date" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-[9px]" value={config.close} onChange={e => setConfig({...config, close: e.target.value})}/></div>
+             <div>Ngày mở: <input type="datetime-local" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-[9px]" value={config.open} onChange={e => setConfig({...config, open: e.target.value})}/></div>
+            <div>Lỗi Tab: <input type="number" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-red-400" value={config.tab} onChange={e => setConfig({...config, tab: e.target.value})}/></div>         
+
+            <div>Ngày đóng: <input type="datetime-local" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-[9px]" value={config.close} onChange={e => setConfig({...config, close: e.target.value})}/></div>
+            <div>Số lần thi: <input type="number" className="w-full bg-slate-900 p-1 rounded border border-slate-700 text-[9px]" value={config.maxthi} onChange={e => setConfig({...config, maxthi: e.target.value})}/></div>
           </div>
         </div>
 

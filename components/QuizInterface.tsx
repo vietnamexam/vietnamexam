@@ -460,4 +460,3 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
 
 export default QuizInterface;
-
