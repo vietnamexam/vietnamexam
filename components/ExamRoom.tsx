@@ -303,7 +303,8 @@ useEffect(() => {
   return () => window.removeEventListener("blur", handleBlur);
 }, [maxTabSwitches]);
  
-  const handleFinish = useCallback(async (isAuto = false) => {
+  // ===== Hàm nộp bài đây nhé
+  const handleFinish = useCallback(async (isAuto = false) => {
     
   // Nếu đang nộp rồi thì không chạy lại nữa
   if (isSubmitting.current) return;
@@ -318,6 +319,13 @@ useEffect(() => {
           isSubmitting.current = false;
         return;
       }
+          // 3. Nếu đủ thời gian -> Hiện xác nhận nộp bài
+    const isConfirmed = window.confirm("Bạn có chắc chắn sẽ nộp bài không?");
+    if (!isConfirmed) {
+      isSubmitting.current = false; // Reset lại nếu người dùng bấm Hủy
+      return; // Dừng hàm nếu bấm Hủy
+    }
+          console.log("Đang tiến hành nộp bài...");
     }
 
   
@@ -533,7 +541,7 @@ setTabSwitches(v=>v+1)
       <div className="bg-slate-800 px-2 py-1 rounded-lg font-mono text-base sm:text-lg text-emerald-400 border border-slate-700">
         {formatTime(timeLeft)}
       </div>
-      <button 
+     <button 
   onClick={() => {
     if (window.confirm("Bạn có chắc chắn sẽ nộp bài không?")) {
       handleFinish(false);
