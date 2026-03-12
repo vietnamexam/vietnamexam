@@ -176,7 +176,6 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
  
 
 // 1. Nạp cấu hình riêng cho ma trận
-useEffect(() => {
  useEffect(() => {
   const loadMatrixConfig = async () => {
     try {
