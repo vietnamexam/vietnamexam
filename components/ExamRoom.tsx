@@ -319,20 +319,7 @@ useEffect(() => {
     isSubmitting.current = false; // Mở khóa nếu lỗi để có thể thử lại
   }
 }, [startTime, minSubmitTime, questions, scoreMCQ, scoreTF, scoreSA, onFinish]);
-  useEffect(() => {
-  const handleStorageChange = (e: StorageEvent) => {
-    // Nếu Tab khác vừa ghi nhận đã nộp bài cho SBD này
-    if (e.key === `finished_${studentInfo.sbd}` && e.newValue === "true") {
-      alert("Hệ thống ghi nhận bạn đã nộp bài ở một cửa sổ khác. Trang này sẽ tự động đóng.");
-      window.location.reload(); // Hoặc điều hướng về trang chủ
-    }
-  };
-
-  window.addEventListener("storage", handleStorageChange);
-  return () => window.removeEventListener("storage", handleStorageChange);
-}, [studentInfo.sbd]);
-   const [currentIdx, setCurrentIdx] = useState(0); 
-  // Thêm vào trong ExamRoom component
+    // Thêm vào trong ExamRoom component
 useEffect(() => {
   const activeBtn = document.getElementById(`q-btn-${currentIdx}`);
   if (activeBtn) {
