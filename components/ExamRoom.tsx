@@ -338,6 +338,7 @@ useEffect(() => {
       isSubmitting.current = false; // Reset lại nếu người dùng bấm Hủy
       return; // Dừng hàm nếu bấm Hủy
     }
+          console.log("Đang tiến hành nộp bài...");
     }
 
   
