@@ -194,23 +194,7 @@ export default function ExamRoom({ 
     };
   }, [studentInfo.sbd, onFinish]);
 
-  // 2. LOGIC RELOAD (Chỉ phạt khi F5 trong cùng một trình duyệt)
-  useEffect(() => {
-    const reloadKey = `reload_check_${studentInfo.sbd}`;
-    const isReloaded = sessionStorage.getItem(reloadKey);
-    
-    if (isReloaded) {
-      setTabSwitches(prev => prev + 1);
-      setWarning({ 
-        message: `Bạn vừa tải lại trang! Bị tính 1 lần vi phạm.`, 
-        count: tabSwitches + 1 
-      });
-    } else {
-      sessionStorage.setItem(reloadKey, "true");
-    }
-  }, []);
-
-  // 3. TỰ ĐỘNG LƯU & KHÔI PHỤC BÀI LÀM
+    // 3. TỰ ĐỘNG LƯU & KHÔI PHỤC BÀI LÀM
   useEffect(() => {
     // Khôi phục ngay khi vào
     const saved = localStorage.getItem("exam_answers_" + studentInfo.sbd);
