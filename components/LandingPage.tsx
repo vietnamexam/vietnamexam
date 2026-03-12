@@ -2021,7 +2021,9 @@ const handleRedirect = () => {
       <p className="text-purple-600 font-semibold mb-2">
         ⏱ Thời gian làm bài: {duration} phút
       </p>
-
+       <p className="text-purple-600 font-semibold mb-2">
+        ⏱ Thời gian tối thiểu: {minSubmitTime} phút
+      </p>
       <p className="text-indigo-600 font-semibold mb-3">
         📄 Số câu hỏi: {questions.length}
       </p>
