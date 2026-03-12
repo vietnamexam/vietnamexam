@@ -332,6 +332,12 @@ useEffect(() => {
           isSubmitting.current = false;
         return;
       }
+          // 3. Nếu đủ thời gian -> Hiện xác nhận nộp bài
+    const isConfirmed = window.confirm("Bạn có chắc chắn sẽ nộp bài không?");
+    if (!isConfirmed) {
+      isSubmitting.current = false; // Reset lại nếu người dùng bấm Hủy
+      return; // Dừng hàm nếu bấm Hủy
+    }
     }
 
   
