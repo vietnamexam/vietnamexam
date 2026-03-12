@@ -492,7 +492,6 @@ disabled={countdown>0}
 className="mt-3 px-4 py-1 bg-white text-red-600 rounded font-bold disabled:opacity-40"
 onClick={()=>{
 setTabPopup(false)
-setTabSwitches(v=>v+1)
 }}
 >
 Đã hiểu rồi chứ bạn yêu!
