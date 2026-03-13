@@ -158,6 +158,7 @@ const [subjectData, setSubjectData] = useState<any[]>([]); // Lưu toàn bộ h�
 const [dynamicSubjects, setDynamicSubjects] = useState<string[]>([]); // Danh sách môn duy nhất
 const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách cấp học duy nhất
    const [matrixTopics, setMatrixTopics] = useState([]); // Danh sách chuyên đề cho ma trận
+  const [selectedGrade, setSelectedGrade] = useState('');
   // ảnh và tin tức
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
 const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
@@ -197,6 +198,19 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   };
   loadMatrixData();
 }, [DANHGIA_URL]);
+  // ==== Lọc theo lớp ================
+
+  const filteredTopics = useMemo(() => {
+
+  if (!selectedGrade) return matrixTopics;
+
+  const allowed = getAllowedGrades(selectedGrade);
+
+  return matrixTopics
+    .filter(t => allowed.includes(Number(t.grade)))
+    .sort((a,b) => b.grade - a.grade);
+
+}, [matrixTopics, selectedGrade]);
 
 // 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
 const scoreInfo = (() => {
@@ -827,7 +841,15 @@ const handleRedirect = () => {
     newTopics[index][field] = value;
     setSelectedTopics(newTopics);
   };
+   const getAllowedGrades = (grade) => {
+  const g = Number(grade);
 
+  if (g === 12) return [12, 11, 10];
+  if (g === 11) return [11, 10];
+  if (g === 10) return [10];
+
+  return [g];
+};
   return (
     <>
     {/* TRƯỜNG HỢP 1: ĐANG THI (Hiện phòng thi, ẩn toàn bộ Landing) */}
@@ -1382,21 +1404,19 @@ const handleRedirect = () => {
               <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all group">
                 {/* SỔ CHỌN CHUYÊN ĐỀ DÙNG matrixTopics MỚI */}
                 {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
-               <select 
-  value={topic.idcd} 
+               <select
+  value={topic.idcd}
   onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
- className="w-full p-2 border rounded-lg text-xs font-semibold bg-white"
+  className="w-full p-2 border rounded-lg text-xs font-semibold bg-white"
 >
   <option value="">-- Chọn chuyên đề --</option>
-  {matrixTopics.length > 0 ? (
-    matrixTopics.map((t, i) => (
-      <option key={i} value={t.id}>
-        {t.id} — {t.name}
-      </option>
-    ))
-  ) : (
-    <option disabled>Đang tải dữ liệu...</option>
-  )}
+
+  {filteredTopics.map((t) => (
+    <option key={t.id} value={t.id}>
+      Lớp {t.grade} — {t.name}
+    </option>
+  ))}
+
 </select>
 
                 {/* Ô nhập liệu tự động */}
