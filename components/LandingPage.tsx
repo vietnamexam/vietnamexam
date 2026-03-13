@@ -1316,7 +1316,7 @@ const handleRedirect = () => {
       {/* --- CÁC MODAL GIỮ NGUYÊN LOGIC CŨ --- */}
      {/* 5. MODALS */}
      {isMatrixOpen && (
-  <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 font-sans">
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 font-sans">
     <div className="bg-white w-full max-w-7xl max-h-[98vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
       
       {/* HÀNG 1: THÔNG TIN CƠ BẢN (HEADER) */}
