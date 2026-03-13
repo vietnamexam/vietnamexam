@@ -1484,7 +1484,7 @@ const handleRedirect = () => {
                <select
   value={topic.idcd}
   onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
-  className="w-full p-2 border rounded-lg text-xs font-semibold bg-white"
+  className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
 >
   <option value="">-- Chọn chuyên đề --</option>
 
