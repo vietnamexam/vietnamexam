@@ -1385,7 +1385,7 @@ const handleRedirect = () => {
                <select 
   value={topic.idcd} 
   onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
-  className="..." // Giữ nguyên class của bạn
+ className="w-full p-2 border rounded-lg text-xs font-semibold bg-white"
 >
   <option value="">-- Chọn chuyên đề --</option>
   {matrixTopics.length > 0 ? (
