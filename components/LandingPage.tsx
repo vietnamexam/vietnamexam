@@ -1421,7 +1421,7 @@ const handleRedirect = () => {
         {selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0) + (parseInt(t.numTF) || 0) + (parseInt(t.numSA) || 0), 0)}
       </span>
       
-      <div className="ml-2 px-3 py-1 bg-gray-100 rounded-full text-[12px] text-gray-500 font-semibold border border-gray-200">
+      <div className="ml-2 px-3 py-1 bg-gray-100 rounded-full text-[12px] text-gray-500 font-semibold border-2 border-blue-500">
         {(() => {
           const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
           const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
@@ -1436,7 +1436,7 @@ const handleRedirect = () => {
 
     {/* VẾ PHẢI: TỔNG ĐIỂM */}
     <div className="flex items-center gap-2">
-      <span className="text-orange-600 uppercase text-[11px] tracking-wider">Tổng điểm dự kiến:</span>
+      <span className="text-blue-600 uppercase text-[11px] tracking-wider">Tổng điểm dự kiến:</span>
       {(() => {
         const sMC = parseFloat(maTranForm.scoreMC) || 0;
         const sTF = parseFloat(maTranForm.scoreTF) || 0;
@@ -1478,7 +1478,7 @@ const handleRedirect = () => {
           {/* Danh sách các dòng chuyên đề */}
           <div className="space-y-2 pb-4">
             {selectedTopics.map((topic, idx) => (
-              <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all group">
+              <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
                 {/* SỔ CHỌN CHUYÊN ĐỀ DÙNG matrixTopics MỚI */}
                 {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
                <select
