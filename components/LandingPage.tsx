@@ -1317,7 +1317,7 @@ const handleRedirect = () => {
      {/* 5. MODALS */}
      {isMatrixOpen && (
   <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 font-sans">
-    <div className="bg-white w-full max-w-6xl max-h-[95vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
+    <div className="bg-white w-full max-w-7xl max-h-[98vh] overflow-hidden rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
       
       {/* HÀNG 1: THÔNG TIN CƠ BẢN (HEADER) */}
       <div className="bg-gradient-to-r from-blue-800 to-indigo-900 p-4 text-white">
@@ -1353,28 +1353,28 @@ const handleRedirect = () => {
   {/* Mã kiểm tra */}
   <div className="space-y-1">
     <label className="text-[10px] uppercase font-bold text-blue-300">
-      Mã kiểm tra
+      Mã kiểm tra(exams)
     </label>
 
     <input
       value={maTranForm.makiemtra}
       onChange={e => setMaTranForm({...maTranForm, makiemtra: e.target.value})}
       className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-3 text-sm outline-none focus:border-blue-300 transition-all"
-      placeholder="KTTX1..."
+      placeholder="Viết liền, KTTX1..."
     />
   </div>
 
   {/* Tên kỳ thi */}
   <div className="space-y-1">
     <label className="text-[10px] uppercase font-bold text-blue-300">
-      Tên kỳ thi
+      Tên bài kiểm tra
     </label>
 
     <input
       value={maTranForm.name}
       onChange={e => setMaTranForm({...maTranForm, name: e.target.value})}
       className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-3 text-sm outline-none focus:border-blue-300 transition-all"
-      placeholder="Ví dụ: Giữa kỳ 1"
+      placeholder="Ví dụ: KT Giữa kỳ 1"
     />
   </div>
 
@@ -1389,21 +1389,24 @@ const handleRedirect = () => {
       value={maTranForm.duration}
       onChange={e => setMaTranForm({...maTranForm, duration: e.target.value})}
       className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-3 text-sm outline-none focus:border-blue-300 transition-all"
+      placeholder="90"
     />
   </div>
 
   {/* ID giáo viên */}
   <div className="space-y-1">
-    <label className="text-[10px] uppercase font-bold text-yellow-400">
-      Mã số Giáo viên
-    </label>
+  <label className="text-[10px] uppercase font-bold text-orange-500 tracking-wider">
+    Mã số Giáo viên
+  </label>
 
-    <input
-      value={idgv}
-      readOnly
-      className="w-full bg-yellow-400/10 border border-yellow-400/40 rounded-lg px-3 py-3 text-sm outline-none font-bold text-yellow-300 cursor-not-allowed"
-    />
-  </div>
+  <input
+    type="text"
+    value={idgv}
+    onChange={(e) => setIdgv(e.target.value)} // Thêm dòng này để cho phép gõ chữ
+    placeholder="Nhập mã GV..."
+    className="w-full bg-white border-2 border-orange-400 rounded-lg px-3 py-3 text-sm font-bold text-orange-700 outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all placeholder:text-orange-200"
+  />
+</div>
 
 </div>
 
@@ -1448,10 +1451,10 @@ const handleRedirect = () => {
           </div>
 
           <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
-            <div className="text-left px-3">Chọn ID : Tên</div>
-            <div className="text-blue-600">Tổng</div><div className="text-blue-600">L3</div><div className="text-blue-600">L4</div>
-            <div className="text-emerald-600">Tổng</div><div className="text-emerald-600">L3</div><div className="text-emerald-600">L4</div>
-            <div className="text-amber-600">Tổng</div><div className="text-amber-600">L3</div><div className="text-amber-600">L4</div>
+            <div className="text-left px-3">Chọn chuyên đề</div>
+            <div className="text-blue-600">Số câu</div><div className="text-blue-600">L3</div><div className="text-blue-600">L4</div>
+            <div className="text-emerald-600">Số câu</div><div className="text-emerald-600">L3</div><div className="text-emerald-600">L4</div>
+            <div className="text-amber-600">Số câu</div><div className="text-amber-600">L3</div><div className="text-amber-600">L4</div>
           </div>
 
           {/* Danh sách các dòng chuyên đề */}
@@ -1500,7 +1503,7 @@ const handleRedirect = () => {
                 THÊM CHUYÊN ĐỀ
               </button>
               <p className="text-[11px] text-gray-400 italic px-2 bg-gray-100 rounded-full py-1">
-                * Lưu ý: Các dòng để trống sẽ tự bị loại bỏ khi lưu.
+                * Lưu ý: Chuyên đề để trống sẽ tự bị loại bỏ khi lưu.
               </p>
             </div>
           </div>
