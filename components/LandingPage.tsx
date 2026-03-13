@@ -1323,7 +1323,7 @@ const handleRedirect = () => {
       <div className="bg-gradient-to-r from-blue-800 to-indigo-900 p-4 text-white">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h2 className="text-xl font-bold flex items-center gap-2">⚙️ Thiết Lập Ma Trận Đề</h2>
+            <h2 className="text-xl font-bold flex items-center gap-2">⚙️ Thiết Lập Ma Trận Đề (Phát triển bởi: Nguyễn Văn Hà - Bắc Ninh - 0988.948.882)</h2>
             <p className="text-blue-200 text-xs">Cấu hình chi tiết chuyên đề và mức độ nhận thức</p>
           </div>
           <button onClick={() => setIsMatrixOpen(false)} className="p-1 hover:bg-white/20 rounded-full transition-colors">
@@ -1426,7 +1426,7 @@ const handleRedirect = () => {
           const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
           const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
           const tSA = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numSA) || 0), 0);
-          return `MCQ: ${tMC}; TF: ${tTF}; SA: ${tSA}`;
+          return `MCQ: ${tMC} ; TF: ${tTF} ; SA: ${tSA}`;
         })()}
       </div>
     </div>
