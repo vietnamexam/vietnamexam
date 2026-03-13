@@ -158,7 +158,7 @@ const [subjectData, setSubjectData] = useState<any[]>([]); // Lưu toàn bộ h�
 const [dynamicSubjects, setDynamicSubjects] = useState<string[]>([]); // Danh sách môn duy nhất
 const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách cấp học duy nhất
    const [matrixTopics, setMatrixTopics] = useState([]); // Danh sách chuyên đề cho ma trận
-  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState(12);
   // ảnh và tin tức
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
 const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
@@ -198,20 +198,9 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   };
   loadMatrixData();
 }, [DANHGIA_URL]);
-  // ==== Lọc theo lớp ================
+ 
 
-  const filteredTopics = useMemo(() => {
-
-  if (!selectedGrade) return matrixTopics;
-
-  const allowed = getAllowedGrades(selectedGrade);
-
-  return matrixTopics
-    .filter(t => allowed.includes(Number(t.grade)))
-    .sort((a,b) => b.grade - a.grade);
-
-}, [matrixTopics, selectedGrade]);
-
+  
 // 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
 const scoreInfo = (() => {
   const sMC = parseFloat(maTranForm.scoreMC) || 0;
@@ -850,6 +839,16 @@ const handleRedirect = () => {
 
   return [g];
 };
+   // ==== Lọc theo lớp ================
+  const filteredTopics = useMemo(() => {
+
+  const allowed = getAllowedGrades(selectedGrade);
+
+  return matrixTopics
+    .filter(t => allowed.includes(Number(t.grade)))
+    .sort((a,b) => Number(b.grade) - Number(a.grade));
+
+}, [matrixTopics, selectedGrade]);
   return (
     <>
     {/* TRƯỜNG HỢP 1: ĐANG THI (Hiện phòng thi, ẩn toàn bộ Landing) */}
@@ -1332,24 +1331,81 @@ const handleRedirect = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-blue-300">Mã kiểm tra</label>
-            <input value={maTranForm.makiemtra} onChange={e => setMaTranForm({...maTranForm, makiemtra: e.target.value})} className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-300 transition-all" placeholder="KTTX1..."/>
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-blue-300">Tên kỳ thi</label>
-            <input value={maTranForm.name} onChange={e => setMaTranForm({...maTranForm, name: e.target.value})} className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-300 transition-all" placeholder="Ví dụ: Giữa kỳ 1"/>
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-blue-300">Thời gian (phút)</label>
-            <input type="number" value={maTranForm.duration} onChange={e => setMaTranForm({...maTranForm, duration: e.target.value})} className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-300 transition-all"/>
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-yellow-400">Mã số Giáo viên</label>
-            <input value={idgv} readOnly className="w-full bg-yellow-400/10 border border-yellow-400/40 rounded-lg px-3 py-2 text-sm outline-none font-bold text-yellow-300 cursor-not-allowed"/>
-          </div>
-        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mb-6">
+
+  {/* Chọn lớp */}
+  <div className="space-y-1">
+    <label className="text-[10px] uppercase font-bold text-green-300">
+      Lớp
+    </label>
+
+    <select
+      value={selectedGrade}
+      onChange={(e)=>setSelectedGrade(e.target.value)}
+      className="w-full bg-green-950/30 border border-green-400/40 rounded-lg px-3 py-3 text-sm outline-none focus:border-green-300 transition-all font-semibold"
+    >
+      <option value="12">Lớp 12</option>
+      <option value="11">Lớp 11</option>
+      <option value="10">Lớp 10</option>
+    </select>
+  </div>
+
+  {/* Mã kiểm tra */}
+  <div className="space-y-1">
+    <label className="text-[10px] uppercase font-bold text-blue-300">
+      Mã kiểm tra
+    </label>
+
+    <input
+      value={maTranForm.makiemtra}
+      onChange={e => setMaTranForm({...maTranForm, makiemtra: e.target.value})}
+      className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-3 text-sm outline-none focus:border-blue-300 transition-all"
+      placeholder="KTTX1..."
+    />
+  </div>
+
+  {/* Tên kỳ thi */}
+  <div className="space-y-1">
+    <label className="text-[10px] uppercase font-bold text-blue-300">
+      Tên kỳ thi
+    </label>
+
+    <input
+      value={maTranForm.name}
+      onChange={e => setMaTranForm({...maTranForm, name: e.target.value})}
+      className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-3 text-sm outline-none focus:border-blue-300 transition-all"
+      placeholder="Ví dụ: Giữa kỳ 1"
+    />
+  </div>
+
+  {/* Thời gian */}
+  <div className="space-y-1">
+    <label className="text-[10px] uppercase font-bold text-blue-300">
+      Thời gian (phút)
+    </label>
+
+    <input
+      type="number"
+      value={maTranForm.duration}
+      onChange={e => setMaTranForm({...maTranForm, duration: e.target.value})}
+      className="w-full bg-blue-950/30 border border-blue-400/30 rounded-lg px-3 py-3 text-sm outline-none focus:border-blue-300 transition-all"
+    />
+  </div>
+
+  {/* ID giáo viên */}
+  <div className="space-y-1">
+    <label className="text-[10px] uppercase font-bold text-yellow-400">
+      Mã số Giáo viên
+    </label>
+
+    <input
+      value={idgv}
+      readOnly
+      className="w-full bg-yellow-400/10 border border-yellow-400/40 rounded-lg px-3 py-3 text-sm outline-none font-bold text-yellow-300 cursor-not-allowed"
+    />
+  </div>
+
+</div>
 
         {/* THANH TỔNG ĐIỂM DỰ KIẾN (TỰ ĐỘNG TÍNH) */}
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-around border border-white/20 shadow-inner">
