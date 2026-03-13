@@ -1411,32 +1411,50 @@ const handleRedirect = () => {
 </div>
 
         {/* THANH TỔNG ĐIỂM DỰ KIẾN (TỰ ĐỘNG TÍNH) */}
-        <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-around border border-white/20 shadow-inner">
-          <div className="text-center">
-            <p className="text-[10px] uppercase opacity-70">Tổng câu hỏi</p>
-            <p className="text-xl font-black text-yellow-400">
-              {selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0) + (parseInt(t.numTF) || 0) + (parseInt(t.numSA) || 0), 0)}
-            </p>
-          </div>
-          <div className="h-8 w-[1px] bg-white/20"></div>
-          <div className="text-center">
-            <p className="text-[10px] uppercase opacity-70">Tổng điểm dự kiến</p>
-            {(() => {
-              const sMC = parseFloat(maTranForm.scoreMC) || 0;
-              const sTF = parseFloat(maTranForm.scoreTF) || 0;
-              const sSA = parseFloat(maTranForm.scoreSA) || 0;
-              const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
-              const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
-              const tSA = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numSA) || 0), 0);
-              const total = (tMC * sMC) + (tTF * sTF) + (tSA * sSA);
-              return (
-                <p className={`text-2xl font-black ${Math.abs(total - 10) < 0.01 ? 'text-green-400' : 'text-orange-400'}`}>
-                  {total.toFixed(2)} / 10
-                </p>
-              );
-            })()}
-          </div>
-        </div>
+       <div className="bg-white border-2 border-blue-100 rounded-xl p-3 shadow-sm">
+  <div className="flex flex-wrap items-center justify-between gap-4 text-sm font-bold">
+    
+    {/* VẾ TRÁI: TỔNG SỐ CÂU & CHI TIẾT */}
+    <div className="flex items-center gap-2 text-gray-700">
+      <span className="text-blue-600 uppercase text-[11px] tracking-wider">Tổng số câu:</span>
+      <span className="text-xl font-black text-blue-700">
+        {selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0) + (parseInt(t.numTF) || 0) + (parseInt(t.numSA) || 0), 0)}
+      </span>
+      
+      <div className="ml-2 px-3 py-1 bg-gray-100 rounded-full text-[12px] text-gray-500 font-semibold border border-gray-200">
+        {(() => {
+          const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
+          const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
+          const tSA = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numSA) || 0), 0);
+          return `MCQ: ${tMC}; TF: ${tTF}; SA: ${tSA}`;
+        })()}
+      </div>
+    </div>
+
+    {/* VẠCH PHÂN CÁCH DỌC */}
+    <div className="hidden md:block h-6 w-[2px] bg-gray-200"></div>
+
+    {/* VẾ PHẢI: TỔNG ĐIỂM */}
+    <div className="flex items-center gap-2">
+      <span className="text-orange-600 uppercase text-[11px] tracking-wider">Tổng điểm dự kiến:</span>
+      {(() => {
+        const sMC = parseFloat(maTranForm.scoreMC) || 0;
+        const sTF = parseFloat(maTranForm.scoreTF) || 0;
+        const sSA = parseFloat(maTranForm.scoreSA) || 0;
+        const tMC = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numMC) || 0), 0);
+        const tTF = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numTF) || 0), 0);
+        const tSA = selectedTopics.reduce((sum, t) => sum + (parseInt(t.numSA) || 0), 0);
+        const total = (tMC * sMC) + (tTF * sTF) + (tSA * sSA);
+        return (
+          <span className={`text-xl font-black ${Math.abs(total - 10) < 0.01 ? 'text-green-600' : 'text-orange-600'}`}>
+            {total.toFixed(2)}
+          </span>
+        );
+      })()}
+    </div>
+
+  </div>
+</div>
       </div>
 
       {/* HÀNG 2: BẢNG CHUYÊN ĐỀ (BODY) */}
