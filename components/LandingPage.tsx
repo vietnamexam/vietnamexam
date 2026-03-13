@@ -1504,8 +1504,8 @@ const handleRedirect = () => {
                     value={topic[field] || ''} 
                     onChange={e => updateTopicRow(idx, field, e.target.value)} 
                     className={`w-full p-2 border rounded-lg text-center text-[11px] outline-none focus:ring-2 transition-all ${
-                      field.includes('MC') ? 'focus:ring-blue-500 border-blue-100' : 
-                      field.includes('TF') ? 'focus:ring-emerald-500 border-emerald-100' : 'focus:ring-amber-500 border-amber-100'
+                      field.includes('MC') ? 'focus:ring-blue-500 border-blue-500' : 
+                      field.includes('TF') ? 'focus:ring-emerald-500 border-blue-500' : 'focus:ring-amber-500 border-blue-500'
                     }`}
                   />
                 ))}
@@ -1532,7 +1532,7 @@ const handleRedirect = () => {
       <div className="p-4 bg-gray-50 border-t">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {/* Nhập điểm Phần I */}
-          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
+          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-500 shadow-sm">
             <span className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg font-black text-xs">P.I</span>
             <div className="flex-1 text-left">
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm/Câu</label>
@@ -1540,7 +1540,7 @@ const handleRedirect = () => {
             </div>
           </div>
           {/* Nhập điểm Phần II */}
-          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-500 shadow-sm">
             <span className="w-10 h-10 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-lg font-black text-xs">P.II</span>
             <div className="flex-1 text-left">
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm/Câu</label>
@@ -1548,7 +1548,7 @@ const handleRedirect = () => {
             </div>
           </div>
           {/* Nhập điểm Phần III */}
-          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
+          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-500 shadow-sm">
             <span className="w-10 h-10 flex items-center justify-center bg-amber-100 text-amber-600 rounded-lg font-black text-xs">P.III</span>
             <div className="flex-1 text-left">
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Điểm/Câu</label>
