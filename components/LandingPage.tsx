@@ -177,32 +177,25 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
 
 // 1. Nạp cấu hình riêng cho ma trận
  useEffect(() => {
-  const loadMatrixConfig = async () => {
+  const loadMatrixData = async () => {
     try {
-      // 1. Thêm redirect: "follow" để vượt tường lửa CORS của Google
+      // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
       const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
         method: "GET",
-        redirect: "follow" 
+        redirect: "follow"
       });
-
-      // 2. Chuyển response thành JSON
       const result = await response.json();
-      console.log("Dữ liệu thực tế nhận được:", result);
-
-      // 3. Kiểm tra cấu trúc: result.status và result.data.topics
-      if (result.status === "success" && result.data && Array.isArray(result.data.topics)) {
-        setMatrixTopics(result.data.topics);
-        console.log("✅ Đã nạp danh sách chuyên đề vào Modal!");
-      } else {
-        console.warn("⚠️ Cấu trúc dữ liệu không đúng hoặc trống:", result);
+      
+      // Kiểm tra và gán vào State mới
+      if (result.status === "success" && result.data) {
+        setMatrixTopics(result.data.topics || []);
+        console.log("✅ Ma trận: Đã nạp xong chuyên đề");
       }
-
-    } catch (error) {
-      console.error("❌ Lỗi kết nối Google Script:", error);
+    } catch (err) {
+      console.error("❌ Ma trận: Lỗi nạp dữ liệu:", err);
     }
   };
-
-  loadMatrixConfig();
+  loadMatrixData();
 }, [DANHGIA_URL]);
 
 // 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
@@ -1389,15 +1382,17 @@ const handleRedirect = () => {
               <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all group">
                 {/* SỔ CHỌN CHUYÊN ĐỀ DÙNG matrixTopics MỚI */}
                 {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
-                <select 
-                  value={topic.idcd} 
-                  onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
-                  className="w-full p-2 text-xs border rounded-lg outline-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 font-medium text-blue-800"
-                >
-                  <option value="">-- Chọn chuyên đề --</option>
-  {matrixTopics && matrixTopics.length > 0 ? (
+               <select 
+  value={topic.idcd} 
+  onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
+  className="..." // Giữ nguyên class của bạn
+>
+  <option value="">-- Chọn chuyên đề --</option>
+  {matrixTopics.length > 0 ? (
     matrixTopics.map((t, i) => (
-      <option key={i} value={t.id}>{t.id} — {t.name}</option>
+      <option key={i} value={t.id}>
+        {t.id} — {t.name}
+      </option>
     ))
   ) : (
     <option disabled>Đang tải dữ liệu...</option>
