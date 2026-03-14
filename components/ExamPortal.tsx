@@ -289,7 +289,7 @@ const currentCodeDef = useMemo(() => {
   const name = (c.name ?? "").toString().trim()
 
   return (
-    <option key={index} value={code}>
+    <option key={code || index} value={code}>
       {code ? `${code} - ${name}` : name}
     </option>
   )
