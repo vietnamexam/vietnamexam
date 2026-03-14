@@ -79,14 +79,19 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
       // Sửa dòng này để tìm kiếm chính xác hơn
 const currentCodeDef = useMemo(() => {
-  console.log("selectedCode:", selectedCode)
+  console.log("Đang tìm cấu hình cho selectedCode:", selectedCode);
 
-  return allAvailableCodes.find(
-    c => String(c.code).trim() === String(selectedCode).trim()
-  )
+  if (!selectedCode) return null;
 
-}, [selectedCode, allAvailableCodes])
+  // Làm sạch selectedCode trước khi tìm
+  const cleanSelected = String(selectedCode).replace(/^'/, "").trim();
 
+  return allAvailableCodes.find(c => {
+    // Làm sạch mã đề trong danh sách trước khi so sánh
+    const cleanEntry = String(c.code || "").replace(/^'/, "").trim();
+    return cleanEntry === cleanSelected;
+  });
+}, [selectedCode, allAvailableCodes]);
   const combinedTopics = useMemo(() => {
     const relatedGrades = getRelatedGrades(grade);
     let topics: { id: string; name: string; grade: string }[] = [];
@@ -138,34 +143,32 @@ const currentCodeDef = useMemo(() => {
   };
 
   const handleStart = () => {
-  console.log("Đang bắt đầu với mã đề:", selectedCode);
+  if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề!");
 
-  if (!verifiedStudent || !selectedCode) {
-    return alert("Vui lòng chọn Mã đề và Xác minh thông tin!");
-  }
+  // CHUẨN HÓA selectedCode: Bỏ dấu nháy, bỏ khoảng trắng
+  const cleanSelectedCode = String(selectedCode).replace(/^'/, "").trim();
 
-  // Tìm lại định nghĩa đề thi từ danh sách đã lọc ở Bước 1
-  const currentCodeDef = allAvailableCodes.find(
-    c => String(c.code).trim() === String(selectedCode).trim()
-  );
+  // Tìm trong danh sách
+  const currentCodeDef = allAvailableCodes.find(c => {
+    const cleanEntryCode = String(c.code || "").replace(/^'/, "").trim();
+    return cleanEntryCode === cleanSelectedCode;
+  });
 
   if (!currentCodeDef) {
-    console.error("Không tìm thấy cấu hình cho mã đề:", selectedCode);
-    return alert("Mã đề không hợp lệ hoặc chưa được nạp dữ liệu!");
+    console.error("Không khớp mã đề:", cleanSelectedCode);
+    return alert("Mã đề không hợp lệ!");
   }
 
   const fc = currentCodeDef.fixedConfig;
-  if (!fc) return alert("Cấu hình đề thi (duration/score) bị lỗi!");  
-
-  // TẠO CONFIG CHUẨN ĐỂ TRUYỀN SANG QUIZ INTERFACE
+  
+  // Gán ID sạch vào finalConfig
   const finalConfig = { 
-    // Quan trọng: Phải String() và replace dấu nháy để hiển thị đẹp
-    id: String(selectedCode).replace(/^'/, "").trim(), 
-    title: currentCodeDef.name || "Đề thi không tên", 
-    time: fc.duration || 45, 
-    mcqPoints: fc.scoreMC || 0, 
-    tfPoints: fc.scoreTF || 0, 
-    saPoints: fc.scoreSA || 0, 
+    id: cleanSelectedCode, // <--- Đảm bảo ID này là chuỗi sạch
+    title: currentCodeDef.name, 
+    time: fc.duration, 
+    mcqPoints: fc.scoreMC, 
+    tfPoints: fc.scoreTF, 
+    saPoints: fc.scoreSA, 
     gradingScheme: 1 
   };
 
@@ -182,7 +185,7 @@ const currentCodeDef = useMemo(() => {
   if (examQuestions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi!");
   
   // GỌI HÀM BẮT ĐẦU
-  onStart(finalConfig, verifiedStudent, examQuestions);
+ onStart(finalConfig, verifiedStudent, examQuestions);
 };
 
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
