@@ -448,7 +448,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 <div className="flex-1 flex flex-col items-center justify-center bg-blue-50 py-2 px-2 rounded-xl border border-blue-100 min-w-[80px]">
   <p className="text-[9px] font-black text-blue-400 uppercase tracking-tighter">Mã đề</p>
   <p className="text-sm font-black text-blue-700 leading-none mt-1">
-    {config.id || "---"}
+    {(config.id ?? "").toString().replace(/^'/,"") || "---"}
   </p>
 </div>
 
