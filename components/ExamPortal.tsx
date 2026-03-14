@@ -127,9 +127,10 @@ const currentCodeDef = useMemo(() =>
   };
 
   const handleStart = () => {
+     console.log("selectedCode:", selectedCode);
     if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề hoặc chưa xác minh!");
     const fc = currentCodeDef?.fixedConfig;
-    if (!fc) return alert("Cấu hình đề thi bị lỗi!");
+    if (!fc) return alert("Cấu hình đề thi bị lỗi!");  
 
     const finalConfig = { 
       id: (selectedCode ?? "").toString().replace(/^'/,"").trim(),
@@ -138,6 +139,7 @@ const currentCodeDef = useMemo(() =>
       mcqPoints: fc.scoreMC, tfPoints: fc.scoreTF, saPoints: fc.scoreSA, 
       gradingScheme: 1 
     };
+     console.log("finalConfig:", finalConfig);
 
     const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : (currentCodeDef.topics as string[]);
     if (!topicsToPick || topicsToPick.length === 0) return alert("Hãy chọn phạm vi kiến thức!");
