@@ -432,49 +432,40 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
            {/* Nút điều hướng */}
 
-{/* Nút điều hướng */}
-<div className="mt-10 flex items-center justify-between gap-4">
-  {/* Nút Câu Trước */}
-  <button 
-    disabled={currentIndex === 0} 
-    onClick={() => setCurrentIndex(p => p - 1)} 
-    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-400 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
-  >
-    Câu Trước
-  </button>
+{/* Nút điều hướng - Đã tinh chỉnh Flexbox chuẩn */}
+            <div className="mt-10 flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
+              {/* Nút Câu Trước */}
+              <button 
+                disabled={currentIndex === 0} 
+                onClick={() => setCurrentIndex(p => p - 1)} 
+                className="flex-1 max-w-[140px] py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+                <span className="hidden md:inline">Trước</span>
+              </button>
 
-  {/* HIỂN THỊ MÃ ĐỀ TRUYỀN SANG */}
-    {/* HIỂN THỊ MÃ ĐỀ - Tinh chỉnh lại cho đẹp */}
+              {/* KHUNG MÃ ĐỀ - Tinh chỉnh giống Style thẻ VIP88 */}
+              <div className="flex flex-col items-center justify-center min-w-[110px]">
+                <div className="bg-yellow-400 text-yellow-900 text-[8px] font-black px-3 py-1 rounded-t-xl uppercase tracking-tighter shadow-sm border-x-2 border-t-2 border-yellow-500">
+                  Mã đề thi
+                </div>
+                <div className="bg-white border-2 border-yellow-400 px-6 py-2 rounded-xl shadow-[0_4px_0_0_rgba(250,204,21,1)] flex items-center justify-center">
+                  <p className="text-xl font-black text-slate-800 font-mono tracking-[0.2em] leading-none">
+                    {(config.id ?? "").toString().replace(/^'/,"") || "N/A"}
+                  </p>
+                </div>
+              </div>
 
-  <div className="flex flex-col items-center justify-center">
-
-    <div className="bg-yellow-400 text-yellow-900 text-[8px] font-black px-2 py-0.5 rounded-t-lg uppercase tracking-tighter shadow-sm">
-
-      Mã đề thi
-
-    </div>
-
-    <div className="bg-white border-2 border-yellow-400 px-6 py-2 rounded-xl shadow-[0_4px_0_0_rgba(250,204,21,1)]">
-
-      <p className="text-xl font-black text-slate-800 font-mono tracking-widest">
-
-        {(config.id ?? "").toString().replace(/^'/,"") || "N/A"}
-
-      </p>
-
-    </div>
-
-  </div>
-
-  {/* Nút Câu Tiếp */}
-  <button 
-    disabled={currentIndex === questions.length - 1} 
-    onClick={() => setCurrentIndex(p => p + 1)} 
-    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-400 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
-  >
-    Câu Tiếp
-  </button>
-</div>
+              {/* Nút Câu Tiếp */}
+              <button 
+                disabled={currentIndex === questions.length - 1} 
+                onClick={() => setCurrentIndex(p => p + 1)} 
+                className="flex-1 max-w-[140px] py-4 rounded-2xl font-black border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase flex items-center justify-center gap-2"
+              >
+                <span className="hidden md:inline">Tiếp</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
 
           </div> 
 
