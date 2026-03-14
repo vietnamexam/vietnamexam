@@ -60,19 +60,22 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   }, [grade]);
 
   // 5. Memos: Xử lý dữ liệu hiển thị
-  const allAvailableCodes = useMemo(() => {
-    
-    const defaults = EXAM_CODES[Number(grade)] || [];
-   const combined = [...defaults, ...dynamicCodes];
-    dynamicCodes.forEach(dc => {
-      if (!combined.find(c => c.code === dc.code)) combined.push(dc);
-    });
-    console.log("grade:", grade);
-    console.log("defaults:", defaults);
-    console.log("dynamicCodes:", dynamicCodes);
-    console.log("ALL CODES:", unique);
-    return combined;
-  }, [grade, dynamicCodes]);
+ const allAvailableCodes = useMemo(() => {
+  const defaults = EXAM_CODES[Number(grade)] || [];
+  
+  // Gộp cả 2 nguồn lại
+  const combined = [...defaults, ...dynamicCodes];
+  
+  // Lọc bỏ trùng lặp dựa trên field 'code'
+  const unique = combined.filter((item, index, self) =>
+    index === self.findIndex((t) => (
+      String(t.code).trim() === String(item.code).trim()
+    ))
+  );
+
+  console.log("DANH SÁCH MÃ ĐỀ CUỐI CÙNG:", unique);
+  return unique;
+}, [grade, dynamicCodes]);
 
       // Sửa dòng này để tìm kiếm chính xác hơn
 const currentCodeDef = useMemo(() => {
@@ -293,7 +296,7 @@ const currentCodeDef = useMemo(() => {
 
   return (
     <option key={code || index} value={code}>
-      {code ? `${code} - ${name}` : code}
+      {code ? `${code} - ${name}` : name}
     </option>
   )
 })}
