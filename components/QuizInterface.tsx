@@ -438,24 +438,25 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
   <button 
     disabled={currentIndex === 0} 
     onClick={() => setCurrentIndex(p => p - 1)} 
-    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
+    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-400 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
   >
     Câu Trước
   </button>
 
   {/* HIỂN THỊ MÃ ĐỀ TRUYỀN SANG */}
-  <div className="flex-1 flex flex-col items-center justify-center bg-blue-50 py-2 px-4 rounded-xl border border-blue-200 shadow-sm">
-    <p className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Mã đề</p>
-    <p className="text-sm font-black text-blue-800">
-      {config.id || "---"} 
-    </p>
-  </div>
+  <div className="flex-1 flex flex-col items-center justify-center bg-blue-50 py-2 px-2 rounded-xl border-2 border-blue-100 shadow-sm min-w-[90px]">
+  <p className="text-[9px] font-black text-blue-400 uppercase tracking-tighter">Mã đề thi</p>
+  <p className="text-sm font-black text-blue-800 leading-none mt-1">
+    {/* Ép kiểu để chắc chắn lấy được dữ liệu */}
+    {String(config?.id || "").replace("'", "") || "---"}
+  </p>
+</div>
 
   {/* Nút Câu Tiếp */}
   <button 
     disabled={currentIndex === questions.length - 1} 
     onClick={() => setCurrentIndex(p => p + 1)} 
-    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
+    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-400 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
   >
     Câu Tiếp
   </button>
