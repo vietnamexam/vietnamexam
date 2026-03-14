@@ -370,7 +370,13 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
                 <label key={i} className={`flex items-center p-5 rounded-2xl border-2 transition-all cursor-pointer group ${answers[currentIndex].answer === opt ? 'border-blue-500 bg-blue-50/50' : 'border-slate-100 hover:border-blue-100 bg-slate-50/30'}`}>
 
-                  <input type="radio" className="hidden" checked={answers[currentIndex].answer === opt} onChange={() => { const n = [...answers]; n[currentIndex].answer = opt; setAnswers(n); }} />
+                  <input type="radio" className="hidden" checked={answers[currentIndex].answer === opt} 
+                    onChange={() => { const n = [...answers]; n[currentIndex].answer = opt; 
+                                     setAnswers(n); 
+                    if (currentIndex < questions.length - 1) {
+                      setTimeout(() => setCurrentIndex(prev => prev + 1), 300);
+                    }
+                                    }} />
 
                   <span className={`w-10 h-10 rounded-full flex items-center justify-center font-black mr-4 border-2 transition-colors shrink-0 ${answers[currentIndex].answer === opt ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-300 border-slate-200 group-hover:border-blue-200'}`}>{String.fromCharCode(65+i)}</span>
 
