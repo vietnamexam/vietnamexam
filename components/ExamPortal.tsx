@@ -61,6 +61,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
   // 5. Memos: Xử lý dữ liệu hiển thị
   const allAvailableCodes = useMemo(() => {
+    console.log("ALL CODES:", allAvailableCodes)
     const defaults = EXAM_CODES[grade] || [];
     const combined = [...defaults];
     dynamicCodes.forEach(dc => {
