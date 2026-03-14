@@ -45,40 +45,54 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
   // 4. Effects: Tải mã đề hệ thống
   useEffect(() => {
-    const fetchSystemCodes = async () => {
-      try {
-        const url = new URL(DEFAULT_API_URL);
-        url.searchParams.append("type", "getExamCodes");
-        url.searchParams.append("idnumber", "SYSTEM");
-        url.searchParams.append("grade", grade);
-        const resp = await fetch(url.toString());
-        const res = await resp.json();
-        if (res.status === "success") setDynamicCodes(res.data);
-      } catch (e) { console.error("Lỗi tải mã đề:", e); }
-    };
-    fetchSystemCodes();
-  }, [grade]);
+  const fetchSystemCodes = async () => {
+    try {
+      // 1. Dùng DANHGIA_URL từ config thay vì dán link cứng
+      const url = new URL(DANHGIA_URL); 
+      url.searchParams.append("type", "getExamCodes");
+      url.searchParams.append("idnumber", "SYSTEM");
+      url.searchParams.append("grade", grade.toString());
+
+      const resp = await fetch(url.toString());
+      const res = await resp.json();
+      
+      if (res.status === "success" && Array.isArray(res.data)) {
+        // 2. Làm sạch và xử lý dữ liệu như cũ
+        const cleanedData = res.data.map((item: any) => ({
+          ...item,
+          code: String(item.code || "").replace(/^'/, "").trim(),
+          // Ép kiểu config từ chuỗi sang object nếu cần
+          fixedConfig: typeof item.fixedConfig === 'string' 
+            ? JSON.parse(item.fixedConfig) 
+            : item.fixedConfig
+        }));
+
+        console.log("✅ Đã nạp mã đề hệ thống từ DANHGIA_URL");
+        setDynamicCodes(cleanedData);
+      }
+    } catch (e) {
+      console.error("Lỗi nạp mã đề từ link Admin:", e);
+    }
+  };
+
+  fetchSystemCodes();
+}, [grade]); // Chạy lại mỗi khi chọn Khối khác
 
   // 5. Memos: Xử lý dữ liệu hiển thị
 const allAvailableCodes = useMemo(() => {
   const defaults = EXAM_CODES[Number(grade)] || [];
   const combined = [...defaults, ...dynamicCodes];
   
-  // Dùng Map để ghi đè trùng lặp, đảm bảo so sánh chuỗi sạch
-  const codeMap = new Map();
-  
+  const uniqueMap = new Map();
   combined.forEach(item => {
-    const cleanKey = String(item.code || "").replace(/^'/, "").trim();
-    if (cleanKey) {
-      codeMap.set(cleanKey, item);
-    }
+    const cleanKey = String(item.code).replace(/^'/, "").trim();
+    if (cleanKey) uniqueMap.set(cleanKey, item);
   });
 
-  const finalArray = Array.from(codeMap.values());
-  console.log("🔥 DANH SÁCH MÃ ĐỀ ĐÃ LỌC:", finalArray);
-  return finalArray;
+  const final = Array.from(uniqueMap.values());
+  console.log("🚀 MÃ ĐỀ ĐÃ NẠP:", final);
+  return final;
 }, [grade, dynamicCodes]);
-
       // Sửa dòng này để tìm kiếm chính xác hơn
 const currentCodeDef = useMemo(() => {
   console.log("Đang tìm cấu hình cho selectedCode:", selectedCode);
@@ -145,57 +159,28 @@ const currentCodeDef = useMemo(() => {
   };
 
  const handleStart = () => {
-  // 1. Kiểm tra đầu vào
-  if (!verifiedStudent || !selectedCode) {
-    return alert("Vui lòng chọn Mã đề và Xác minh danh tính trước khi bắt đầu!");
-  }
+  if (!verifiedStudent || !selectedCode) return alert("Vui lòng chọn Mã đề!");
 
-  // 2. Làm sạch ID và tìm cấu hình đề
   const cleanId = String(selectedCode).replace(/^'/, "").trim();
   const currentCodeDef = allAvailableCodes.find(c => 
-    String(c.code || "").replace(/^'/, "").trim() === cleanId
+    String(c.code).replace(/^'/, "").trim() === cleanId
   );
 
   if (!currentCodeDef || !currentCodeDef.fixedConfig) {
-    console.error("Lỗi: Không tìm thấy cấu hình cho mã", cleanId);
-    return alert("Mã đề không hợp lệ hoặc chưa có cấu hình!");
+    return alert("Mã đề này chưa có cấu hình trận đề!");
   }
 
   const fc = currentCodeDef.fixedConfig;
-
-  // 3. Xác định danh sách Chuyên đề cần bốc câu hỏi
-  // Nếu là mã 'manual' (tự do) thì lấy từ selectedTopics người dùng tick
-  // Nếu là mã cố định thì lấy list topics định nghĩa sẵn trong mã đó
   const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : currentCodeDef.topics;
 
-  if (!topicsToPick || (Array.isArray(topicsToPick) && topicsToPick.length === 0)) {
-    return alert("Vui lòng chọn ít nhất một chuyên đề kiến thức!");
-  }
-
-  // 4. Bốc câu hỏi thông minh
   const examQuestions = pickQuestionsSmart(
     topicsToPick,
-    { 
-      mc: resolveCounts(fc.numMC, topicsToPick), 
-      tf: resolveCounts(fc.numTF, topicsToPick), 
-      sa: resolveCounts(fc.numSA, topicsToPick) 
-    },
-    { 
-      mc3: resolveCounts(fc.mcL3, topicsToPick), 
-      mc4: resolveCounts(fc.mcL4, topicsToPick), 
-      tf3: resolveCounts(fc.tfL3, topicsToPick), 
-      tf4: resolveCounts(fc.tfL4, topicsToPick), 
-      sa3: resolveCounts(fc.saL3, topicsToPick), 
-      sa4: resolveCounts(fc.saL4, topicsToPick) 
-    }
+    { mc: resolveCounts(fc.numMC, topicsToPick), tf: resolveCounts(fc.numTF, topicsToPick), sa: resolveCounts(fc.numSA, topicsToPick) },
+    { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
   );
 
-  // 5. Kiểm tra số lượng câu hỏi thực tế bốc được
-  if (!examQuestions || examQuestions.length === 0) {
-    return alert("Ngân hàng câu hỏi hiện không đủ để tạo đề theo yêu cầu này!");
-  }
+  if (examQuestions.length === 0) return alert("Ngân hàng câu hỏi hiện không đủ!");
 
-  // 6. Đóng gói Config chuẩn để truyền sang QuizInterface
   const finalConfig = { 
     id: cleanId, 
     title: currentCodeDef.name, 
@@ -206,9 +191,6 @@ const currentCodeDef = useMemo(() => {
     gradingScheme: 1 
   };
 
-  console.log("🚀 KHỞI TẠO BÀI THI THÀNH CÔNG:", { finalConfig, totalQuestions: examQuestions.length });
-
-  // 7. Kích hoạt chuyển sang giao diện làm bài
   onStart(finalConfig, verifiedStudent, examQuestions);
 };
 
@@ -330,23 +312,17 @@ const currentCodeDef = useMemo(() => {
   <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
   <div className="space-y-4">
     <div className="relative">
-     <select 
-  className="w-full p-4 md:p-5 min-h-[44px] bg-slate-50 border-2 border-slate-100 rounded-2xl md:rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" 
+    <select 
+  className="..." 
   value={selectedCode} 
   onChange={e => setSelectedCode(e.target.value)}
 >
   <option value="">-- CHỌN MÃ ĐỀ --</option>
-  {allAvailableCodes.map((c, index) => {
-    // Làm sạch mã đề ngay khi render lên danh sách
-    const cleanCode = String(c.code ?? "").replace(/^'/, "").trim();
-    const displayName = (c.name ?? "").toString().trim();
-
-    return (
-      <option key={cleanCode || index} value={cleanCode}>
-        {cleanCode ? `${cleanCode} - ${displayName}` : displayName}
-      </option>
-    );
-  })}
+  {allAvailableCodes.map((c, idx) => (
+    <option key={idx} value={String(c.code).replace(/^'/, "").trim()}>
+      {String(c.code).replace(/^'/, "").trim()} - {c.name}
+    </option>
+  ))}
 </select>
       <i className="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"></i>
     </div>
