@@ -293,7 +293,7 @@ const currentCodeDef = useMemo(() => {
 
   return (
     <option key={code || index} value={code}>
-      {code ? `${code} - ${name}` : name}
+      {code ? `${code} - ${name}` : code}
     </option>
   )
 })}
