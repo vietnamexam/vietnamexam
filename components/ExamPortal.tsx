@@ -61,20 +61,25 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
   // 5. Memos: Xử lý dữ liệu hiển thị
   const allAvailableCodes = useMemo(() => {
-    console.log("ALL CODES:", allAvailableCodes)
+    
     const defaults = EXAM_CODES[grade] || [];
     const combined = [...defaults];
     dynamicCodes.forEach(dc => {
       if (!combined.find(c => c.code === dc.code)) combined.push(dc);
     });
+    console.log("ALL CODES:", combined);
     return combined;
   }, [grade, dynamicCodes]);
 
       // Sửa dòng này để tìm kiếm chính xác hơn
-const currentCodeDef = useMemo(() => 
-  allAvailableCodes.find(c => String(c.code).trim() === String(selectedCode).trim()), 
-  console.log(selectedCode)                             
-[selectedCode, allAvailableCodes]);
+const currentCodeDef = useMemo(() => {
+  console.log("selectedCode:", selectedCode)
+
+  return allAvailableCodes.find(
+    c => String(c.code).trim() === String(selectedCode).trim()
+  )
+
+}, [selectedCode, allAvailableCodes])
 
   const combinedTopics = useMemo(() => {
     const relatedGrades = getRelatedGrades(grade);
