@@ -444,13 +444,27 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
   </button>
 
   {/* HIỂN THỊ MÃ ĐỀ TRUYỀN SANG */}
-  {/* Hiển thị Mã đề giữa Câu trước - Câu tiếp */}
-<div className="flex-1 flex flex-col items-center justify-center bg-blue-50 py-2 px-2 rounded-xl border border-blue-100 min-w-[80px]">
-  <p className="text-[9px] font-black text-blue-400 uppercase tracking-tighter">Mã đề</p>
-  <p className="text-sm font-black text-blue-700 leading-none mt-1">
-    {(config.id ?? "").toString().replace(/^'/,"") || "---"}
-  </p>
-</div>
+    {/* HIỂN THỊ MÃ ĐỀ - Tinh chỉnh lại cho đẹp */}
+
+  <div className="flex flex-col items-center justify-center">
+
+    <div className="bg-yellow-400 text-yellow-900 text-[8px] font-black px-2 py-0.5 rounded-t-lg uppercase tracking-tighter shadow-sm">
+
+      Mã đề thi
+
+    </div>
+
+    <div className="bg-white border-2 border-yellow-400 px-6 py-2 rounded-xl shadow-[0_4px_0_0_rgba(250,204,21,1)]">
+
+      <p className="text-xl font-black text-slate-800 font-mono tracking-widest">
+
+        {(config.id ?? "").toString().replace(/^'/,"") || "N/A"}
+
+      </p>
+
+    </div>
+
+  </div>
 
   {/* Nút Câu Tiếp */}
   <button 
