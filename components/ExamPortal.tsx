@@ -138,32 +138,52 @@ const currentCodeDef = useMemo(() => {
   };
 
   const handleStart = () => {
-     console.log("selectedCode:", selectedCode);
-    if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề hoặc chưa xác minh!");
-    const fc = currentCodeDef?.fixedConfig;
-    if (!fc) return alert("Cấu hình đề thi bị lỗi!");  
+  console.log("Đang bắt đầu với mã đề:", selectedCode);
 
-    const finalConfig = { 
-      id: (selectedCode ?? "").toString().replace(/^'/,"").trim(),
-      title: currentCodeDef.name, 
-      time: fc.duration, 
-      mcqPoints: fc.scoreMC, tfPoints: fc.scoreTF, saPoints: fc.scoreSA, 
-      gradingScheme: 1 
-    };
-     console.log("finalConfig:", finalConfig);
+  if (!verifiedStudent || !selectedCode) {
+    return alert("Vui lòng chọn Mã đề và Xác minh thông tin!");
+  }
 
-    const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : (currentCodeDef.topics as string[]);
-    if (!topicsToPick || topicsToPick.length === 0) return alert("Hãy chọn phạm vi kiến thức!");
+  // Tìm lại định nghĩa đề thi từ danh sách đã lọc ở Bước 1
+  const currentCodeDef = allAvailableCodes.find(
+    c => String(c.code).trim() === String(selectedCode).trim()
+  );
 
-    const examQuestions = pickQuestionsSmart(
-      topicsToPick, 
-      { mc: resolveCounts(fc.numMC, topicsToPick), tf: resolveCounts(fc.numTF, topicsToPick), sa: resolveCounts(fc.numSA, topicsToPick) }, 
-      { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
-    );
+  if (!currentCodeDef) {
+    console.error("Không tìm thấy cấu hình cho mã đề:", selectedCode);
+    return alert("Mã đề không hợp lệ hoặc chưa được nạp dữ liệu!");
+  }
 
-    if (examQuestions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi!");
-    onStart(finalConfig, verifiedStudent, examQuestions);
+  const fc = currentCodeDef.fixedConfig;
+  if (!fc) return alert("Cấu hình đề thi (duration/score) bị lỗi!");  
+
+  // TẠO CONFIG CHUẨN ĐỂ TRUYỀN SANG QUIZ INTERFACE
+  const finalConfig = { 
+    // Quan trọng: Phải String() và replace dấu nháy để hiển thị đẹp
+    id: String(selectedCode).replace(/^'/, "").trim(), 
+    title: currentCodeDef.name || "Đề thi không tên", 
+    time: fc.duration || 45, 
+    mcqPoints: fc.scoreMC || 0, 
+    tfPoints: fc.scoreTF || 0, 
+    saPoints: fc.scoreSA || 0, 
+    gradingScheme: 1 
   };
+
+  console.log("✅ Final Config đã sẵn sàng:", finalConfig);
+
+  // Logic lấy câu hỏi (Giữ nguyên của bạn)
+  const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : (currentCodeDef.topics);
+  const examQuestions = pickQuestionsSmart(
+    topicsToPick, 
+    { mc: resolveCounts(fc.numMC, topicsToPick), tf: resolveCounts(fc.numTF, topicsToPick), sa: resolveCounts(fc.numSA, topicsToPick) }, 
+    { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
+  );
+
+  if (examQuestions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi!");
+  
+  // GỌI HÀM BẮT ĐẦU
+  onStart(finalConfig, verifiedStudent, examQuestions);
+};
 
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
 
