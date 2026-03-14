@@ -130,7 +130,7 @@ const currentCodeDef = useMemo(() =>
     if (!fc) return alert("Cấu hình đề thi bị lỗi!");
 
     const finalConfig = { 
-      String(selectedCode).replace(/'/g, "").trim(),
+      id: String(selectedCode).replace(/'/g, "").trim(),
       title: currentCodeDef.name, 
       time: fc.duration, 
       mcqPoints: fc.scoreMC, tfPoints: fc.scoreTF, saPoints: fc.scoreSA, 
