@@ -60,21 +60,23 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   }, [grade]);
 
   // 5. Memos: Xử lý dữ liệu hiển thị
- const allAvailableCodes = useMemo(() => {
+const allAvailableCodes = useMemo(() => {
   const defaults = EXAM_CODES[Number(grade)] || [];
-  
-  // Gộp cả 2 nguồn lại
   const combined = [...defaults, ...dynamicCodes];
   
-  // Lọc bỏ trùng lặp dựa trên field 'code'
-  const unique = combined.filter((item, index, self) =>
-    index === self.findIndex((t) => (
-      String(t.code).trim() === String(item.code).trim()
-    ))
-  );
+  // Dùng Map để ghi đè trùng lặp, đảm bảo so sánh chuỗi sạch
+  const codeMap = new Map();
+  
+  combined.forEach(item => {
+    const cleanKey = String(item.code || "").replace(/^'/, "").trim();
+    if (cleanKey) {
+      codeMap.set(cleanKey, item);
+    }
+  });
 
-  console.log("DANH SÁCH MÃ ĐỀ CUỐI CÙNG:", unique);
-  return unique;
+  const finalArray = Array.from(codeMap.values());
+  console.log("🔥 DANH SÁCH MÃ ĐỀ ĐÃ LỌC:", finalArray);
+  return finalArray;
 }, [grade, dynamicCodes]);
 
       // Sửa dòng này để tìm kiếm chính xác hơn
@@ -142,28 +144,60 @@ const currentCodeDef = useMemo(() => {
     finally { setIsVerifying(false); }
   };
 
-  const handleStart = () => {
-  if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề!");
+ const handleStart = () => {
+  // 1. Kiểm tra đầu vào
+  if (!verifiedStudent || !selectedCode) {
+    return alert("Vui lòng chọn Mã đề và Xác minh danh tính trước khi bắt đầu!");
+  }
 
-  // CHUẨN HÓA selectedCode: Bỏ dấu nháy, bỏ khoảng trắng
-  const cleanSelectedCode = String(selectedCode).replace(/^'/, "").trim();
+  // 2. Làm sạch ID và tìm cấu hình đề
+  const cleanId = String(selectedCode).replace(/^'/, "").trim();
+  const currentCodeDef = allAvailableCodes.find(c => 
+    String(c.code || "").replace(/^'/, "").trim() === cleanId
+  );
 
-  // Tìm trong danh sách
-  const currentCodeDef = allAvailableCodes.find(c => {
-    const cleanEntryCode = String(c.code || "").replace(/^'/, "").trim();
-    return cleanEntryCode === cleanSelectedCode;
-  });
-
-  if (!currentCodeDef) {
-    console.error("Không khớp mã đề:", cleanSelectedCode);
-    return alert("Mã đề không hợp lệ!");
+  if (!currentCodeDef || !currentCodeDef.fixedConfig) {
+    console.error("Lỗi: Không tìm thấy cấu hình cho mã", cleanId);
+    return alert("Mã đề không hợp lệ hoặc chưa có cấu hình!");
   }
 
   const fc = currentCodeDef.fixedConfig;
-  
-  // Gán ID sạch vào finalConfig
+
+  // 3. Xác định danh sách Chuyên đề cần bốc câu hỏi
+  // Nếu là mã 'manual' (tự do) thì lấy từ selectedTopics người dùng tick
+  // Nếu là mã cố định thì lấy list topics định nghĩa sẵn trong mã đó
+  const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : currentCodeDef.topics;
+
+  if (!topicsToPick || (Array.isArray(topicsToPick) && topicsToPick.length === 0)) {
+    return alert("Vui lòng chọn ít nhất một chuyên đề kiến thức!");
+  }
+
+  // 4. Bốc câu hỏi thông minh
+  const examQuestions = pickQuestionsSmart(
+    topicsToPick,
+    { 
+      mc: resolveCounts(fc.numMC, topicsToPick), 
+      tf: resolveCounts(fc.numTF, topicsToPick), 
+      sa: resolveCounts(fc.numSA, topicsToPick) 
+    },
+    { 
+      mc3: resolveCounts(fc.mcL3, topicsToPick), 
+      mc4: resolveCounts(fc.mcL4, topicsToPick), 
+      tf3: resolveCounts(fc.tfL3, topicsToPick), 
+      tf4: resolveCounts(fc.tfL4, topicsToPick), 
+      sa3: resolveCounts(fc.saL3, topicsToPick), 
+      sa4: resolveCounts(fc.saL4, topicsToPick) 
+    }
+  );
+
+  // 5. Kiểm tra số lượng câu hỏi thực tế bốc được
+  if (!examQuestions || examQuestions.length === 0) {
+    return alert("Ngân hàng câu hỏi hiện không đủ để tạo đề theo yêu cầu này!");
+  }
+
+  // 6. Đóng gói Config chuẩn để truyền sang QuizInterface
   const finalConfig = { 
-    id: cleanSelectedCode, // <--- Đảm bảo ID này là chuỗi sạch
+    id: cleanId, 
     title: currentCodeDef.name, 
     time: fc.duration, 
     mcqPoints: fc.scoreMC, 
@@ -172,20 +206,10 @@ const currentCodeDef = useMemo(() => {
     gradingScheme: 1 
   };
 
-  console.log("✅ Final Config đã sẵn sàng:", finalConfig);
+  console.log("🚀 KHỞI TẠO BÀI THI THÀNH CÔNG:", { finalConfig, totalQuestions: examQuestions.length });
 
-  // Logic lấy câu hỏi (Giữ nguyên của bạn)
-  const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : (currentCodeDef.topics);
-  const examQuestions = pickQuestionsSmart(
-    topicsToPick, 
-    { mc: resolveCounts(fc.numMC, topicsToPick), tf: resolveCounts(fc.numTF, topicsToPick), sa: resolveCounts(fc.numSA, topicsToPick) }, 
-    { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
-  );
-
-  if (examQuestions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi!");
-  
-  // GỌI HÀM BẮT ĐẦU
- onStart(finalConfig, verifiedStudent, examQuestions);
+  // 7. Kích hoạt chuyển sang giao diện làm bài
+  onStart(finalConfig, verifiedStudent, examQuestions);
 };
 
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
@@ -306,23 +330,23 @@ const currentCodeDef = useMemo(() => {
   <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
   <div className="space-y-4">
     <div className="relative">
-      <select 
+     <select 
   className="w-full p-4 md:p-5 min-h-[44px] bg-slate-50 border-2 border-slate-100 rounded-2xl md:rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" 
   value={selectedCode} 
   onChange={e => setSelectedCode(e.target.value)}
 >
   <option value="">-- CHỌN MÃ ĐỀ --</option>
   {allAvailableCodes.map((c, index) => {
+    // Làm sạch mã đề ngay khi render lên danh sách
+    const cleanCode = String(c.code ?? "").replace(/^'/, "").trim();
+    const displayName = (c.name ?? "").toString().trim();
 
-  const code = (c.code ?? "").toString().replace(/^'/,"").trim()
-  const name = (c.name ?? "").toString().trim()
-
-  return (
-    <option key={code || index} value={code}>
-      {code ? `${code} - ${name}` : name}
-    </option>
-  )
-})}
+    return (
+      <option key={cleanCode || index} value={cleanCode}>
+        {cleanCode ? `${cleanCode} - ${displayName}` : displayName}
+      </option>
+    );
+  })}
 </select>
       <i className="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"></i>
     </div>
