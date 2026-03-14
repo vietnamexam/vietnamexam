@@ -431,27 +431,30 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
             {/* Nút điều hướng */}
 
            {/* Nút điều hướng */}
-<div className="mt-10 flex items-center justify-between gap-4">
+{/* Nút điều hướng */}
+<div className="mt-10 flex items-center justify-between gap-3">
   {/* Nút Câu Trước */}
   <button 
     disabled={currentIndex === 0} 
     onClick={() => setCurrentIndex(p => p - 1)} 
-    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
+    className="flex-[2] py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
   >
     Câu Trước
   </button>
 
   {/* HIỂN THỊ MÃ ĐỀ Ở GIỮA */}
-  <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 py-2 px-4 rounded-xl border border-dashed border-slate-200">
-    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Mã đề thi</p>
-    <p className="text-sm font-black text-blue-800">{config.id}</p>
+  <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 py-2 rounded-xl border-2 border-slate-100 min-w-[70px]">
+    <p className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Mã đề</p>
+    <p className="text-sm font-black text-blue-700 leading-none mt-1">
+      {config.id}
+    </p>
   </div>
 
   {/* Nút Câu Tiếp */}
   <button 
     disabled={currentIndex === questions.length - 1} 
     onClick={() => setCurrentIndex(p => p + 1)} 
-    className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
+    className="flex-[2] py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase"
   >
     Câu Tiếp
   </button>
