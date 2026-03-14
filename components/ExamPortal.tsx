@@ -275,14 +275,16 @@ const currentCodeDef = useMemo(() =>
 >
   <option value="">-- CHỌN MÃ ĐỀ --</option>
   {allAvailableCodes.map((c, index) => {
-    // Ép kiểu về string để hiển thị cho chắc chắn
-    const displayCode = String(c.code || "").trim();
-    return (
-      <option key={index} value={displayCode}>
-        {displayCode} - {c.name}
-      </option>
-    );
-  })}
+
+  const code = (c.code ?? "").toString().replace(/^'/,"").trim()
+  const name = (c.name ?? "").toString().trim()
+
+  return (
+    <option key={index} value={code}>
+      {code ? `${code} - ${name}` : name}
+    </option>
+  )
+})}
 </select>
       <i className="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"></i>
     </div>
