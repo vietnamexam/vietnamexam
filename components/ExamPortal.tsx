@@ -62,12 +62,15 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   // 5. Memos: Xử lý dữ liệu hiển thị
   const allAvailableCodes = useMemo(() => {
     
-    const defaults = EXAM_CODES[grade] || [];
-    const combined = [...defaults];
+    const defaults = EXAM_CODES[Number(grade)] || [];
+   const combined = [...defaults, ...dynamicCodes];
     dynamicCodes.forEach(dc => {
       if (!combined.find(c => c.code === dc.code)) combined.push(dc);
     });
-    console.log("ALL CODES:", combined);
+    console.log("grade:", grade);
+    console.log("defaults:", defaults);
+    console.log("dynamicCodes:", dynamicCodes);
+    console.log("ALL CODES:", unique);
     return combined;
   }, [grade, dynamicCodes]);
 
