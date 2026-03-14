@@ -23,7 +23,7 @@ const Watermark: React.FC<WatermarkProps> = ({ text, seed = 0 }) => {
   const watermarkItems = useMemo(() => {
 
     const items = [];
-    const count = 10;
+    const count = 6;
 
     for (let i = 0; i < count; i++) {
 
