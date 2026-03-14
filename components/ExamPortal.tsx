@@ -45,69 +45,34 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
   // 4. Effects: Tải mã đề hệ thống
   useEffect(() => {
-  const fetchSystemCodes = async () => {
-    try {
-      // 1. Dùng DANHGIA_URL từ config thay vì dán link cứng
-      const url = new URL(DANHGIA_URL); 
-      url.searchParams.append("type", "getExamCodes");
-      url.searchParams.append("idnumber", "SYSTEM");
-      url.searchParams.append("grade", grade.toString());
-
-      const resp = await fetch(url.toString());
-      const res = await resp.json();
-      
-      if (res.status === "success" && Array.isArray(res.data)) {
-        // 2. Làm sạch và xử lý dữ liệu như cũ
-        const cleanedData = res.data.map((item: any) => ({
-          ...item,
-          code: String(item.code || "").replace(/^'/, "").trim(),
-          // Ép kiểu config từ chuỗi sang object nếu cần
-          fixedConfig: typeof item.fixedConfig === 'string' 
-            ? JSON.parse(item.fixedConfig) 
-            : item.fixedConfig
-        }));
-
-        console.log("✅ Đã nạp mã đề hệ thống từ DANHGIA_URL");
-        setDynamicCodes(cleanedData);
-      }
-    } catch (e) {
-      console.error("Lỗi nạp mã đề từ link Admin:", e);
-    }
-  };
-
-  fetchSystemCodes();
-}, [grade]); // Chạy lại mỗi khi chọn Khối khác
+    const fetchSystemCodes = async () => {
+      try {
+        const url = new URL(DEFAULT_API_URL);
+        url.searchParams.append("type", "getExamCodes");
+        url.searchParams.append("idnumber", "SYSTEM");
+        url.searchParams.append("grade", grade);
+        const resp = await fetch(url.toString());
+        const res = await resp.json();
+        if (res.status === "success") setDynamicCodes(res.data);
+      } catch (e) { console.error("Lỗi tải mã đề:", e); }
+    };
+    fetchSystemCodes();
+  }, [grade]);
 
   // 5. Memos: Xử lý dữ liệu hiển thị
-const allAvailableCodes = useMemo(() => {
-  const defaults = EXAM_CODES[Number(grade)] || [];
-  const combined = [...defaults, ...dynamicCodes];
-  
-  const uniqueMap = new Map();
-  combined.forEach(item => {
-    const cleanKey = String(item.code).replace(/^'/, "").trim();
-    if (cleanKey) uniqueMap.set(cleanKey, item);
-  });
+  const allAvailableCodes = useMemo(() => {
+    const defaults = EXAM_CODES[grade] || [];
+    const combined = [...defaults];
+    dynamicCodes.forEach(dc => {
+      if (!combined.find(c => c.code === dc.code)) combined.push(dc);
+    });
+    return combined;
+  }, [grade, dynamicCodes]);
 
-  const final = Array.from(uniqueMap.values());
-  console.log("🚀 MÃ ĐỀ ĐÃ NẠP:", final);
-  return final;
-}, [grade, dynamicCodes]);
-      // Sửa dòng này để tìm kiếm chính xác hơn
-const currentCodeDef = useMemo(() => {
-  console.log("Đang tìm cấu hình cho selectedCode:", selectedCode);
+  const currentCodeDef = useMemo(() => 
+    allAvailableCodes.find(c => c.code === selectedCode), 
+  [selectedCode, allAvailableCodes]);
 
-  if (!selectedCode) return null;
-
-  // Làm sạch selectedCode trước khi tìm
-  const cleanSelected = String(selectedCode).replace(/^'/, "").trim();
-
-  return allAvailableCodes.find(c => {
-    // Làm sạch mã đề trong danh sách trước khi so sánh
-    const cleanEntry = String(c.code || "").replace(/^'/, "").trim();
-    return cleanEntry === cleanSelected;
-  });
-}, [selectedCode, allAvailableCodes]);
   const combinedTopics = useMemo(() => {
     const relatedGrades = getRelatedGrades(grade);
     let topics: { id: string; name: string; grade: string }[] = [];
@@ -158,41 +123,29 @@ const currentCodeDef = useMemo(() => {
     finally { setIsVerifying(false); }
   };
 
- const handleStart = () => {
-  if (!verifiedStudent || !selectedCode) return alert("Vui lòng chọn Mã đề!");
+  const handleStart = () => {
+    if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề hoặc chưa xác minh!");
+    const fc = currentCodeDef?.fixedConfig;
+    if (!fc) return alert("Cấu hình đề thi bị lỗi!");
 
-  const cleanId = String(selectedCode).replace(/^'/, "").trim();
-  const currentCodeDef = allAvailableCodes.find(c => 
-    String(c.code).replace(/^'/, "").trim() === cleanId
-  );
+    const finalConfig = { 
+      id: selectedCode, title: currentCodeDef.name, time: fc.duration, 
+      mcqPoints: fc.scoreMC, tfPoints: fc.scoreTF, saPoints: fc.scoreSA, 
+      gradingScheme: 1 
+    };
 
-  if (!currentCodeDef || !currentCodeDef.fixedConfig) {
-    return alert("Mã đề này chưa có cấu hình trận đề!");
-  }
+    const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : (currentCodeDef.topics as string[]);
+    if (!topicsToPick || topicsToPick.length === 0) return alert("Hãy chọn phạm vi kiến thức!");
 
-  const fc = currentCodeDef.fixedConfig;
-  const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : currentCodeDef.topics;
+    const examQuestions = pickQuestionsSmart(
+      topicsToPick, 
+      { mc: resolveCounts(fc.numMC, topicsToPick), tf: resolveCounts(fc.numTF, topicsToPick), sa: resolveCounts(fc.numSA, topicsToPick) }, 
+      { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
+    );
 
-  const examQuestions = pickQuestionsSmart(
-    topicsToPick,
-    { mc: resolveCounts(fc.numMC, topicsToPick), tf: resolveCounts(fc.numTF, topicsToPick), sa: resolveCounts(fc.numSA, topicsToPick) },
-    { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
-  );
-
-  if (examQuestions.length === 0) return alert("Ngân hàng câu hỏi hiện không đủ!");
-
-  const finalConfig = { 
-    id: cleanId, 
-    title: currentCodeDef.name, 
-    time: fc.duration, 
-    mcqPoints: fc.scoreMC, 
-    tfPoints: fc.scoreTF, 
-    saPoints: fc.scoreSA, 
-    gradingScheme: 1 
+    if (examQuestions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi!");
+    onStart(finalConfig, verifiedStudent, examQuestions);
   };
-
-  onStart(finalConfig, verifiedStudent, examQuestions);
-};
 
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
 
@@ -312,18 +265,10 @@ const currentCodeDef = useMemo(() => {
   <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
   <div className="space-y-4">
     <div className="relative">
-    <select 
-  className="..." 
-  value={selectedCode} 
-  onChange={e => setSelectedCode(e.target.value)}
->
-  <option value="">-- CHỌN MÃ ĐỀ --</option>
-  {allAvailableCodes.map((c, idx) => (
-    <option key={idx} value={String(c.code).replace(/^'/, "").trim()}>
-      {String(c.code).replace(/^'/, "").trim()} - {c.name}
-    </option>
-  ))}
-</select>
+      <select className="w-full p-4 md:p-5 min-h-[44px] bg-slate-50 border-2 border-slate-100 rounded-2xl md:rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
+        <option value="">-- CHỌN MÃ ĐỀ --</option>
+        {allAvailableCodes.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+      </select>
       <i className="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"></i>
     </div>
     
