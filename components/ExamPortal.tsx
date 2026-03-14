@@ -73,6 +73,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       // Sửa dòng này để tìm kiếm chính xác hơn
 const currentCodeDef = useMemo(() => 
   allAvailableCodes.find(c => String(c.code).trim() === String(selectedCode).trim()), 
+  console.log(selectedCode)                             
 [selectedCode, allAvailableCodes]);
 
   const combinedTopics = useMemo(() => {
