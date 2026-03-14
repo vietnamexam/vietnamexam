@@ -69,9 +69,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
     return combined;
   }, [grade, dynamicCodes]);
 
-  const currentCodeDef = useMemo(() => 
-    allAvailableCodes.find(c => c.code === selectedCode), 
-  [selectedCode, allAvailableCodes]);
+      // Sửa dòng này để tìm kiếm chính xác hơn
+const currentCodeDef = useMemo(() => 
+  allAvailableCodes.find(c => String(c.code).trim() === String(selectedCode).trim()), 
+[selectedCode, allAvailableCodes]);
 
   const combinedTopics = useMemo(() => {
     const relatedGrades = getRelatedGrades(grade);
@@ -129,7 +130,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
     if (!fc) return alert("Cấu hình đề thi bị lỗi!");
 
     const finalConfig = { 
-      id: selectedCode, title: currentCodeDef.name, time: fc.duration, 
+      String(selectedCode).replace(/'/g, "").trim(),
+      title: currentCodeDef.name, 
+      time: fc.duration, 
       mcqPoints: fc.scoreMC, tfPoints: fc.scoreTF, saPoints: fc.scoreSA, 
       gradingScheme: 1 
     };
