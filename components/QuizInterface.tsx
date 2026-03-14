@@ -447,16 +447,16 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
               </button>
 
               {/* KHUNG MÃ ĐỀ - Tinh chỉnh giống Style thẻ VIP88 */}
-              <div className="flex flex-col items-center justify-center min-w-[110px]">
-                <div className="bg-yellow-400 text-yellow-900 text-[8px] font-black px-3 py-1 rounded-t-xl uppercase tracking-tighter shadow-sm border-x-2 border-t-2 border-yellow-500">
-                  Mã đề thi
-                </div>
-                <div className="bg-white border-2 border-yellow-400 px-6 py-2 rounded-xl shadow-[0_4px_0_0_rgba(250,204,21,1)] flex items-center justify-center">
-                  <p className="text-xl font-black text-slate-800 font-mono tracking-[0.2em] leading-none">
-                    {(config.id ?? "").toString().replace(/^'/,"") || "N/A"}
-                  </p>
-                </div>
-              </div>
+             <div className="flex flex-col items-center justify-center min-w-[110px]">
+  <div className="bg-yellow-400 text-yellow-900 text-[8px] font-black px-3 py-1 rounded-t-xl uppercase tracking-tighter shadow-sm border-x-2 border-t-2 border-yellow-500">
+    Mã đề thi
+  </div>
+  <div className="bg-white border-2 border-yellow-400 px-6 py-2 rounded-xl shadow-[0_4px_0_0_rgba(250,204,21,1)] flex items-center justify-center">
+    <p className="text-xl font-black text-slate-800 font-mono tracking-[0.2em] leading-none">
+      {String(config?.id || "").replace(/^'/, "") || "---"}
+    </p>
+  </div>
+</div>
 
               {/* Nút Câu Tiếp */}
               <button 
