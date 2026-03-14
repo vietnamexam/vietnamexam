@@ -21,6 +21,8 @@ interface QuizInterfaceProps {
 
 }
 
+
+
 const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, questions, onFinish, isQuizMode = false }) => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,6 +38,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
     }))
 
   );
+
   const TOTAL_TIME = config.time * 60; // giây
 
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
@@ -245,47 +248,54 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
 
   return (
-  <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 font-sans">
-    
-    {/* BẮT ĐẦU CỘT 1 (lg:col-span-1) */}
-    <div className="lg:col-span-1 space-y-6">
-      
-      {/* Khung Trắng 1: Thông tin tài khoản, Mã đề, Bảng câu hỏi */}
-      <div className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
-        <div className="space-y-3 mb-6">
-          {/* Tài khoản */}
-          <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-            <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Tài khoản hiện tại</p>
-            <p className="font-black text-blue-700 truncate">{student.taikhoanapp || "FREE_USER"}</p>
+
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 font-sans">
+
+      <div className="lg:col-span-1 space-y-6">
+
+        <div className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
+
+           <div className="space-y-3 mb-6">
+
+              <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+
+                 <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Tài khoản hiện tại</p>
+
+                 <p className="font-black text-blue-700 truncate">{student.taikhoanapp || "FREE_USER"}</p>
+
+              </div>
+
+              <div className={`p-4 rounded-2xl border transition-colors ${tabSwitches > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
+
+                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vi phạm chuyển tab</p>
+
+                 <p className={`font-black ${tabSwitches > 0 ? 'text-red-600' : 'text-slate-700'}`}>{tabSwitches} / {student.limittab}</p>
+
+              </div>
+
+           </div>
+
+
+
+          <div className="grid grid-cols-5 gap-2">
+
+            {questions.map((_, i) => (
+
+              <button key={i} onClick={() => setCurrentIndex(i)} className={`aspect-square rounded-xl font-black text-xs transition-all border-2 flex items-center justify-center ${getQuestionStyle(i)} ${currentIndex === i ? 'ring-4 ring-yellow-400 scale-110 z-10' : ''}`}>
+
+                {i + 1}
+
+              </button>
+
+            ))}
+
           </div>
 
-          {/* CHÈN MÃ ĐỀ VÀO ĐÂY - ĐÃ KIỂM TRA ĐỦ DIV */}
-          <div className="p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-400 shadow-[0_4px_0_0_rgba(250,204,21,1)]">
-            <p className="text-[9px] font-black text-yellow-600 uppercase tracking-widest">Mã đề thi</p>
-            <p className="text-2xl font-black text-slate-800 font-mono tracking-widest">
-              {String(config?.id || "N/A").replace(/^'/, "")}
-            </p>
-          </div>
-
-          {/* Vi phạm chuyển tab */}
-          <div className={`p-4 rounded-2xl border transition-colors ${tabSwitches > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vi phạm chuyển tab</p>
-            <p className={`font-black ${tabSwitches > 0 ? 'text-red-600' : 'text-slate-700'}`}>{tabSwitches} / {student.limittab}</p>
-          </div>
         </div>
 
-        {/* Bảng số câu hỏi */}
-        <div className="grid grid-cols-5 gap-2">
-          {questions.map((_, i) => (
-            <button key={i} onClick={() => setCurrentIndex(i)} className={`aspect-square rounded-xl font-black text-xs transition-all border-2 flex items-center justify-center ${getQuestionStyle(i)} ${currentIndex === i ? 'ring-4 ring-yellow-400 scale-110 z-10' : ''}`}>
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      </div> {/* Đóng Khung Trắng 1 */}
+        
 
-      {/* Khung Trắng 2: Đồng hồ đếm ngược */}
-      <div className="bg-white p-6 rounded-[2rem] shadow-xl text-center border border-slate-100">
+        <div className="bg-white p-6 rounded-[2rem] shadow-xl text-center border border-slate-100">
 
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Thời gian còn lại</p>
 
@@ -363,16 +373,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
                 <label key={i} className={`flex items-center p-5 rounded-2xl border-2 transition-all cursor-pointer group ${answers[currentIndex].answer === opt ? 'border-blue-500 bg-blue-50/50' : 'border-slate-100 hover:border-blue-100 bg-slate-50/30'}`}>
 
-                  <input type="radio" className="hidden" checked={answers[currentIndex].answer === opt} 
-                    onChange={() => { const n = [...answers]; n[currentIndex].answer = opt; 
-                                     setAnswers(n); 
-                   if (currentIndex < questions.length - 1) {
-    const nextTick = setTimeout(() => {
-      setCurrentIndex(prev => prev + 1);
-    }, 300);
-    return () => clearTimeout(nextTick);
-  }
-                                    }} />
+                  <input type="radio" className="hidden" checked={answers[currentIndex].answer === opt} onChange={() => { const n = [...answers]; n[currentIndex].answer = opt; setAnswers(n); }} />
 
                   <span className={`w-10 h-10 rounded-full flex items-center justify-center font-black mr-4 border-2 transition-colors shrink-0 ${answers[currentIndex].answer === opt ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-300 border-slate-200 group-hover:border-blue-200'}`}>{String.fromCharCode(65+i)}</span>
 
@@ -432,41 +433,12 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
             {/* Nút điều hướng */}
 
-           {/* Nút điều hướng */}
+            <div className="mt-10 flex justify-between gap-4">
 
-{/* Nút điều hướng - Đã tinh chỉnh Flexbox chuẩn */}
-            <div className="mt-10 flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
-              {/* Nút Câu Trước */}
-              <button 
-                disabled={currentIndex === 0} 
-                onClick={() => setCurrentIndex(p => p - 1)} 
-                className="flex-1 max-w-[140px] py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase flex items-center justify-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
-                <span className="hidden md:inline">Trước</span>
-              </button>
+              <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(p => p - 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Câu Trước</button>
 
-              {/* KHUNG MÃ ĐỀ - Tinh chỉnh giống Style thẻ VIP88 */}
-             <div className="flex flex-col items-center justify-center min-w-[110px]">
-  <div className="bg-yellow-400 text-yellow-900 text-[8px] font-black px-3 py-1 rounded-t-xl uppercase tracking-tighter shadow-sm border-x-2 border-t-2 border-yellow-500">
-    Mã đề thi
-  </div>
-  <div className="bg-white border-2 border-yellow-400 px-6 py-2 rounded-xl shadow-[0_4px_0_0_rgba(250,204,21,1)] flex items-center justify-center">
-    <p className="text-xl font-black text-slate-800 font-mono tracking-[0.2em] leading-none">
-  {String(config?.id || "").replace(/^'/, "") || "DEF_01"} 
-</p>
-  </div>
-</div>
+              <button disabled={currentIndex === questions.length - 1} onClick={() => setCurrentIndex(p => p + 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Câu Tiếp</button>
 
-              {/* Nút Câu Tiếp */}
-              <button 
-                disabled={currentIndex === questions.length - 1} 
-                onClick={() => setCurrentIndex(p => p + 1)} 
-                className="flex-1 max-w-[140px] py-4 rounded-2xl font-black border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200 disabled:opacity-30 transition-all active:scale-95 text-[10px] md:text-xs uppercase flex items-center justify-center gap-2"
-              >
-                <span className="hidden md:inline">Tiếp</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
-              </button>
             </div>
 
           </div> 
