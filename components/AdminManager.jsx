@@ -23,6 +23,16 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   // Hàm xác định môn học từ 2 ký tự đầu của Password
   useEffect(() => { setTempValue(value); }, [value]);
   // Ép MathJax quét lại sau khi render hoặc sửa xong
+  useEffect(() => {
+  if (allQuestions.length > 0) {
+    // Đợi 1 chút cho React render HTML xong rồi mới gọi MathJax
+    setTimeout(() => {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }, 500);
+  }
+}, [allQuestions]);
  useEffect(() => {
   if (!isEditing && window.MathJax?.typesetPromise) {
     const el = document.querySelector('.mathjax-content');
