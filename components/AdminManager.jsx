@@ -421,7 +421,7 @@ const handleVerifyAdminOTP = async () => {
   {/* Ô Password của bạn giữ nguyên */}
         
         <input 
-          type="password" 
+          type="text" 
           className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
           value={otp} 
           onChange={e => setOtp(e.target.value)} 
