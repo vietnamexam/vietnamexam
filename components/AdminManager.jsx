@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, API_ROUTING } from '../config';
-const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(value);
-  
-
-  
-// Hàm xác định môn học từ 2 ký tự đầu của Password
 const getSubjectFromPass = (pass) => {
   const p = String(pass || "").toUpperCase();
   
@@ -24,9 +17,11 @@ const getSubjectFromPass = (pass) => {
   
   return { id: 'unknown', name: 'Hệ thống', color: 'bg-slate-100 text-slate-700 border-slate-200' };
 };
-
+const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempValue, setTempValue] = useState(value);
+  // Hàm xác định môn học từ 2 ký tự đầu của Password
   useEffect(() => { setTempValue(value); }, [value]);
-
   // Ép MathJax quét lại sau khi render hoặc sửa xong
  useEffect(() => {
   if (!isEditing && window.MathJax?.typesetPromise) {
