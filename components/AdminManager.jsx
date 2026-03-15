@@ -4,7 +4,7 @@ import { DANHGIA_URL, API_ROUTING } from '../config';
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
-  const [authPass, setAuthPass] = useState("");
+  
 
   
 // Hàm xác định môn học từ 2 ký tự đầu của Password
@@ -143,6 +143,7 @@ const getSubjectFromPass = (pass) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
+  const [authPass, setAuthPass] = useState("");
   const [idgv, setIdgv] = useState("")
   const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
