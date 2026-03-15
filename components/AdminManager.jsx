@@ -425,7 +425,7 @@ const handleVerifyAdminOTP = async () => {
           className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
           value={otp} 
           onChange={e => setOtp(e.target.value)} 
-          placeholder="Nhập mật khẩu theo môn"
+          placeholder="Nhập mật khẩu"
         />
 
         {/* THAY THẾ NÚT CŨ BẰNG NÚT MỚI Ở ĐÂY */}
