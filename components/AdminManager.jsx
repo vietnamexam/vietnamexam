@@ -5,6 +5,25 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
 
+  
+// Hàm xác định môn học từ 2 ký tự đầu của Password
+const getSubjectFromPass = (pass) => {
+  const p = String(pass || "").toUpperCase();
+  
+  if (p.startsWith('TO')) return { id: 'toan', name: 'Toán học', color: 'bg-blue-100 text-blue-700 border-blue-200' };
+  if (p.startsWith('LY')) return { id: 'vatly', name: 'Vật lý', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+  if (p.startsWith('HO')) return { id: 'hoahoc', name: 'Hóa học', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+  if (p.startsWith('SI')) return { id: 'sinhoc', name: 'Sinh học', color: 'bg-purple-100 text-purple-700 border-purple-200' };
+  if (p.startsWith('TA')) return { id: 'anh', name: 'T.Anh', color: 'bg-blue-100 text-blue-700 border-blue-200' }; 
+  if (p.startsWith('SU')) return { id: 'lichsu', name: 'Lịch sử', color: 'bg-green-100 text-green-700 border-green-200' };  
+  if (p.startsWith('DIA')) return { id: 'dialy', name: 'Địa lý', color: 'bg-green-100 text-green-700 border-green-200' }; 
+  if (p.startsWith('KT')) return { id: 'ktpl', name: 'KTPL', color: 'bg-green-100 text-green-700 border-green-200' }; 
+  if (p.startsWith('CN')) return { id: 'cncn', name: 'CNCN', color: 'bg-green-100 text-green-700 border-green-200' };  
+  if (p.startsWith('NN')) return { id: 'cnnn', name: 'CNNN', color: 'bg-green-100 text-green-700 border-green-200' };  
+  
+  return { id: 'unknown', name: 'Hệ thống', color: 'bg-slate-100 text-slate-700 border-slate-200' };
+};
+
   useEffect(() => { setTempValue(value); }, [value]);
 
   // Ép MathJax quét lại sau khi render hoặc sửa xong
@@ -278,13 +297,17 @@ const chuan_hoa = (data) => ({
 setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
-  const handleLoadQuestions = async () => {
-  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions`);
+ const handleLoadQuestions = async () => {
+  // 1. Lấy ID môn học dựa trên Password hiện tại
+  const subjectId = getSubjectFromPass(authPass).id;
+
+  // 2. Truyền thêm tham số mon vào URL
+  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions&mon=${subjectId}`);
   const res = await resp.json();
 
   if (res.status === 'success') {
     setAllQuestions(res.data);
-    alert("📚 Đã load ngân hàng câu hỏi!");
+    alert(`📚 Đã load ngân hàng môn ${getSubjectFromPass(authPass).name}!`);
   } else {
     alert("Lỗi load!");
   }
