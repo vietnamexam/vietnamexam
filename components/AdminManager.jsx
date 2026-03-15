@@ -238,7 +238,7 @@ const chuan_hoa = (data) => ({
  const findQuestion = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
+    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${getSubjectFromPass(authPass).id}`);
     const res = await resp.json();
     if (res.status === 'success') {
       // 💡 Hợp nhất dữ liệu thông minh
@@ -310,7 +310,9 @@ setPreviewData(results);
   const subjectId = getSubjectFromPass(authPass).id;
 
   // 2. Truyền thêm tham số mon vào URL
-  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions&mon=${subjectId}`);
+   // Sửa thành:
+  const url = `${DANHGIA_URL}?action=loadQuestions&mon=${getSubjectFromPass(authPass).id}`;
+  const resp = await fetch(url);
   const res = await resp.json();
 
   if (res.status === 'success') {
@@ -479,7 +481,9 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}`);
+    const monId = getSubjectFromPass(authPass).id;
+    // Thêm tham số &mon= vào URL    
+    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`);
     const res = await resp.json();
     
    if(res.status === 'success') {
@@ -541,7 +545,9 @@ const handleQuickUpdate = async (field, newValue) => {
     };
 
     // 3. Gửi lên Google Apps Script
-    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
+    // Thêm tham số &mon= vào URL
+    const url = `${DANHGIA_URL}?action=updateQuestion&mon=${getSubjectFromPass(authPass).id}`;
+    const res = await fetch(url, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
