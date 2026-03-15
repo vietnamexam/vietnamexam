@@ -398,7 +398,7 @@ if (res.status === "success") { // Chỉ cần check status là đủ, hoặc ch
   
   const subject = getSubjectFromPass(otp.trim());
   alert(`✅ Xác minh thành công môn ${subject ? subject.name : "hệ thống"}!`);
-}
+
     } else {
       alert(res.message || "Thông tin xác minh không chính xác!");
     }
