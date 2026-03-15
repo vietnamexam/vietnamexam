@@ -142,6 +142,7 @@ const getSubjectFromPass = (pass) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
+  const [idgv, setIdgv] = useState("")
   const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
@@ -378,36 +379,71 @@ const handleUploadLG = async () => {
 };
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
- const handleVerifyAdminOTP = async () => {
+const handleVerifyAdminOTP = async () => {
+  if (!idgv) return alert("Vui lòng nhập ID Giáo viên (VD: admin)");
   if (!otp) return alert("Vui lòng nhập mật khẩu!");
   
-  // Kiểm tra định dạng môn từ pass trước
-  const subjectInfo = getSubjectFromPass(otp.trim());
-  if (subjectInfo.id === 'unknown') {
-    return alert("Mật khẩu không đúng định dạng môn học (Ví dụ: TO..., LY...)!");
-  }
-
   setLoading(true);
   try {
-    // THÊM idgv=admin vào đây
-    const url = `${DANHGIA_URL}?action=checkAdminOTP&otp=${encodeURIComponent(otp.trim())}&idgv=admin`;
+    // Gửi IDGV và OTP lên Server
+    const url = `${DANHGIA_URL}?action=checkAdminOTP&otp=${encodeURIComponent(otp.trim())}&idgv=${idgv.trim().toLowerCase()}`;
     const resp = await fetch(url);
     const res = await resp.json();
     
     if (res.status === "success" && res.verified === true) {
-        setIsAdminVerified(true);
-        // Lưu lại pass để Badge môn học hiển thị
-        setAuthPass(otp.trim()); 
+      setIsAdminVerified(true);
+      setAuthPass(otp.trim()); // Lưu lại để hàm getSubjectFromPass nhận diện môn
+      alert(`✅ Xác minh thành công môn ${getSubjectFromPass(otp.trim()).name}!`);
     } else {
-        alert("Mật khẩu Admin không chính xác!");
+      alert(res.message || "Thông tin xác minh không chính xác!");
     }
   } catch (e) {
-    console.error(e);
     alert("Lỗi kết nối server!");
   } finally {
     setLoading(false);
   }
 };
+  if (!isAdminVerified) {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center p-4">
+      <div className="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md text-center">
+        <h2 className="text-2xl font-black mb-8">ADMIN SECURITY</h2>
+        {/* Thêm ô nhập IDGV */}
+  <input 
+    type="text" 
+    placeholder="ID Giáo viên (VD: admin)" 
+    className="w-full p-4 bg-slate-50 border-2 rounded-2xl text-center mb-4 font-bold uppercase text-slate-600"
+    value={idgv} // Bạn khai báo thêm state [idgv, setIdgv] = useState("admin")
+    onChange={e => setIdgv(e.target.value)}
+  />
+
+  {/* Ô Password của bạn giữ nguyên */}
+        
+        <input 
+          type="password" 
+          className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
+          value={otp} 
+          onChange={e => setOtp(e.target.value)} 
+          placeholder="••••"
+        />
+
+        {/* THAY THẾ NÚT CŨ BẰNG NÚT MỚI Ở ĐÂY */}
+        <button 
+          onClick={handleVerifyAdminOTP} 
+          disabled={loading}
+          className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-70"
+        >
+          {loading ? (
+            <><i className="fa-solid fa-spinner animate-spin"></i> ĐANG KIỂM TRA...</>
+          ) : (
+            "XÁC MINH"
+          )}
+        </button>
+        
+      </div>
+    </div>
+  );
+}
 // Hàm tìm câu trùng
 const handleFindDuplicates = async () => {
   setLoading(true);
