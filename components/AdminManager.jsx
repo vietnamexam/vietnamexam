@@ -319,8 +319,10 @@ setPreviewData(results);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
     const dataArray = previewData;
+    const subjectId = getSubjectFromPass(authPass).id;
+    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${subjectId}`;
     
-    const resp = await fetch(`${DANHGIA_URL}?action=saveQuestions`, {
+    const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' }, 
       body: JSON.stringify(dataArray) 
@@ -328,8 +330,8 @@ setPreviewData(results);
     
     const res = await resp.json();
     if (res.status === 'success') { 
-      alert(`🚀 Thành công! Đã chèn thêm ${dataArray.length} câu hỏi vào ngân hàng .`); 
-      setJsonInput(''); 
+      alert(`🚀 Thành công! Đã chèn thêm ${dataArray.length} câu hỏi vào ngân hàng môn ${getSubjectFromPass(authPass).name}.`); 
+      setJsonInput('');
     } else {
       alert("Lỗi: " + res.message);
     }
