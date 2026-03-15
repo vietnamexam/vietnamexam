@@ -4,6 +4,7 @@ import { DANHGIA_URL, API_ROUTING } from '../config';
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
+  const [authPass, setAuthPass] = useState("");
 
   
 // Hàm xác định môn học từ 2 ký tự đầu của Password
@@ -424,7 +425,7 @@ const handleVerifyAdminOTP = async () => {
           className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
           value={otp} 
           onChange={e => setOtp(e.target.value)} 
-          placeholder="••••"
+          placeholder="Nhập mật khẩu theo môn"
         />
 
         {/* THAY THẾ NÚT CŨ BẰNG NÚT MỚI Ở ĐÂY */}
