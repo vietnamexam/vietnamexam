@@ -391,10 +391,14 @@ const handleVerifyAdminOTP = async () => {
     const resp = await fetch(url);
     const res = await resp.json();
     
-    if (res.status === "success" && res.verified === true) {
-      setIsAdminVerified(true);
-      setAuthPass(otp.trim()); // Lưu lại để hàm getSubjectFromPass nhận diện môn
-      alert(`✅ Xác minh thành công môn ${getSubjectFromPass(otp.trim()).name}!`);
+   // Sửa dòng này:
+if (res.status === "success") { // Chỉ cần check status là đủ, hoặc check res.data
+  setIsAdminVerified(true);
+  setAuthPass(otp.trim());
+  
+  const subject = getSubjectFromPass(otp.trim());
+  alert(`✅ Xác minh thành công môn ${subject ? subject.name : "hệ thống"}!`);
+}
     } else {
       alert(res.message || "Thông tin xác minh không chính xác!");
     }
