@@ -548,18 +548,16 @@ const handleQuickUpdate = async (field, newValue) => {
   return (
  <div className="p-3 md:p-8 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl max-w-6xl mx-auto my-4 md:my-6 border border-slate-50">
       <div className="flex items-center gap-2 mb-8 bg-white/50 backdrop-blur-md p-2 rounded-3xl w-fit shadow-sm border border-slate-200">
-  {/* Nút Sửa câu hỏi */}
-  <button 
-    onClick={() => setCurrentTab('cauhoi')} 
-    className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
-      currentTab === 'cauhoi' 
-      ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
-      : 'text-slate-500 hover:bg-slate-100'
-    }`}
-  >
-    <i className="fa-solid fa-pen-to-square"></i> Sửa câu hỏi
-  </button>
-  
+   {/* NÚT HIỂN THỊ MÔN MẶC ĐỊNH - Dựa theo Pass */}
+  {authPass && (
+    <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl border text-[10px] font-black uppercase shadow-sm ${getSubjectFromPass(authPass).color}`}>
+      <i className="fa-solid fa-book-open-reader"></i>
+      Môn: {getSubjectFromPass(authPass).name}
+    </div>
+  )}
+
+  {/* Vạch ngăn cách nhẹ */}
+  <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
   {/* Nút Import Word */}
   <button 
     onClick={() => setCurrentTab('word')} 
@@ -593,6 +591,17 @@ const handleQuickUpdate = async (field, newValue) => {
 >
   <i className="fa-solid fa-clone"></i> {loading ? 'Đang quét...' : 'Tìm câu trùng'}
 </button>
+         {/* Nút Sửa câu hỏi */}
+  <button 
+    onClick={() => setCurrentTab('cauhoi')} 
+    className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
+      currentTab === 'cauhoi' 
+      ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
+      : 'text-slate-500 hover:bg-slate-100'
+    }`}
+  >
+    <i className="fa-solid fa-pen-to-square"></i> Sửa câu hỏi
+  </button>
 
   {/* Vạch ngăn cách tinh tế */}
   <div className="w-[1px] h-6 bg-slate-300 mx-2"></div>
