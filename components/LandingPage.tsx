@@ -179,7 +179,9 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   const loadMatrixData = async () => {
     try {
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
+      // Sửa dòng này:
+      const url = `${DANHGIA_URL}?action=getAppConfigmt&mon=${selectedMonId}`;
+      const response = await fetch(url, {
         method: "GET",
         redirect: "follow"
       });
@@ -840,14 +842,18 @@ const handleRedirect = () => {
   return [g];
 };
    // ==== Lọc theo lớp ================
-  const filteredTopics = useMemo(() => {
-  if (!matrixTopics || matrixTopics.length === 0) return [];
-  
-  // Dùng trực tiếp selectedMonId từ ô Select ở trên
-  return matrixTopics.filter(t => 
-    String(t.grade) === String(selectedGrade) && 
-    String(t.monId) === String(selectedMonId)
-  );
+ const filteredTopics = useMemo(() => {
+  if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
+
+  console.log("Đang lọc cho môn:", selectedMonId); // Dòng này để thầy kiểm tra trong Console
+
+  return matrixTopics.filter(t => {
+    const matchGrade = String(t.grade) === String(selectedGrade);
+    // Ép kiểu về chuỗi và viết thường để so sánh tuyệt đối chính xác
+    const matchMon = String(t.monId).toLowerCase() === String(selectedMonId).toLowerCase();
+    
+    return matchGrade && matchMon;
+  });
 }, [matrixTopics, selectedGrade, selectedMonId]);
   return (
     <>
