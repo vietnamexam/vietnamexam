@@ -1490,13 +1490,13 @@ const filteredTopics = useMemo(() => {
             <select 
   value={topic.idcd} 
   onChange={(e) => handleUpdateTopic(index, 'idcd', e.target.value)}
-  className="..."
+   className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
 >
   <option value="">-- Chọn chuyên đề --</option>
- (Array.isArray(filteredTopics) ? filteredTopics : []).map((t) => (
-    <option key={item.idcd} value={item.idcd}>
-      {item.idcd} - {item.namecd}
-    </option>
+              {(Array.isArray(filteredTopics) ? filteredTopics : []).map((t) => (
+    <option key={String(t.idcd)} value={String(t.idcd)}>
+  {t.idcd} — {t.namecd}
+</option>
   ))}
 </select>
             <div className="text-blue-600">Số câu</div><div className="text-blue-600">L3</div><div className="text-blue-600">L4</div>
@@ -1530,7 +1530,7 @@ const filteredTopics = useMemo(() => {
                   <input 
                     key={field}
                     type="number" 
-                    value={topic[field] || ''} 
+                    value={topic[field] ?? ''} 
                    onChange={e => updateTopicRow(index, field, Number(e.target.value))}
                     className={`w-full p-2 border rounded-lg text-center text-[11px] outline-none focus:ring-2 transition-all ${
                       field.includes('MC') ? 'focus:ring-blue-500 border-blue-500' : 
