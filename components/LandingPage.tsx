@@ -512,7 +512,9 @@ const handleSaveMatrix = async () => {
  console.log("🚀 Payload gửi đi:", payload);
   // 5. Gửi dữ liệu đi
   try {
-    const response = await fetch(`${targetURL}?action=saveMatrix`, {
+    const monId = getSubjectFromPass(authPass).id;
+    const url = `${targetURL}?action=saveMatrix&mon=${monId}`;
+    const response = await fetch(url, {
       method: "POST",
       mode: "cors",
       headers: { "Content-Type": "text/plain" },
