@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, API_ROUTING } from '../config';
-export const getSubjectFromPass = (pass) => {
+const getSubjectFromPass = (pass) => {
   const p = String(pass || "").toUpperCase();
   
-  if (p.startsWith('TO@')) return { id: 'toan', name: 'Toán học', color: 'bg-blue-100 text-blue-700 border-blue-200' };
-  if (p.startsWith('LY@')) return { id: 'ly', name: 'Vật lý', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
-  if (p.startsWith('HO@')) return { id: 'hoa', name: 'Hóa học', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
-  if (p.startsWith('SI@')) return { id: 'sinh', name: 'Sinh học', color: 'bg-purple-100 text-purple-700 border-purple-200' };
-  if (p.startsWith('TA@')) return { id: 'anh', name: 'T.Anh', color: 'bg-blue-100 text-blue-700 border-blue-200' }; 
-  if (p.startsWith('SU@')) return { id: 'su', name: 'Lịch sử', color: 'bg-green-100 text-green-700 border-green-200' };  
-  if (p.startsWith('DI@')) return { id: 'dia', name: 'Địa lý', color: 'bg-green-100 text-green-700 border-green-200' }; 
-  if (p.startsWith('KT@')) return { id: 'ktpl', name: 'KTPL', color: 'bg-green-100 text-green-700 border-green-200' }; 
-  if (p.startsWith('CN@')) return { id: 'cncn', name: 'CNCN', color: 'bg-green-100 text-green-700 border-green-200' };  
-  if (p.startsWith('NN@')) return { id: 'cnnn', name: 'CNNN', color: 'bg-green-100 text-green-700 border-green-200' };  
+  if (p.startsWith('TO')) return { id: 'toan', name: 'Toán học', color: 'bg-blue-100 text-blue-700 border-blue-200' };
+  if (p.startsWith('LY')) return { id: 'vatly', name: 'Vật lý', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+  if (p.startsWith('HO')) return { id: 'hoahoc', name: 'Hóa học', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+  if (p.startsWith('SI')) return { id: 'sinhoc', name: 'Sinh học', color: 'bg-purple-100 text-purple-700 border-purple-200' };
+  if (p.startsWith('TA')) return { id: 'anh', name: 'T.Anh', color: 'bg-blue-100 text-blue-700 border-blue-200' }; 
+  if (p.startsWith('SU')) return { id: 'lichsu', name: 'Lịch sử', color: 'bg-green-100 text-green-700 border-green-200' };  
+  if (p.startsWith('DI')) return { id: 'dialy', name: 'Địa lý', color: 'bg-green-100 text-green-700 border-green-200' }; 
+  if (p.startsWith('KT')) return { id: 'ktpl', name: 'KTPL', color: 'bg-green-100 text-green-700 border-green-200' }; 
+  if (p.startsWith('CN')) return { id: 'cncn', name: 'CNCN', color: 'bg-green-100 text-green-700 border-green-200' };  
+  if (p.startsWith('NN')) return { id: 'cnnn', name: 'CNNN', color: 'bg-green-100 text-green-700 border-green-200' };  
   
   return { id: 'unknown', name: 'Hệ thống', color: 'bg-slate-100 text-slate-700 border-slate-200' };
 };
@@ -23,16 +23,6 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   // Hàm xác định môn học từ 2 ký tự đầu của Password
   useEffect(() => { setTempValue(value); }, [value]);
   // Ép MathJax quét lại sau khi render hoặc sửa xong
-  useEffect(() => {
-  if (allQuestions.length > 0) {
-    // Đợi 1 chút cho React render HTML xong rồi mới gọi MathJax
-    setTimeout(() => {
-      if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise();
-      }
-    }, 500);
-  }
-}, [allQuestions]);
  useEffect(() => {
   if (!isEditing && window.MathJax?.typesetPromise) {
     const el = document.querySelector('.mathjax-content');
@@ -198,10 +188,7 @@ const chuan_hoa = (data) => ({
   useEffect(() => {
   const loadConfig = async () => {
     try {
-      const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL   
-      const url = `${DANHGIA_URL}?action=getAppConfig&mon=${monId}`;
-      const response = await fetch(url);
+      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig`);
       const result = await response.json();
       if (result.status === "success") {
         setSubjects(result.data.topics);
@@ -241,9 +228,7 @@ const chuan_hoa = (data) => ({
  const findQuestion = async () => {
   setLoading(true);
   try {
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${monId}`
-    const resp = await fetch(url);
+    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
     const res = await resp.json();
     if (res.status === 'success') {
       // 💡 Hợp nhất dữ liệu thông minh
@@ -315,11 +300,7 @@ setPreviewData(results);
   const subjectId = getSubjectFromPass(authPass).id;
 
   // 2. Truyền thêm tham số mon vào URL
-   // Sửa thành:
-  const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL        
-  const url = `${DANHGIA_URL}?action=loadQuestions&mon=${monId}`;
-  const resp = await fetch(url);
+  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions&mon=${subjectId}`);
   const res = await resp.json();
 
   if (res.status === 'success') {
@@ -337,10 +318,9 @@ setPreviewData(results);
   setLoading(true);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
-    const dataArray = previewData;    
-    const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL       
-    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${monId}`;
+    const dataArray = previewData;
+    const subjectId = getSubjectFromPass(authPass).id;
+    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${subjectId}`;
     
     const resp = await fetch(url, {
       method: 'POST',
@@ -384,10 +364,7 @@ const handleUploadLG = async () => {
     }).filter(item => item.id !== null);
 
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
-    const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL   
-    const url = `${DANHGIA_URL}?action=saveLG&mon=${monId}`;
-    const resp = await fetch(url, {
+    const resp = await fetch(`${DANHGIA_URL}?action=saveLG`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
@@ -474,9 +451,7 @@ if (res.status === "success") { // Chỉ cần check status là đủ, hoặc ch
 const handleFindDuplicates = async () => {
   setLoading(true);
   try {
-    const monId = getSubjectFromPass(authPass).id;   // Thêm tham số &mon= vào URL    
-    const url = `${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`;
-    const resp = await fetch(url);
+    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions`);
     const res = await resp.json();
     if (res.status === 'success') {
       setDuplicateGroups(res.data);
@@ -494,10 +469,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
-    const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL    
-    const url = `${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`;
-    const resp = await fetch(url);
+    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}`);
     const res = await resp.json();
     
    if(res.status === 'success') {
@@ -559,11 +531,7 @@ const handleQuickUpdate = async (field, newValue) => {
     };
 
     // 3. Gửi lên Google Apps Script
-    // Thêm tham số &mon= vào URL
-    const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL        
-    const url = `${DANHGIA_URL}?action=updateQuestion&mon=${monId}`;
-    const res = await fetch(url, {
+    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
