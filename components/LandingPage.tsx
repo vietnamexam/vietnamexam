@@ -468,54 +468,42 @@ const handleStudentSubmit = async (e) => {
   // =========================================Ghi ma trận========================================================================
 
 const handleSaveMatrix = async () => {
-  // 1. Kiểm tra ID Giáo viên
   if (!idgv) {
     alert("❌ Lỗi: Không xác định được ID Giáo viên!");
     return;
   }
 
-  // 2. BƯỚC LỌC THÔNG MINH: Chỉ lấy những dòng đã chọn Chuyên đề
   const validRows = selectedTopics.filter(t => t.idcd !== "" && t.idcd !== undefined);
-
   if (validRows.length === 0) {
-    alert("⚠️ Bạn chưa chọn chuyên đề nào trong bảng ma trận!");
+    alert("⚠️ Bạn chưa chọn chuyên đề nào!");
     return;
   }
 
-  // 3. Tự động chọn Link Script dựa trên mã IDGV
   const targetURL = API_ROUTING[idgv] || DEFAULT_API_URL;
 
-  // 4. Gom dữ liệu vào Payload
   const payload = {
     gvId: idgv,
-    mon: selectedMonId,
+    mon: selectedMonId, // Gửi mã môn (toan, vatly...)
     makiemtra: maTranForm.makiemtra,
     name: maTranForm.name,
     duration: maTranForm.duration,
-
-    // Chuyển mảng thành chuỗi phân cách bởi dấu phẩy
+    // Gom mảng thành chuỗi phân cách bởi dấu phẩy
     topics: validRows.map(t => t.idcd).join(', '),
-    
     numMC: validRows.map(t => t.numMC || 0).join(', '),
     mcL3: validRows.map(t => t.mcL3 || 0).join(', '),
     mcL4: validRows.map(t => t.mcL4 || 0).join(', '),
-
     numTF: validRows.map(t => t.numTF || 0).join(', '),
     tfL3: validRows.map(t => t.tfL3 || 0).join(', '),
     tfL4: validRows.map(t => t.tfL4 || 0).join(', '),
-
     numSA: validRows.map(t => t.numSA || 0).join(', '),
     saL3: validRows.map(t => t.saL3 || 0).join(', '),
     saL4: validRows.map(t => t.saL4 || 0).join(', '),
-
-    // Điểm số lấy từ Form nhập liệu
     scoreMC: maTranForm.scoreMC || 0.25,
     scoreTF: maTranForm.scoreTF || 1.0,
     scoreSA: maTranForm.scoreSA || 0.5
   };
- console.log("🚀 Payload gửi đi:", payload);
-  // 5. Gửi dữ liệu đi
-  try {    
+
+  try {
     const url = `${targetURL}?action=saveMatrix&mon=${selectedMonId}`;
     const response = await fetch(url, {
       method: "POST",
@@ -525,16 +513,12 @@ const handleSaveMatrix = async () => {
     });
 
     const result = await response.json();
-
     if (result.status === "success") {
       alert("✅ " + result.message);
-      if (typeof setIsMatrixOpen === "function") setIsMatrixOpen(false); // Đóng modal nếu thành công
-    } else {
-      alert("⚠️ Lỗi Script: " + result.message);
+      if (typeof setIsMatrixOpen === "function") setIsMatrixOpen(false);
     }
   } catch (e) {
     console.error("Lỗi Save Matrix:", e);
-    alert("❌ Lỗi kết nối! Kiểm tra Console để biết chi tiết.");
   }
 };
 
@@ -846,9 +830,9 @@ const handleRedirect = () => {
 };
    // ==== Lọc theo lớp ================
  const filteredTopics = useMemo(() => {
-  // Nếu chưa nạp xong hoặc chưa chọn đủ Lớp/Môn thì trả về rỗng
   if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
-  const allowed = getAllowedGrades(selectedGrade);
+
+  // Lọc theo Lớp (grade) và Môn (monid)
   return matrixTopics.filter(t => 
     String(t.grade) === String(selectedGrade) && 
     String(t.monid) === String(selectedMonId)
@@ -1515,25 +1499,23 @@ const handleRedirect = () => {
           </div>
 
           {/* Danh sách các dòng chuyên đề */}
-          <div className="space-y-2 pb-4">
-            {selectedTopics.map((topic, idx) => (
-              <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
-                {/* SỔ CHỌN CHUYÊN ĐỀ DÙNG matrixTopics MỚI */}
-                {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
-               <select
-  value={topic.idcd}
-  onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
-  className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
->
-  <option value="">-- Chọn chuyên đề --</option>
-
-  {filteredTopics.map((t) => (
-    <option key={t.id} value={t.id}>
-      Lớp {t.grade} — {t.name}
-    </option>
-  ))}
-
-</select>
+               <div className="space-y-2 pb-4">
+  {selectedTopics.map((topic, index) => (
+    <div key={index} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
+      
+      {/* SỔ CHỌN CHUYÊN ĐỀ */}
+      <select
+        value={topic.idcd || ""}
+        onChange={(e) => updateTopicRow(index, 'idcd', e.target.value)}
+        className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white outline-none"
+      >
+        <option value="">-- Chọn chuyên đề --</option>
+        {filteredTopics.map((t) => (
+          <option key={t.idcd} value={t.idcd}>
+            {t.idcd} — {t.namecd}
+          </option>
+        ))}
+      </select>
 
                 {/* Ô nhập liệu tự động */}
                 {[ 'numMC', 'mcL3', 'mcL4', 'numTF', 'tfL3', 'tfL4', 'numSA', 'saL3', 'saL4' ].map((field) => (
