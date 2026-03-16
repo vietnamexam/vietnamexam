@@ -1500,19 +1500,23 @@ const handleRedirect = () => {
 
           {/* Danh sách các dòng chuyên đề */}
                <div className="space-y-2 pb-4">
-  {selectedTopics.map((topic, index) => (
+  {/* SỬA CHỖ NÀY: Đổi 'item' thành 'topic' để khớp với value={topic.idcd} bên dưới */}
+  {selectedTopics.map((topic, index) => ( 
     <div key={index} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
       
-      {/* SỔ CHỌN CHUYÊN ĐỀ */}
+      {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
+      
       <select
-        value={topic.idcd || ""}
+        value={topic.idcd} // Bây giờ topic đã được định nghĩa từ map ở trên
         onChange={(e) => updateTopicRow(index, 'idcd', e.target.value)}
-        className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white outline-none"
+        className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
       >
         <option value="">-- Chọn chuyên đề --</option>
+
         {filteredTopics.map((t) => (
+          /* SỬA CHỖ NÀY: Để hiện đúng "1001 - Mệnh đề" và khớp với logic lọc */
           <option key={t.idcd} value={t.idcd}>
-            {t.idcd} — {t.namecd}
+             {t.idcd} — {t.namecd}
           </option>
         ))}
       </select>
