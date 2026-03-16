@@ -1506,8 +1506,7 @@ const filteredTopics = useMemo(() => {
 
           {/* Danh sách các dòng chuyên đề */}
                <div className="space-y-2 pb-4">
-  {/* SỬA CHỖ NÀY: Đổi 'item' thành 'topic' để khớp với value={topic.idcd} bên dưới */}
-  {selectedTopics.map((topic, index) => ( 
+    {Array.isArray(selectedTopics) && selectedTopics.map((topic, index) => (
     <div key={index} className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
            
       <select
