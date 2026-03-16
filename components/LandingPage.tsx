@@ -1497,7 +1497,18 @@ const handleRedirect = () => {
           </div>
 
           <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
-            <div className="text-left px-3">Chọn chuyên đề</div>
+            <select 
+  value={topic.idcd} 
+  onChange={(e) => handleUpdateTopic(index, 'idcd', e.target.value)}
+  className="..."
+>
+  <option value="">-- Chọn chuyên đề --</option>
+  {filteredTopics.map((item) => (
+    <option key={item.idcd} value={item.idcd}>
+      {item.idcd} - {item.namecd}
+    </option>
+  ))}
+</select>
             <div className="text-blue-600">Số câu</div><div className="text-blue-600">L3</div><div className="text-blue-600">L4</div>
             <div className="text-emerald-600">Số câu</div><div className="text-emerald-600">L3</div><div className="text-emerald-600">L4</div>
             <div className="text-amber-600">Số câu</div><div className="text-amber-600">L3</div><div className="text-amber-600">L4</div>
