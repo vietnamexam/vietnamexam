@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, API_ROUTING } from '../config';
-const getSubjectFromPass = (pass) => {
+export const getSubjectFromPass = (pass) => {
   const p = String(pass || "").toUpperCase();
   
   if (p.startsWith('TO')) return { id: 'toan', name: 'Toán học', color: 'bg-blue-100 text-blue-700 border-blue-200' };
