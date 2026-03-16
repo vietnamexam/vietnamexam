@@ -846,17 +846,12 @@ const handleRedirect = () => {
 };
    // ==== Lọc theo lớp ================
  const filteredTopics = useMemo(() => {
-  if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
+  if (!matrixTopics || !selectedMonId) return [];
 
-  console.log("Đang lọc cho môn:", selectedMonId); // Dòng này để thầy kiểm tra trong Console
-
-  return matrixTopics.filter(t => {
-    const matchGrade = String(t.grade) === String(selectedGrade);
-    // Ép kiểu về chuỗi và viết thường để so sánh tuyệt đối chính xác
-    const matchMon = String(t.monId).toLowerCase() === String(selectedMonId).toLowerCase();
-    
-    return matchGrade && matchMon;
-  });
+  return matrixTopics.filter(t => 
+    String(t.grade) === String(selectedGrade) && 
+    String(t.monId) === String(selectedMonId)
+  );
 }, [matrixTopics, selectedGrade, selectedMonId]);
   return (
     <>
