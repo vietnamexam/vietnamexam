@@ -4,6 +4,9 @@ import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
 import { fetchScore, resetQuiz } from '../questions';
+
+
+
 interface LandingPageProps {
   onSelectGrade: (grade: number) => void;
   onSelectQuiz: (num: number, pts: number, quizStudent: Partial<Student>) => void;
@@ -29,7 +32,6 @@ const LandingPage: React.FC<LandingPageProps> = ({
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   // Thêm/Kiểm tra dòng này ở đầu Component
-  const [selectedMonId, setSelectedMonId] = useState('toan');
   const [appConfig, setAppConfig] = useState({ topics: [], classes: [] });
   const [showNotice, setShowNotice] = useState(false); // 110326
   const [maxthi, setMaxthi] = useState(1); // 110326
@@ -155,26 +157,23 @@ const [authForm, setAuthForm] = useState({ phone: '', pass: '' });
 const [subjectData, setSubjectData] = useState<any[]>([]); // Lưu toàn bộ hàng từ sheet 
 const [dynamicSubjects, setDynamicSubjects] = useState<string[]>([]); // Danh sách môn duy nhất
 const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách cấp học duy nhất
-  const [matrixTopics, setMatrixTopics] = useState([]);// Danh sách chuyên đề cho ma trận
+   const [matrixTopics, setMatrixTopics] = useState([]); // Danh sách chuyên đề cho ma trận
   const [selectedGrade, setSelectedGrade] = useState(12);
   // ảnh và tin tức
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
 const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
-  useEffect(() => {
+   useEffect(() => {
+  // Giả sử bạn dùng google.script.run để gọi hàm từ backend GAS
   if (typeof google !== 'undefined') {
     google.script.run
       .withSuccessHandler((data) => {
+        console.log("✅ Đã tải Config:", data);
         setAppConfig(data);
-        // Nếu trong data có môn mặc định, ta gán luôn vào selectedMonId
-        if (data.defaultMon) {
-          setSelectedMonId(data.defaultMon);
-        } else {
-          setSelectedMonId("toan"); // Dự phòng nếu không có
-        }
       })
       .execute('getAppConfig');
   }
 }, []);
+
  
 
 // 1. Nạp cấu hình riêng cho ma trận
@@ -182,9 +181,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   const loadMatrixData = async () => {
     try {
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
-      // Sửa dòng này:
-      const url = `${DANHGIA_URL}?action=getAppConfigmt&mon=${selectedMonId}`;
-      const response = await fetch(url, {
+      const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
         method: "GET",
         redirect: "follow"
       });
@@ -200,7 +197,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
     }
   };
   loadMatrixData();
-}, [DANHGIA_URL, selectedMonId]);
+}, [DANHGIA_URL]);
  
 
   
@@ -273,9 +270,7 @@ const scoreInfo = (() => {
 
   setScoreData(result);
 };
-  useEffect(() => {
-  console.log("Danh sách topics:", matrixTopics);
-}, [matrixTopics]);
+  
 // ==================================== Reset chung ================================================================
    useEffect(() => {
   fetchApiRouting();
@@ -470,44 +465,54 @@ const handleStudentSubmit = async (e) => {
   // =========================================Ghi ma trận========================================================================
 
 const handleSaveMatrix = async () => {
+  // 1. Kiểm tra ID Giáo viên
   if (!idgv) {
     alert("❌ Lỗi: Không xác định được ID Giáo viên!");
     return;
   }
 
+  // 2. BƯỚC LỌC THÔNG MINH: Chỉ lấy những dòng đã chọn Chuyên đề
   const validRows = selectedTopics.filter(t => t.idcd !== "" && t.idcd !== undefined);
+
   if (validRows.length === 0) {
-    alert("⚠️ Bạn chưa chọn chuyên đề nào!");
+    alert("⚠️ Bạn chưa chọn chuyên đề nào trong bảng ma trận!");
     return;
   }
 
+  // 3. Tự động chọn Link Script dựa trên mã IDGV
   const targetURL = API_ROUTING[idgv] || DEFAULT_API_URL;
 
+  // 4. Gom dữ liệu vào Payload
   const payload = {
     gvId: idgv,
-    mon: selectedMonId, // Gửi mã môn (toan, vatly...)
     makiemtra: maTranForm.makiemtra,
     name: maTranForm.name,
     duration: maTranForm.duration,
-    // Gom mảng thành chuỗi phân cách bởi dấu phẩy
+
+    // Chuyển mảng thành chuỗi phân cách bởi dấu phẩy
     topics: validRows.map(t => t.idcd).join(', '),
+    
     numMC: validRows.map(t => t.numMC || 0).join(', '),
     mcL3: validRows.map(t => t.mcL3 || 0).join(', '),
     mcL4: validRows.map(t => t.mcL4 || 0).join(', '),
+
     numTF: validRows.map(t => t.numTF || 0).join(', '),
     tfL3: validRows.map(t => t.tfL3 || 0).join(', '),
     tfL4: validRows.map(t => t.tfL4 || 0).join(', '),
+
     numSA: validRows.map(t => t.numSA || 0).join(', '),
     saL3: validRows.map(t => t.saL3 || 0).join(', '),
     saL4: validRows.map(t => t.saL4 || 0).join(', '),
+
+    // Điểm số lấy từ Form nhập liệu
     scoreMC: maTranForm.scoreMC || 0.25,
     scoreTF: maTranForm.scoreTF || 1.0,
     scoreSA: maTranForm.scoreSA || 0.5
   };
-
+ console.log("🚀 Payload gửi đi:", payload);
+  // 5. Gửi dữ liệu đi
   try {
-    const url = `${targetURL}?action=saveMatrix&mon=${selectedMonId}`;
-    const response = await fetch(url, {
+    const response = await fetch(`${targetURL}?action=saveMatrix`, {
       method: "POST",
       mode: "cors",
       headers: { "Content-Type": "text/plain" },
@@ -515,12 +520,16 @@ const handleSaveMatrix = async () => {
     });
 
     const result = await response.json();
+
     if (result.status === "success") {
       alert("✅ " + result.message);
-      if (typeof setIsMatrixOpen === "function") setIsMatrixOpen(false);
+      if (typeof setIsMatrixOpen === "function") setIsMatrixOpen(false); // Đóng modal nếu thành công
+    } else {
+      alert("⚠️ Lỗi Script: " + result.message);
     }
   } catch (e) {
     console.error("Lỗi Save Matrix:", e);
+    alert("❌ Lỗi kết nối! Kiểm tra Console để biết chi tiết.");
   }
 };
 
@@ -817,15 +826,10 @@ const handleRedirect = () => {
   }
 };
   const updateTopicRow = (index, field, value) => {
-  setSelectedTopics(prev => {
-    const newTopics = [...prev];
-    newTopics[index] = {
-      ...newTopics[index],
-      [field]: value
-    };
-    return newTopics;
-  });
-};
+    const newTopics = [...selectedTopics];
+    newTopics[index][field] = value;
+    setSelectedTopics(newTopics);
+  };
    const getAllowedGrades = (grade) => {
   const g = Number(grade);
 
@@ -836,14 +840,15 @@ const handleRedirect = () => {
   return [g];
 };
    // ==== Lọc theo lớp ================
-const filteredTopics = useMemo(() => {
-  if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
+  const filteredTopics = useMemo(() => {
 
- return matrixTopics.filter(t => 
-  String(t.grade).trim() === String(selectedGrade).trim() &&
-  String(t.monid).trim() === String(selectedMonId).trim()
-);  
-}, [matrixTopics, selectedGrade, selectedMonId]);
+  const allowed = getAllowedGrades(selectedGrade);
+
+  return matrixTopics
+    .filter(t => allowed.includes(Number(t.grade)))
+    .sort((a,b) => Number(b.grade) - Number(a.grade));
+
+}, [matrixTopics, selectedGrade]);
   return (
     <>
     {/* TRƯỜNG HỢP 1: ĐANG THI (Hiện phòng thi, ẩn toàn bộ Landing) */}
@@ -1326,7 +1331,7 @@ const filteredTopics = useMemo(() => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-5 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mb-6">
 
   {/* Chọn lớp */}
   <div className="space-y-1">
@@ -1336,7 +1341,7 @@ const filteredTopics = useMemo(() => {
 
     <select
       value={selectedGrade}
-      onChange={(e)=>setSelectedGrade(Number(e.target.value))}
+      onChange={(e)=>setSelectedGrade(e.target.value)}
       className="w-full bg-green-950/30 border border-green-400/40 rounded-lg px-3 py-3 text-sm outline-none focus:border-green-300 transition-all font-semibold"
     >
       <option value="12">Lớp 12</option>
@@ -1344,29 +1349,6 @@ const filteredTopics = useMemo(() => {
       <option value="10">Lớp 10</option>
     </select>
   </div>
-          {/* MỚI: Chọn Môn học */}
- {/* MỚI: Chọn Môn học - Cho phép giáo viên tự chọn môn */}
-<div className="space-y-1">
-  <label className="text-[10px] uppercase font-bold text-yellow-400">
-   Chọn môn học
-  </label>
-  <select
-    value={selectedMonId}
-    onChange={(e) => setSelectedMonId(e.target.value)}
-    className="w-full bg-yellow-950/30 border border-yellow-400/40 rounded-lg px-3 py-3 text-sm outline-none font-bold text-yellow-200 cursor-pointer"
-  >
-    <option value="toan" className="bg-gray-800">TOÁN HỌC</option>
-    <option value="ly" className="bg-gray-800">VẬT LÝ</option>
-    <option value="hoa" className="bg-gray-800">HÓA HỌC</option>
-    <option value="sinh" className="bg-gray-800">SINH HỌC</option>
-    <option value="anh" className="bg-gray-800">TIẾNG ANH</option>
-    <option value="su" className="bg-gray-800">LỊCH SỬ</option>
-    <option value="dia" className="bg-gray-800">ĐỊA LÝ</option>
-    <option value="ktpl" className="bg-gray-800">KTPL</option>
-    <option value="cncn" className="bg-gray-800">CNCN</option>
-    <option value="cnnn" className="bg-gray-800">CNNN</option>
-  </select>
-</div>
 
   {/* Mã kiểm tra */}
   <div className="space-y-1">
@@ -1477,60 +1459,50 @@ const filteredTopics = useMemo(() => {
 
       {/* HÀNG 2: BẢNG CHUYÊN ĐỀ (BODY) */}
       <div className="flex-1 overflow-auto p-4 bg-gray-50 custom-scrollbar">
-        <div className="min-w-[800px] md:min-w-[950px]">
+        <div className="min-w-[950px]">
           {/* Header Bảng */}
-          <div className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center font-bold text-[10px] uppercase tracking-wider">
+          <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center font-bold text-[10px] uppercase tracking-wider">
             <div className="text-left px-2 text-gray-400">Chuyên đề</div>
             <div className="col-span-3 py-1 bg-blue-600 text-white rounded-t-lg">Phần I (Trắc nghiệm)</div>
             <div className="col-span-3 py-1 bg-emerald-600 text-white rounded-t-lg">Phần II (Đúng/Sai)</div>
             <div className="col-span-3 py-1 bg-amber-600 text-white rounded-t-lg">Phần III (Trả lời ngắn)</div>
           </div>
 
-          <div className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
-            <select 
-  value={topic.idcd} 
-  onChange={(e) => updateTopicRow(index, 'idcd', e.target.value)}
-   className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
->
-  <option value="">-- Chọn chuyên đề --</option>
-              {(Array.isArray(filteredTopics) ? filteredTopics : []).map((t) => (
-    <option key={String(t.idcd)} value={String(t.idcd)}>
-  {t.idcd} — {t.namecd}
-</option>
-  ))}
-</select>
+          <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
+            <div className="text-left px-3">Chọn chuyên đề</div>
             <div className="text-blue-600">Số câu</div><div className="text-blue-600">L3</div><div className="text-blue-600">L4</div>
             <div className="text-emerald-600">Số câu</div><div className="text-emerald-600">L3</div><div className="text-emerald-600">L4</div>
             <div className="text-amber-600">Số câu</div><div className="text-amber-600">L3</div><div className="text-amber-600">L4</div>
           </div>
 
           {/* Danh sách các dòng chuyên đề */}
-               <div className="space-y-2 pb-4">
-    {Array.isArray(selectedTopics) && selectedTopics.map((topic, index) => (
-    <div key={index} className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
-           
-      <select
-        value={topic.idcd} // Bây giờ topic đã được định nghĩa từ map ở trên
-        onChange={(e) => updateTopicRow(index, 'idcd', e.target.value)}
-        className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
-      >
-        <option value="">-- Chọn chuyên đề --</option>
+          <div className="space-y-2 pb-4">
+            {selectedTopics.map((topic, idx) => (
+              <div key={idx} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
+                {/* SỔ CHỌN CHUYÊN ĐỀ DÙNG matrixTopics MỚI */}
+                {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
+               <select
+  value={topic.idcd}
+  onChange={(e) => updateTopicRow(idx, 'idcd', e.target.value)}
+  className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
+>
+  <option value="">-- Chọn chuyên đề --</option>
 
-        {filteredTopics.map((t) => (
-          /* SỬA CHỖ NÀY: Để hiện đúng "1001 - Mệnh đề" và khớp với logic lọc */
-         <option key={String(t.idcd)} value={String(t.idcd)}>
-             {t.idcd} — {t.namecd}
-          </option>
-        ))}
-      </select>
+  {filteredTopics.map((t) => (
+    <option key={t.id} value={t.id}>
+      Lớp {t.grade} — {t.name}
+    </option>
+  ))}
+
+</select>
 
                 {/* Ô nhập liệu tự động */}
                 {[ 'numMC', 'mcL3', 'mcL4', 'numTF', 'tfL3', 'tfL4', 'numSA', 'saL3', 'saL4' ].map((field) => (
                   <input 
                     key={field}
                     type="number" 
-                    value={topic[field] ?? ''} 
-                   onChange={e => updateTopicRow(index, field, Number(e.target.value))}
+                    value={topic[field] || ''} 
+                    onChange={e => updateTopicRow(idx, field, e.target.value)} 
                     className={`w-full p-2 border rounded-lg text-center text-[11px] outline-none focus:ring-2 transition-all ${
                       field.includes('MC') ? 'focus:ring-blue-500 border-blue-500' : 
                       field.includes('TF') ? 'focus:ring-emerald-500 border-blue-500' : 'focus:ring-amber-500 border-blue-500'
