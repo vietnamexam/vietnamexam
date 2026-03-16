@@ -1489,7 +1489,7 @@ const filteredTopics = useMemo(() => {
           <div className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
             <select 
   value={topic.idcd} 
-  onChange={(e) => handleUpdateTopic(index, 'idcd', e.target.value)}
+  onChange={(e) => updateTopicRow(index, 'idcd', e.target.value)}
    className="w-full p-2 border-2 border-blue-500 rounded-lg text-xs font-semibold bg-white"
 >
   <option value="">-- Chọn chuyên đề --</option>
