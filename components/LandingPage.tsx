@@ -155,7 +155,7 @@ const [authForm, setAuthForm] = useState({ phone: '', pass: '' });
 const [subjectData, setSubjectData] = useState<any[]>([]); // Lưu toàn bộ hàng từ sheet 
 const [dynamicSubjects, setDynamicSubjects] = useState<string[]>([]); // Danh sách môn duy nhất
 const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách cấp học duy nhất
-   const [matrixTopics, setMatrixTopics] = useState([]); // Danh sách chuyên đề cho ma trận
+  const [matrixTopics, setMatrixTopics] = useState([]);// Danh sách chuyên đề cho ma trận
   const [selectedGrade, setSelectedGrade] = useState(12);
   // ảnh và tin tức
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
@@ -200,7 +200,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
     }
   };
   loadMatrixData();
-}, [DANHGIA_URL]);
+}, [DANHGIA_URL, selectedMonId]);
  
 
   
@@ -815,10 +815,15 @@ const handleRedirect = () => {
   }
 };
   const updateTopicRow = (index, field, value) => {
-    const newTopics = [...selectedTopics];
-    newTopics[index][field] = value;
-    setSelectedTopics(newTopics);
-  };
+  setSelectedTopics(prev => {
+    const newTopics = [...prev];
+    newTopics[index] = {
+      ...newTopics[index],
+      [field]: value
+    };
+    return newTopics;
+  });
+};
    const getAllowedGrades = (grade) => {
   const g = Number(grade);
 
@@ -1319,7 +1324,7 @@ const filteredTopics = useMemo(() => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-5 mb-6">
 
   {/* Chọn lớp */}
   <div className="space-y-1">
@@ -1329,7 +1334,7 @@ const filteredTopics = useMemo(() => {
 
     <select
       value={selectedGrade}
-      onChange={(e)=>setSelectedGrade(e.target.value)}
+      onChange={(e)=>setSelectedGrade(Number(e.target.value))}
       className="w-full bg-green-950/30 border border-green-400/40 rounded-lg px-3 py-3 text-sm outline-none focus:border-green-300 transition-all font-semibold"
     >
       <option value="12">Lớp 12</option>
@@ -1470,7 +1475,7 @@ const filteredTopics = useMemo(() => {
 
       {/* HÀNG 2: BẢNG CHUYÊN ĐỀ (BODY) */}
       <div className="flex-1 overflow-auto p-4 bg-gray-50 custom-scrollbar">
-        <div className="min-w-[950px]">
+        <div className="min-w-[800px] md:min-w-[950px]">
           {/* Header Bảng */}
           <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center font-bold text-[10px] uppercase tracking-wider">
             <div className="text-left px-2 text-gray-400">Chuyên đề</div>
@@ -1526,7 +1531,7 @@ const filteredTopics = useMemo(() => {
                     key={field}
                     type="number" 
                     value={topic[field] || ''} 
-                    onChange={e => updateTopicRow(idx, field, e.target.value)} 
+                    onChange={e => updateTopicRow(index, field, e.target.value)} 
                     className={`w-full p-2 border rounded-lg text-center text-[11px] outline-none focus:ring-2 transition-all ${
                       field.includes('MC') ? 'focus:ring-blue-500 border-blue-500' : 
                       field.includes('TF') ? 'focus:ring-emerald-500 border-blue-500' : 'focus:ring-amber-500 border-blue-500'
