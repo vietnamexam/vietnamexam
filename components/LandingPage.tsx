@@ -273,7 +273,9 @@ const scoreInfo = (() => {
 
   setScoreData(result);
 };
-  
+  useEffect(() => {
+  console.log("Danh sách topics:", matrixTopics);
+}, [matrixTopics]);
 // ==================================== Reset chung ================================================================
    useEffect(() => {
   fetchApiRouting();
@@ -837,10 +839,10 @@ const handleRedirect = () => {
 const filteredTopics = useMemo(() => {
   if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
 
-  return matrixTopics.filter(t => 
-    String(t.grade) === String(selectedGrade) && 
-    String(t.monid) === String(selectedMonId) // Phải khớp với cột monid trong sheet dangcd
-  );
+ return matrixTopics.filter(t => 
+  String(t.grade).trim() === String(selectedGrade).trim() &&
+  String(t.monid).trim() === String(selectedMonId).trim()
+);  
 }, [matrixTopics, selectedGrade, selectedMonId]);
   return (
     <>
@@ -1477,21 +1479,21 @@ const filteredTopics = useMemo(() => {
       <div className="flex-1 overflow-auto p-4 bg-gray-50 custom-scrollbar">
         <div className="min-w-[800px] md:min-w-[950px]">
           {/* Header Bảng */}
-          <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center font-bold text-[10px] uppercase tracking-wider">
+          <div className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-3 text-center font-bold text-[10px] uppercase tracking-wider">
             <div className="text-left px-2 text-gray-400">Chuyên đề</div>
             <div className="col-span-3 py-1 bg-blue-600 text-white rounded-t-lg">Phần I (Trắc nghiệm)</div>
             <div className="col-span-3 py-1 bg-emerald-600 text-white rounded-t-lg">Phần II (Đúng/Sai)</div>
             <div className="col-span-3 py-1 bg-amber-600 text-white rounded-t-lg">Phần III (Trả lời ngắn)</div>
           </div>
 
-          <div className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
+          <div className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 mb-2 text-center text-[10px] font-bold text-gray-500 bg-white py-1 shadow-sm border rounded-lg">
             <select 
   value={topic.idcd} 
   onChange={(e) => handleUpdateTopic(index, 'idcd', e.target.value)}
   className="..."
 >
   <option value="">-- Chọn chuyên đề --</option>
-  {filteredTopics.map((item) => (
+ (Array.isArray(filteredTopics) ? filteredTopics : []).map((t) => (
     <option key={item.idcd} value={item.idcd}>
       {item.idcd} - {item.namecd}
     </option>
@@ -1506,10 +1508,8 @@ const filteredTopics = useMemo(() => {
                <div className="space-y-2 pb-4">
   {/* SỬA CHỖ NÀY: Đổi 'item' thành 'topic' để khớp với value={topic.idcd} bên dưới */}
   {selectedTopics.map((topic, index) => ( 
-    <div key={index} className="grid grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
-      
-      {console.log("Danh sách topics hiện có trong Modal:", matrixTopics)}
-      
+    <div key={index} className="grid grid-cols-[2fr_repeat(9,1fr)] md:grid-cols-[2.5fr_repeat(9,1fr)] gap-2 items-center bg-white p-2 rounded-xl border-2 border-blue-500 shadow-sm hover:border-blue-400 transition-all group">
+           
       <select
         value={topic.idcd} // Bây giờ topic đã được định nghĩa từ map ở trên
         onChange={(e) => updateTopicRow(index, 'idcd', e.target.value)}
@@ -1519,7 +1519,7 @@ const filteredTopics = useMemo(() => {
 
         {filteredTopics.map((t) => (
           /* SỬA CHỖ NÀY: Để hiện đúng "1001 - Mệnh đề" và khớp với logic lọc */
-          <option key={t.idcd} value={t.idcd}>
+         <option key={String(t.idcd)} value={String(t.idcd)}>
              {t.idcd} — {t.namecd}
           </option>
         ))}
@@ -1531,7 +1531,7 @@ const filteredTopics = useMemo(() => {
                     key={field}
                     type="number" 
                     value={topic[field] || ''} 
-                    onChange={e => updateTopicRow(index, field, e.target.value)} 
+                   onChange={e => updateTopicRow(index, field, Number(e.target.value))}
                     className={`w-full p-2 border rounded-lg text-center text-[11px] outline-none focus:ring-2 transition-all ${
                       field.includes('MC') ? 'focus:ring-blue-500 border-blue-500' : 
                       field.includes('TF') ? 'focus:ring-emerald-500 border-blue-500' : 'focus:ring-amber-500 border-blue-500'
