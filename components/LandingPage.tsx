@@ -846,11 +846,12 @@ const handleRedirect = () => {
 };
    // ==== Lọc theo lớp ================
  const filteredTopics = useMemo(() => {
-  if (!matrixTopics || !selectedMonId) return [];
+  // Nếu chưa nạp xong hoặc chưa chọn đủ Lớp/Môn thì trả về rỗng
+  if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
 
   return matrixTopics.filter(t => 
     String(t.grade) === String(selectedGrade) && 
-    String(t.monId) === String(selectedMonId)
+    String(t.monid) === String(selectedMonId)
   );
 }, [matrixTopics, selectedGrade, selectedMonId]);
   return (
