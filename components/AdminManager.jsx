@@ -319,8 +319,8 @@ setPreviewData(results);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
     const dataArray = previewData;
-    const subjectId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${subjectId}`;
+    const monId = getSubjectFromPass(authPass).id;
+    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${monId}`;
     
     const resp = await fetch(url, {
       method: 'POST',
