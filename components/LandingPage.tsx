@@ -160,18 +160,21 @@ const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách 
   // ảnh và tin tức
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
 const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
-   useEffect(() => {
-  // Giả sử bạn dùng google.script.run để gọi hàm từ backend GAS
+  useEffect(() => {
   if (typeof google !== 'undefined') {
     google.script.run
       .withSuccessHandler((data) => {
-        console.log("✅ Đã tải Config:", data);
         setAppConfig(data);
+        // Nếu trong data có môn mặc định, ta gán luôn vào selectedMonId
+        if (data.defaultMon) {
+          setSelectedMonId(data.defaultMon);
+        } else {
+          setSelectedMonId("toan"); // Dự phòng nếu không có
+        }
       })
       .execute('getAppConfig');
   }
 }, []);
-
  
 
 // 1. Nạp cấu hình riêng cho ma trận
