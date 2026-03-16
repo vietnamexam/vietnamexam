@@ -4,7 +4,7 @@ import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
 import { fetchScore, resetQuiz } from '../questions';
-import {getSubjectFromPass} from './AdminManager';
+import { getSubjectFromPass } from './AdminManager';
 
 
 
