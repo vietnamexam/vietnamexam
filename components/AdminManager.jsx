@@ -198,7 +198,9 @@ const chuan_hoa = (data) => ({
   useEffect(() => {
   const loadConfig = async () => {
     try {
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig`);
+      const monId = getSubjectFromPass(authPass).id;
+    // Thêm tham số &mon= vào URL       
+      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig&mon=${monId}`);
       const result = await response.json();
       if (result.status === "success") {
         setSubjects(result.data.topics);
@@ -238,7 +240,9 @@ const chuan_hoa = (data) => ({
  const findQuestion = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${getSubjectFromPass(authPass).id}`);
+    const monId = getSubjectFromPass(authPass).id;
+    const url = `${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${monId}`
+    const resp = await fetch(url);
     const res = await resp.json();
     if (res.status === 'success') {
       // 💡 Hợp nhất dữ liệu thông minh
@@ -311,7 +315,9 @@ setPreviewData(results);
 
   // 2. Truyền thêm tham số mon vào URL
    // Sửa thành:
-  const url = `${DANHGIA_URL}?action=loadQuestions&mon=${getSubjectFromPass(authPass).id}`;
+  const monId = getSubjectFromPass(authPass).id;
+    // Thêm tham số &mon= vào URL        
+  const url = `${DANHGIA_URL}?action=loadQuestions&mon=${monId}`;
   const resp = await fetch(url);
   const res = await resp.json();
 
@@ -330,9 +336,10 @@ setPreviewData(results);
   setLoading(true);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
-    const dataArray = previewData;
-    const subjectId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${subjectId}`;
+    const dataArray = previewData;    
+    const monId = getSubjectFromPass(authPass).id;
+    // Thêm tham số &mon= vào URL       
+    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${monId}`;
     
     const resp = await fetch(url, {
       method: 'POST',
@@ -376,7 +383,10 @@ const handleUploadLG = async () => {
     }).filter(item => item.id !== null);
 
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
-    const resp = await fetch(`${DANHGIA_URL}?action=saveLG`, {
+    const monId = getSubjectFromPass(authPass).id;
+    // Thêm tham số &mon= vào URL   
+    
+    const resp = await fetch(`${DANHGIA_URL}?action=saveLG&mon=${monId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
@@ -463,7 +473,9 @@ if (res.status === "success") { // Chỉ cần check status là đủ, hoặc ch
 const handleFindDuplicates = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions`);
+    const monId = getSubjectFromPass(authPass).id;   // Thêm tham số &mon= vào URL    
+    
+    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`);
     const res = await resp.json();
     if (res.status === 'success') {
       setDuplicateGroups(res.data);
@@ -546,7 +558,9 @@ const handleQuickUpdate = async (field, newValue) => {
 
     // 3. Gửi lên Google Apps Script
     // Thêm tham số &mon= vào URL
-    const url = `${DANHGIA_URL}?action=updateQuestion&mon=${getSubjectFromPass(authPass).id}`;
+    const monId = getSubjectFromPass(authPass).id;
+    // Thêm tham số &mon= vào URL        
+    const url = `${DANHGIA_URL}?action=updateQuestion&mon=${monId}`;
     const res = await fetch(url, {
       method: 'POST',
       mode: 'cors',
