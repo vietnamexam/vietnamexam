@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, API_ROUTING } from '../config';
-export const getSubjectFromPass = (input) => {
-  const p = String(input || "").toUpperCase();
+export const getSubjectFromPass = (pass) => {
+  const p = String(pass || "").toUpperCase();
   
   if (p.startsWith('TO@')) return { id: 'toan', name: 'Toán học', color: 'bg-blue-100 text-blue-700 border-blue-200' };
   if (p.startsWith('LY@')) return { id: 'ly', name: 'Vật lý', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
