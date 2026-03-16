@@ -829,13 +829,12 @@ const handleRedirect = () => {
   return [g];
 };
    // ==== Lọc theo lớp ================
- const filteredTopics = useMemo(() => {
+const filteredTopics = useMemo(() => {
   if (!matrixTopics || matrixTopics.length === 0 || !selectedMonId) return [];
 
-  // Lọc theo Lớp (grade) và Môn (monid)
   return matrixTopics.filter(t => 
     String(t.grade) === String(selectedGrade) && 
-    String(t.monid) === String(selectedMonId)
+    String(t.monid) === String(selectedMonId) // Phải khớp với cột monid trong sheet dangcd
   );
 }, [matrixTopics, selectedGrade, selectedMonId]);
   return (
