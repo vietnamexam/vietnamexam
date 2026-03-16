@@ -1349,6 +1349,22 @@ const handleRedirect = () => {
       <option value="10">Lớp 10</option>
     </select>
   </div>
+          {/* MỚI: Chọn Môn học */}
+  <div className="space-y-1">
+    <label className="text-[10px] uppercase font-bold text-yellow-400">
+      Môn học
+    </label>
+    <select
+      // Sử dụng trực tiếp môn lấy từ mật khẩu để đảm bảo monId luôn chuẩn
+      value={getSubjectFromPass(authPass).id} 
+      disabled // Khóa lại vì mỗi GV chỉ 1 môn theo authPass, hoặc để chọn nếu thầy muốn linh hoạt
+      className="w-full bg-yellow-950/30 border border-yellow-400/40 rounded-lg px-3 py-3 text-sm outline-none font-bold text-yellow-200"
+    >
+      <option value={getSubjectFromPass(authPass).id}>
+        {getSubjectFromPass(authPass).name.toUpperCase()}
+      </option>
+    </select>
+  </div>
 
   {/* Mã kiểm tra */}
   <div className="space-y-1">
