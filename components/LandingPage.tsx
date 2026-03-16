@@ -4,10 +4,6 @@ import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
 import { fetchScore, resetQuiz } from '../questions';
-import { getSubjectFromPass } from './AdminManager';
-
-
-
 interface LandingPageProps {
   onSelectGrade: (grade: number) => void;
   onSelectQuiz: (num: number, pts: number, quizStudent: Partial<Student>) => void;
@@ -33,6 +29,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   // Thêm/Kiểm tra dòng này ở đầu Component
+  const [selectedMonId, setSelectedMonId] = useState("");
   const [appConfig, setAppConfig] = useState({ topics: [], classes: [] });
   const [showNotice, setShowNotice] = useState(false); // 110326
   const [maxthi, setMaxthi] = useState(1); // 110326
@@ -486,6 +483,7 @@ const handleSaveMatrix = async () => {
   // 4. Gom dữ liệu vào Payload
   const payload = {
     gvId: idgv,
+    mon: selectedMonId,
     makiemtra: maTranForm.makiemtra,
     name: maTranForm.name,
     duration: maTranForm.duration,
@@ -512,9 +510,8 @@ const handleSaveMatrix = async () => {
   };
  console.log("🚀 Payload gửi đi:", payload);
   // 5. Gửi dữ liệu đi
-  try {
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${targetURL}?action=saveMatrix&mon=${monId}`;
+  try {    
+    const url = `${targetURL}?action=saveMatrix&mon=${selectedMonId}`;
     const response = await fetch(url, {
       method: "POST",
       mode: "cors",
@@ -844,14 +841,14 @@ const handleRedirect = () => {
 };
    // ==== Lọc theo lớp ================
   const filteredTopics = useMemo(() => {
-
-  const allowed = getAllowedGrades(selectedGrade);
-
-  return matrixTopics
-    .filter(t => allowed.includes(Number(t.grade)))
-    .sort((a,b) => Number(b.grade) - Number(a.grade));
-
-}, [matrixTopics, selectedGrade]);
+  if (!matrixTopics || matrixTopics.length === 0) return [];
+  
+  // Dùng trực tiếp selectedMonId từ ô Select ở trên
+  return matrixTopics.filter(t => 
+    String(t.grade) === String(selectedGrade) && 
+    String(t.monId) === String(selectedMonId)
+  );
+}, [matrixTopics, selectedGrade, selectedMonId]);
   return (
     <>
     {/* TRƯỜNG HỢP 1: ĐANG THI (Hiện phòng thi, ẩn toàn bộ Landing) */}
@@ -1353,21 +1350,28 @@ const handleRedirect = () => {
     </select>
   </div>
           {/* MỚI: Chọn Môn học */}
-  <div className="space-y-1">
-    <label className="text-[10px] uppercase font-bold text-yellow-400">
-      Môn học
-    </label>
-    <select
-      // Sử dụng trực tiếp môn lấy từ mật khẩu để đảm bảo monId luôn chuẩn
-      value={getSubjectFromPass(authPass).id} 
-      disabled // Khóa lại vì mỗi GV chỉ 1 môn theo authPass, hoặc để chọn nếu thầy muốn linh hoạt
-      className="w-full bg-yellow-950/30 border border-yellow-400/40 rounded-lg px-3 py-3 text-sm outline-none font-bold text-yellow-200"
-    >
-      <option value={getSubjectFromPass(authPass).id}>
-        {getSubjectFromPass(authPass).name.toUpperCase()}
-      </option>
-    </select>
-  </div>
+ {/* MỚI: Chọn Môn học - Cho phép giáo viên tự chọn môn */}
+<div className="space-y-1">
+  <label className="text-[10px] uppercase font-bold text-yellow-400">
+   Chọn môn học
+  </label>
+  <select
+    value={selectedMonId}
+    onChange={(e) => setSelectedMonId(e.target.value)}
+    className="w-full bg-yellow-950/30 border border-yellow-400/40 rounded-lg px-3 py-3 text-sm outline-none font-bold text-yellow-200 cursor-pointer"
+  >
+    <option value="toan" className="bg-gray-800">TOÁN HỌC</option>
+    <option value="ly" className="bg-gray-800">VẬT LÝ</option>
+    <option value="hoa" className="bg-gray-800">HÓA HỌC</option>
+    <option value="sinh" className="bg-gray-800">SINH HỌC</option>
+    <option value="anh" className="bg-gray-800">TIẾNG ANH</option>
+    <option value="su" className="bg-gray-800">LỊCH SỬ</option>
+    <option value="dia" className="bg-gray-800">ĐỊA LÝ</option>
+    <option value="ktpl" className="bg-gray-800">KTPL</option>
+    <option value="cncn" className="bg-gray-800">CNCN</option>
+    <option value="cnnn" className="bg-gray-800">CNNN</option>
+  </select>
+</div>
 
   {/* Mã kiểm tra */}
   <div className="space-y-1">
