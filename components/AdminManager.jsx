@@ -199,8 +199,9 @@ const chuan_hoa = (data) => ({
   const loadConfig = async () => {
     try {
       const monId = getSubjectFromPass(authPass).id;
-    // Thêm tham số &mon= vào URL       
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig&mon=${monId}`);
+    // Thêm tham số &mon= vào URL   
+      const url = `${DANHGIA_URL}?action=getAppConfig&mon=${monId}`;
+      const response = await fetch(url);
       const result = await response.json();
       if (result.status === "success") {
         setSubjects(result.data.topics);
@@ -385,8 +386,8 @@ const handleUploadLG = async () => {
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
     const monId = getSubjectFromPass(authPass).id;
     // Thêm tham số &mon= vào URL   
-    
-    const resp = await fetch(`${DANHGIA_URL}?action=saveLG&mon=${monId}`, {
+    const url = `${DANHGIA_URL}?action=saveLG&mon=${monId}`;
+    const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
@@ -474,8 +475,8 @@ const handleFindDuplicates = async () => {
   setLoading(true);
   try {
     const monId = getSubjectFromPass(authPass).id;   // Thêm tham số &mon= vào URL    
-    
-    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`);
+    const url = `${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`;
+    const resp = await fetch(url);
     const res = await resp.json();
     if (res.status === 'success') {
       setDuplicateGroups(res.data);
@@ -495,7 +496,8 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   try {
     const monId = getSubjectFromPass(authPass).id;
     // Thêm tham số &mon= vào URL    
-    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`);
+    const url = `${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`;
+    const resp = await fetch(url);
     const res = await resp.json();
     
    if(res.status === 'success') {
