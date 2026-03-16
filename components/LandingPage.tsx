@@ -29,7 +29,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   // Thêm/Kiểm tra dòng này ở đầu Component
-  const [selectedMonId, setSelectedMonId] = useState("");
+  const [selectedMonId, setSelectedMonId] = useState('toan');
   const [appConfig, setAppConfig] = useState({ topics: [], classes: [] });
   const [showNotice, setShowNotice] = useState(false); // 110326
   const [maxthi, setMaxthi] = useState(1); // 110326
