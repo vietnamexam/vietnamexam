@@ -189,7 +189,9 @@ const chuan_hoa = (data) => ({
   useEffect(() => {
   const loadConfig = async () => {
     try {
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig`);
+      const monId = getSubjectFromPass(authPass).id;
+      const url = `${DANHGIA_URL}?action=getAppConfig&mon=${monId}`;
+      const response = await fetch(url);
       const result = await response.json();
       if (result.status === "success") {
         setSubjects(result.data.topics);
@@ -230,7 +232,7 @@ const chuan_hoa = (data) => ({
   setLoading(true);
   try {
     const monId = getSubjectFromPass(authPass).id;
-    const url =`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${monId}`;
+    const url = `${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${monId}`;
 
     const resp = await fetch(url);
     const res = await resp.json();
@@ -369,7 +371,7 @@ const handleUploadLG = async () => {
 
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
     const monId = getSubjectFromPass(authPass).id;
-    const url =`${DANHGIA_URL}?action=saveLG&mon=${monId}`;
+    const url = `${DANHGIA_URL}?action=saveLG&mon=${monId}`;
     const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
@@ -458,7 +460,7 @@ const handleFindDuplicates = async () => {
   setLoading(true);
   try {
     const monId = getSubjectFromPass(authPass).id;
-    const url =`${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`;
+    const url = `${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`;
 
     const resp = await fetch(url);
     const res = await resp.json();
@@ -479,7 +481,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   
   try {
     const monId = getSubjectFromPass(authPass).id;
-    const url =`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`;
+    const url = `${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`;
 
     const resp = await fetch(url);
     const res = await resp.json();
