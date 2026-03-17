@@ -180,8 +180,10 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
  useEffect(() => {
   const loadMatrixData = async () => {
     try {
+      const monId = getSubjectFromPass(authPass).id; 
+      const url = ${DANHGIA_URL}?action=getAppConfigmt&mon=${monId};
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
+      const response = await fetch(url, {
         method: "GET",
         redirect: "follow"
       });
@@ -197,10 +199,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
     }
   };
   loadMatrixData();
-}, [DANHGIA_URL]);
- 
-
-  
+}, [DANHGIA_URL, authPass]);  
 // 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
 const scoreInfo = (() => {
   const sMC = parseFloat(maTranForm.scoreMC) || 0;
