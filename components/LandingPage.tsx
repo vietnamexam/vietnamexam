@@ -181,7 +181,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   const loadMatrixData = async () => {
     try {
       const monId = getSubjectFromPass(authPass).id; 
-      const url = ${DANHGIA_URL}?action=getAppConfigmt&mon=${monId};
+      const url = `${DANHGIA_URL}?action=getAppConfigmt&mon=${monId}`;
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
       const response = await fetch(url, {
         method: "GET",
