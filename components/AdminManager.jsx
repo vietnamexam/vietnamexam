@@ -376,7 +376,7 @@ const handleUploadLG = async () => {
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
     });
     
-    const result = await resp.text();
+    const result = await resp.json();
     alert(result.message);
     setJsonInput('');
   } catch (e) { alert("Lỗi gửi dữ liệu thầy ạ!"); }
