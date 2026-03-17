@@ -1111,31 +1111,27 @@ const handleRedirect = () => {
 </div>       
 
      {/* CỘT PHẢI: QUIZ & TOP 10 (VUỐT) */}
-        <div className="lg:col-span-3 flex flex-col gap-4 order-3">
+       <div className="lg:col-span-3 flex flex-col gap-4 order-3">
           {/* CỤM NÚT ĐIỀU KHIỂN */}
           <div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
-            <a
-  href="https://thayhabacninh.vercel.app/?mode=quiz"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="w-full bg-orange-500 text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-orange-700 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-2"
->
-  <i className="fas fa-gift animate-bounce"></i>
-  SĂN QUÀ QUIZ
-</a>
+            <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="w-full bg-orange-500 text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-orange-700 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+              <i className="fas fa-gift animate-bounce"></i> SĂN QUÀ QUIZ
+            </button>
+            <button className="w-full bg-blue-500 text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-blue-800 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+              <i className="fas fa-gamepad animate-bounce"></i> Chọn lớp để vào làm bài
+            </button>
            <div className="grid grid-cols-2 gap-2">
- {[12, 11, 10].map(g => (
-  <a
-    key={g}
-    href={`https://thayhabacninh.vercel.app/?grade=${g}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-blue-600 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
-  >
-    <i className="fas fa-graduation-cap text-xs"></i>
-    <span>Lớp {g}</span>
-  </a>
-))}
+  {/* 3 Nút chọn lớp 10, 11, 12 */}
+  {[12, 11, 10].map(g => (
+    <button 
+      key={g} 
+      onClick={() => onSelectGrade(g)} 
+      className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-blue-800 transition-all active:scale-95 flex items-center justify-center gap-2"
+    >
+      <i className="fas fa-graduation-cap text-[10px]"></i> 
+      <span>Lớp {g}</span>
+    </button>
+  ))}
 
 
 
