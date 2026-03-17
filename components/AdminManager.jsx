@@ -376,7 +376,7 @@ const handleUploadLG = async () => {
     });
     
     const result = await resp.text();
-    alert(result);
+    alert(result.message);
     setJsonInput('');
   } catch (e) { alert("Lỗi gửi dữ liệu thầy ạ!"); }
   finally { setLoading(false); }
