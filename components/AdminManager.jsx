@@ -228,7 +228,10 @@ const chuan_hoa = (data) => ({
  const findQuestion = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
+    const monId = getSubjectFromPass(authPass).id;
+    const url =`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${monId}`;
+
+    const resp = await fetch(url);
     const res = await resp.json();
     if (res.status === 'success') {
       // 💡 Hợp nhất dữ liệu thông minh
@@ -364,7 +367,9 @@ const handleUploadLG = async () => {
     }).filter(item => item.id !== null);
 
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
-    const resp = await fetch(`${DANHGIA_URL}?action=saveLG`, {
+    const monId = getSubjectFromPass(authPass).id;
+    const url =`${DANHGIA_URL}?action=saveLG&mon=${monId}`;
+    const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
@@ -451,7 +456,10 @@ if (res.status === "success") { // Chỉ cần check status là đủ, hoặc ch
 const handleFindDuplicates = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions`);
+    const monId = getSubjectFromPass(authPass).id;
+    const url =`${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`;
+
+    const resp = await fetch(url);
     const res = await resp.json();
     if (res.status === 'success') {
       setDuplicateGroups(res.data);
@@ -469,7 +477,10 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}`);
+    const monId = getSubjectFromPass(authPass).id;
+    const url =`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`;
+
+    const resp = await fetch(url);
     const res = await resp.json();
     
    if(res.status === 'success') {
@@ -531,7 +542,9 @@ const handleQuickUpdate = async (field, newValue) => {
     };
 
     // 3. Gửi lên Google Apps Script
-    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
+    const monId = getSubjectFromPass(authPass).id;
+    const url = `${DANHGIA_URL}?action=updateQuestion&mon=${monId}`;
+    const res = await fetch(url, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
@@ -742,7 +755,7 @@ const handleQuickUpdate = async (field, newValue) => {
             </button>
           </div>
 
-          <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
+          <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200 max-h-[600px]">
             {previewData.length > 0 ? (
               <QuestionPreviewBlock
   data={previewData}
@@ -866,7 +879,7 @@ const handleQuickUpdate = async (field, newValue) => {
       </div>
 
       {/* Body */}
-      <div className="p-4 md:p-6 flex-1 overflow-y-auto space-y-4">
+      <div className="p-4 md:p-6 flex-1 overflow-y-auto scroll-smooth space-y-4">
 
                <EditableSection
           title="Nội dung câu hỏi"
