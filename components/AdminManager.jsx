@@ -193,7 +193,7 @@ const chuan_hoa = (data) => ({
       const url = `${DANHGIA_URL}?action=getAppConfig&mon=${monId}`;
       const response = await fetch(url);
       const result = await response.json();
-      if (result.status === "success") {
+      if (result && result.status === "success") {
         setSubjects(result.data.topics);
         console.log("✅ Đã nạp cấu hình thành công!");
       }
@@ -202,7 +202,7 @@ const chuan_hoa = (data) => ({
     }
   };
   loadConfig();
-}, []);
+}, [authPass]);
   
   const [gvInfo, setGvInfo] = useState({ id: '', pass: '' });  
   const [maTranForm, setMaTranForm] = useState({
