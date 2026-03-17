@@ -1190,11 +1190,11 @@ const handleRedirect = () => {
           const password = window.prompt("🔐 Nhập mật khẩu Admin để reset:");
           if (!password) return;
 
-          if (!API_ROUTING["admin2"]) {
+          if (!API_ROUTING["111"]) {
             await fetchApiRouting();
           }
 
-          const baseUrl = API_ROUTING["admin2"];
+          const baseUrl = API_ROUTING["111"];
 
           const res = await fetch(
             `${baseUrl}?action=resetQuiz&password=${encodeURIComponent(password)}`
