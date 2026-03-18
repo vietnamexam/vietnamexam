@@ -46,8 +46,7 @@ const App: React.FC = () => {
         console.log("🚀 Hệ thống bắt đầu khởi tạo...");
         await Promise.all([
           fetchAdminConfig(),
-          fetchApiRouting(),
-          fetchQuestionsBank(),
+          fetchApiRouting(),         
           fetchQuestionsBankW()
         ]);
         console.log("✅ Tất cả dữ liệu đã nạp xong!");
