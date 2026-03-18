@@ -1123,7 +1123,7 @@ const handleRedirect = () => {
   SĂN QUÀ QUIZ
 </a>
            <div className="grid grid-cols-2 gap-2">
- {[12, 11, 10].map(g => (
+ {[12, 11, 10, 9].map(g => (
   <a
     key={g}
     href={`https://thayhabacninh-phi.vercel.app/?grade=${g}`}
