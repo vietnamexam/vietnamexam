@@ -1,6 +1,5 @@
 import { Question } from './types';
 import { DANHGIA_URL } from './config';
-import { getSubjectFromPass } from "./utils/subject";
 // Lọc câu trùng
 const findDuplicates = (bank) => {
   const groups = [];
@@ -46,9 +45,8 @@ const checkSimilarity = (str1, str2) => {
 export let questionsBank: Question[] = [];
 
 // 2. Hàm nạp dữ liệu từ Google Sheet
-export const fetchQuestionsBank = async (): Promise<Question[]> => {
-  try {
-    const mon = getSubjectFromPass(pass).id;
+export const fetchQuestionsBank = async (monId: String): Promise<Question[]> => {
+  try {    
     const response = await fetch(`${DANHGIA_URL}?action=getQuestions&mon=&{mon}`);
     const result = await response.json();
     
