@@ -4,6 +4,7 @@ import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
 import { fetchScore, resetQuiz } from '../questions';
+import { getSubjectFromPass } from "../utils/subject";
 
 
 
@@ -32,6 +33,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   // Thêm/Kiểm tra dòng này ở đầu Component
+  const [authPass, setAuthPass] = useState("");
   const [appConfig, setAppConfig] = useState({ topics: [], classes: [] });
   const [showNotice, setShowNotice] = useState(false); // 110326
   const [maxthi, setMaxthi] = useState(1); // 110326
@@ -180,8 +182,10 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
  useEffect(() => {
   const loadMatrixData = async () => {
     try {
+      const monId = getSubjectFromPass(authPass).id; 
+      const url = `${DANHGIA_URL}?action=getAppConfigmt&mon=${monId}`;
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
+      const response = await fetch(url, {
         method: "GET",
         redirect: "follow"
       });
@@ -197,10 +201,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
     }
   };
   loadMatrixData();
-}, [DANHGIA_URL]);
- 
-
-  
+}, [DANHGIA_URL, authPass]);  
 // 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
 const scoreInfo = (() => {
   const sMC = parseFloat(maTranForm.scoreMC) || 0;
@@ -1123,7 +1124,7 @@ const handleRedirect = () => {
   SĂN QUÀ QUIZ
 </a>
            <div className="grid grid-cols-2 gap-2">
- {[12, 11, 10, 9].map(g => (
+ {[12, 11, 10].map(g => (
   <a
     key={g}
     href={`https://thayhabacninh-phi.vercel.app/?grade=${g}`}
@@ -1189,11 +1190,11 @@ const handleRedirect = () => {
           const password = window.prompt("🔐 Nhập mật khẩu Admin để reset:");
           if (!password) return;
 
-          if (!API_ROUTING["admin2"]) {
+          if (!API_ROUTING["111"]) {
             await fetchApiRouting();
           }
 
-          const baseUrl = API_ROUTING["admin2"];
+          const baseUrl = API_ROUTING["111"];
 
           const res = await fetch(
             `${baseUrl}?action=resetQuiz&password=${encodeURIComponent(password)}`
