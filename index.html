@@ -5,9 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Hệ thống học tập và kiểm tra online</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
      <script>
   window.MathJax = {
@@ -22,7 +19,10 @@
       // Giúp MathJax không quét nhầm vào các đoạn code hoặc input
       ignoreHtmlClass: 'no-mathjax',
       processHtmlClass: 'mathjax-process'
-    },    
+    },
+    chtml: {
+      fontCache: 'global'
+    },
     startup: {
       // Đảm bảo MathJax sẵn sàng cho việc gọi từ React useEffect
       typeset: true 
@@ -58,7 +58,7 @@
         }
     </style>
 
-
+<link rel="stylesheet" href="/index.css">
 </head>
 <body>
   <div id="root"></div>

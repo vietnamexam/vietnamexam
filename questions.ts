@@ -1,46 +1,5 @@
 import { Question } from './types';
-import { DANHGIA_URL } from './config';
-import { getSubjectFromPass } from "../utils/subject";
-// Lọc câu trùng
-const findDuplicates = (bank) => {
-  const groups = [];
-  const usedIds = new Set();
-
-  for (let i = 0; i < bank.length; i++) {
-    if (usedIds.has(bank[i].id)) continue;
-    let group = [bank[i]];
-
-    for (let j = i + 1; j < bank.length; j++) {
-      const q1 = bank[i];
-      const q2 = bank[j];
-
-      // TIÊU CHUẨN LỌC TRÙNG CỦA THẦY:
-      // 1. Đáp án giống nhau (q1.a === q2.a)
-      // 2. Nội dung câu hỏi khá giống nhau (dùng độ dài hoặc từ khóa)
-      const contentSimilarity = checkSimilarity(q1.question, q2.question);
-      
-      if (q1.a === q2.a && contentSimilarity > 0.8) {
-        group.push(q2);
-        usedIds.add(q2.id);
-      }
-    }
-
-    if (group.length > 1) {
-      groups.push(group);
-      usedIds.add(bank[i].id);
-    }
-  }
-  return groups;
-};
-
-// Hàm kiểm tra độ giống nhau cơ bản (Có thể dùng thuật toán Levenshtein nâng cao hơn)
-const checkSimilarity = (str1, str2) => {
-  const s1 = str1.replace(/[0-9]/g, '').toLowerCase(); // Loại bỏ số để so sánh lời dẫn
-  const s2 = str2.replace(/[0-9]/g, '').toLowerCase();
-  // Nếu số liệu giống nhau thì quan trọng hơn, thầy có thể thêm logic lọc số ở đây
-  return s1 === s2 ? 1 : 0.5; // Tạm thời trả về 1 nếu giống hệt lời dẫn
-};
-
+import { DANHGIA_URL, API_ROUTING  } from './config';
 
 // 1. Lưu trữ ngân hàng câu hỏi
 export let questionsBank: Question[] = [];
@@ -48,8 +7,7 @@ export let questionsBank: Question[] = [];
 // 2. Hàm nạp dữ liệu từ Google Sheet
 export const fetchQuestionsBank = async (): Promise<Question[]> => {
   try {
-    const mon = getSubjectFromPass(pass).id;
-    const response = await fetch(`${DANHGIA_URL}?action=getQuestions&mon=&{mon}`);
+    const response = await fetch(`${DANHGIA_URL}?action=getQuestions`);
     const result = await response.json();
     
     if (result.status === "success" && Array.isArray(result.data)) {
@@ -102,11 +60,11 @@ export const pickQuestionsSmart = (
       const typePool = pool.filter(q => q.type === type);
       
       // Lọc mức độ 3 và 4
-      const p4 = typePool.filter(q => q.classTag.toString().endsWith(".4"));
-      const p3 = typePool.filter(q => q.classTag.toString().endsWith(".3"));
+      const p4 = typePool.filter(q => q.classTag.toString().endsWith(".d"));
+      const p3 = typePool.filter(q => q.classTag.toString().endsWith(".c"));
       const pOther = typePool.filter(q => 
-        !q.classTag.toString().endsWith(".3") && 
-        !q.classTag.toString().endsWith(".4")
+        !q.classTag.toString().endsWith(".c") && 
+        !q.classTag.toString().endsWith(".d")
       );
 
       let res4 = shuffleArray(p4).slice(0, l4);
@@ -139,3 +97,52 @@ export const pickQuestionsSmart = (
     return newQ;
   });
 };
+export const fetchScore = async (
+  idgv: string,
+  sbd: string,
+  exams: string
+) => {
+
+  if (!API_ROUTING[idgv]) {
+    await fetchApiRouting();   // 👈 bắt buộc load lại
+  }
+
+  const baseUrl = API_ROUTING[idgv];
+  if (!baseUrl) return null;
+
+  const url = `${baseUrl}?action=getScore&sbd=${sbd}&exams=${exams}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if (data.status === "success") {
+    return data.data;
+  }
+
+  return null;
+};
+export const resetQuiz = async () => {
+
+  if (!API_ROUTING["admin2"]) {
+    await fetchApiRouting();
+  }
+
+  const baseUrl = API_ROUTING["admin2"];
+
+  if (!baseUrl) {
+    alert("Không tìm thấy routing admin2");
+    return false;
+  }
+
+  try {
+    const res = await fetch(`${baseUrl}?action=resetQuiz`);
+    const data = await res.json();
+
+    return data.status === "success";
+  } catch (err) {
+    console.error("Lỗi resetQuiz:", err);
+    return false;
+  }
+};
+
+
