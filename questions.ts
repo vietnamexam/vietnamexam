@@ -1,6 +1,6 @@
 import { Question } from './types';
 import { DANHGIA_URL } from './config';
-import { getSubjectFromPass } from "../utils/subject";
+import { getSubjectFromPass } from "./utils/subject";
 // Lọc câu trùng
 const findDuplicates = (bank) => {
   const groups = [];
