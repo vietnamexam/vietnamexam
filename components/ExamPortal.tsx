@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Question, Student, ExamCodeDefinition } from '../types';
 import { API_ROUTING, DEFAULT_API_URL, TOPICS_DATA, EXAM_CODES } from '../config';
-import { pickQuestionsSmart } from '../questions';
+import { pickQuestionsSmart, fetchQuestionsBank } from '../questions';
 
 interface ExamPortalProps {
   grade: string | number; // Chấp nhận cả hai nhưng sẽ ép về string ngay
