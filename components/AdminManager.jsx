@@ -173,14 +173,13 @@ const chuan_hoa = (data) => ({
   id: data.id          // Giữ nguyên id
 });
   // ========= Chọn môn học ======================
+ // ========= Chọn môn học ======================
   useEffect(() => {
   const loadConfig = async () => {
     try {
-      const monId = getSubjectFromPass(authPass).id;
-      const url = `${DANHGIA_URL}?action=getAppConfig&mon=${monId}`;
-      const response = await fetch(url);
+      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig`);
       const result = await response.json();
-      if (result && result.status === "success") {
+      if (result.status === "success") {
         setSubjects(result.data.topics);
         console.log("✅ Đã nạp cấu hình thành công!");
       }
@@ -189,7 +188,7 @@ const chuan_hoa = (data) => ({
     }
   };
   loadConfig();
-}, [authPass]);
+}, []);
   
   const [gvInfo, setGvInfo] = useState({ id: '', pass: '' });  
   const [maTranForm, setMaTranForm] = useState({
