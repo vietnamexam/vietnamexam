@@ -183,7 +183,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   const loadMatrixData = async () => {
     try {
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
-      const response = await fetch(`${API_ROUNTING[admin1]}?action=getAppConfigmt`, {
+      const response = await fetch(`${API_ROUTING[admin1]}?action=getAppConfigmt`, {
         method: "GET",
         redirect: "follow"
       });
