@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DANHGIA_URL, API_ROUTING } from '../config';
+import { KETQUA_URL } from '../config';
 
 const TeacherWordTask = ({ onBack }) => {
   // Thêm vào cùng các state khác
@@ -40,7 +40,7 @@ const [isReviewing, setIsReviewing] = useState(false);
     return;
   }
 
-  const targetUrl = API_ROUTING[idgv];
+  const targetUrl = KETQUA_URL;
 
   if (!targetUrl) {
     alert("❌ Không tìm thấy API của giáo viên này!");
@@ -174,7 +174,7 @@ const handleSaveQuestions = async (dataArray) => {
 
   try {
 
-    const targetUrl = API_ROUTING[idgv];
+    const targetUrl = KETQUA_URL;
 
     // ⭐ Convert question thành JSON string
     const formattedData = dataArray.map(q => ({
@@ -222,7 +222,7 @@ const handleSaveQuestions = async (dataArray) => {
   if (!idgv) return alert("❌ Thầy chưa nhập ID Giáo viên!");
   if (!examCode) return alert("❌ Cần nhập Mã đề!");
   
-  const targetUrl = customLink || API_ROUTING[idgv];
+  const targetUrl = KETQUA_URL;
   if (!targetUrl) return alert("❌ Không tìm thấy Link Script cho ID này!");
 
   setLoading(true);
@@ -305,7 +305,7 @@ const handleSaveQuestions = async (dataArray) => {
     return;
   }
 
-  const targetUrl = customLink || API_ROUTING[idgv];
+  const targetUrl = KETQUA_URL;
   setLoading(true);
 
   try {

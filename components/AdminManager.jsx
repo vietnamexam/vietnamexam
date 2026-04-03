@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
-import { DANHGIA_URL, API_ROUTING } from '../config';
+import { DANHGIA_URL, KETQUA_URL } from '../config';
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -171,7 +171,7 @@ const chuan_hoa = (data) => ({
   useEffect(() => {
   const loadConfig = async () => {
     try {
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfig`);
+      const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
       const result = await response.json();
       if (result.status === "success") {
         setSubjects(result.data.topics);
@@ -211,7 +211,7 @@ const chuan_hoa = (data) => ({
  const findQuestion = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
+    const resp = await fetch(`${KETQUA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
     const res = await resp.json();
     if (res.status === 'success') {
       // 💡 Hợp nhất dữ liệu thông minh
@@ -279,7 +279,7 @@ setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
   const handleLoadQuestions = async () => {
-  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions`);
+  const resp = await fetch(`${KETQUA_URL}?action=loadQuestions`);
   const res = await resp.json();
 
   if (res.status === 'success') {
@@ -299,7 +299,7 @@ setPreviewData(results);
     // Phải parse jsonInput thành mảng Object trước khi gửi
     const dataArray = previewData;
     
-    const resp = await fetch(`${DANHGIA_URL}?action=saveQuestions`, {
+    const resp = await fetch(`${KETQUA_URL}?action=saveQuestions`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' }, 
       body: JSON.stringify(dataArray) 
@@ -341,7 +341,7 @@ const handleUploadLG = async () => {
     }).filter(item => item.id !== null);
 
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
-    const resp = await fetch(`${DANHGIA_URL}?action=saveLG`, {
+    const resp = await fetch(`${KETQUA_URL}?action=saveLG`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
@@ -418,7 +418,7 @@ if (!isAdminVerified) {
 const handleFindDuplicates = async () => {
   setLoading(true);
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions`);
+    const resp = await fetch(`${KETQUA_URL}?action=findDuplicateQuestions`);
     const res = await resp.json();
     if (res.status === 'success') {
       setDuplicateGroups(res.data);
@@ -436,7 +436,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
-    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}`);
+    const resp = await fetch(`${KETQUA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}`);
     const res = await resp.json();
     
    if(res.status === 'success') {
@@ -498,7 +498,7 @@ const handleQuickUpdate = async (field, newValue) => {
     };
 
     // 3. Gửi lên Google Apps Script
-    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
+    const res = await fetch(`${KETQUA_URL}?action=updateQuestion`, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },

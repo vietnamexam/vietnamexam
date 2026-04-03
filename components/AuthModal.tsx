@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Question, Student, ExamCodeDefinition } from '../types';
-import { API_ROUTING, DEFAULT_API_URL, TOPICS_DATA, EXAM_CODES } from '../config';
+import { KETQUA_URL, TOPICS_DATA, EXAM_CODES } from '../config';
 import { pickQuestionsSmart } from '../questions';
 
 /**
@@ -33,7 +33,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   useEffect(() => {
     const fetchSystemCodes = async () => {
       try {
-        const url = new URL(DEFAULT_API_URL);
+        const url = new URL(KETQUA_URL);
         url.searchParams.append("type", "getExamCodes");
         url.searchParams.append("idnumber", "SYSTEM");
         url.searchParams.append("grade", grade);
@@ -83,7 +83,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     if (!idInput || !sbdInput) return alert("Vui lòng nhập đầy đủ ID Giáo viên và Số báo danh!");
     setIsVerifying(true);
     setVerifiedStudent(null);
-    const targetUrl = API_ROUTING[idInput.trim()] || DEFAULT_API_URL;
+    const targetUrl =  KETQUA_URL;
     try {
       const url = new URL(targetUrl);
       url.searchParams.append("type", "verifyStudent");
@@ -180,7 +180,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
             <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Thí sinh</span>
             <div className="flex items-center gap-1.5">
               <span className="font-black text-blue-900 uppercase truncate">{verifiedStudent.name}</span>
-              <svg className="w-4 h-4 text-blue-500 fill-current" viewBox="0 0 20 20 shadow-sm"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+              <svg className="w-4 h-4 text-blue-500 fill-current" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
             </div>
           </div>
         </div>

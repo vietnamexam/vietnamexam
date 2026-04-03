@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, API_ROUTING, DEFAULT_API_URL, fetchApiRouting } from '../config';
+import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, KETQUA_URL, ADMIN2_URL, } from '../config';
 import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
-import { fetchScore, resetQuiz } from '../questions';
+import { fetchScore } from '../questions';
 
 
 
@@ -29,6 +29,16 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onOpenTeacherTask,
   setView
 }) => {
+  // ỨNG DỤNG KHÁC
+  const EXTRA_APPS_DATA = [
+  { name: "Word-PDF-IMG To Latex", icon: "fas fa-sync-alt", link: "https://convertword.vercel.app/" },
+  { name: "Tạo câu tương tự từ ảnh, PDF", icon: "fas fa-clone", link: "https://taocautuongtu.vercel.app/" },
+  { name: "Vòng quay may mắn", icon: "fas fa-dharmachakra", link: "https://vongquaymayman-fawn.vercel.app/" },  
+  { name: "Học tiếng anh cùng chuyên gia", icon: "fas fa-language", link: "https://online.activeskills.vn?ref=activeskills" },
+  { name: "Máy tính Online", icon: "fas fa-calculator", link: "https://www.desmos.com/scientific" },
+  { name: "Quản lý học thêm thông minh", icon: "fas fa-graduation-cap", link: "https://quanlyhocthem-theta.vercel.app/" },
+  { name: "App dành cho GVCN", icon: "fas fa-user-tie", link: "https://teacherassistant-jet.vercel.app/" },
+];
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   // Thêm/Kiểm tra dòng này ở đầu Component
@@ -181,7 +191,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   const loadMatrixData = async () => {
     try {
       // Gọi đúng action getAppConfigmt và thêm redirect: "follow"
-      const response = await fetch(`${DANHGIA_URL}?action=getAppConfigmt`, {
+      const response = await fetch(`${KETQUA_URL}?action=getAppConfigmt`, {
         method: "GET",
         redirect: "follow"
       });
@@ -197,7 +207,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
     }
   };
   loadMatrixData();
-}, [DANHGIA_URL]);
+}, [KETQUA_URL]);
  
 
   
@@ -251,6 +261,44 @@ const scoreInfo = (() => {
   };
   fetchContentData();
 }, []);
+
+  // Admin quản lý
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [adminApps, setAdminApps] = useState([]);
+  const handleAdminLogin = async () => {
+  if (showAdminMenu) {
+    setShowAdminMenu(false);
+    return;
+  }
+
+  const inputID = prompt("Nhập ID Admin:");
+  if (!inputID) return;
+  const inputPass = prompt("Nhập mật khẩu Admin:");
+  if (!inputPass) return;
+
+  setLoading(true);
+  try {    
+    // Gửi yêu cầu với các tham số id và pass
+    const response = await fetch(
+      `${DANHGIA_URL}?action=getAdminApps&id=${encodeURIComponent(inputID)}&pass=${encodeURIComponent(inputPass)}`
+    );
+    const result = await response.json();
+
+    // Lưu ý: Dữ liệu của bạn nằm trong result.status.success và result.status.data
+    if (result.status && result.status.success) {
+      setAdminApps(result.status.data); // Gán mảng 3 admin vào state
+      setShowAdminMenu(true);
+    } else {
+      alert("Thông tin đăng nhập không chính xác hoặc lỗi Server!");
+    }
+  } catch (error) {
+    alert("Lỗi kết nối hệ thống! Vui lòng thử lại.");
+    console.error("Fetch Error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+  // Admin
   // =================================xem điểm ============================
  const handleViewScore = async () => {
   setLoadingScore(true);
@@ -271,10 +319,7 @@ const scoreInfo = (() => {
   setScoreData(result);
 };
   
-// ==================================== Reset chung ================================================================
-   useEffect(() => {
-  fetchApiRouting();
-}, []);
+// ==================================== Reset chung ================================================================   
  useEffect(() => {
   const saved = localStorage.getItem('idgv');
   if (saved) {
@@ -290,17 +335,12 @@ const scoreInfo = (() => {
   if (!idgv || !resetType) return;
 
   const fetchExams = async () => {
-    try {
-      if (!API_ROUTING[idgv]) {
-        await fetchApiRouting();
-      }
-
-      const baseUrl = API_ROUTING[idgv];
+    try {      
+      const baseUrl = KETQUA_URL;
       if (!baseUrl) {
   console.log("IDGV không tồn tại");
   return;
     }
-
       const res = await fetch(
         `${baseUrl}?action=getExamsList&type=${resetType}`
       );
@@ -326,12 +366,7 @@ const scoreInfo = (() => {
   if (resetMode === "byExams" && !resetExams) {
     return alert("Chọn mã exams");
   }
-
-  if (!API_ROUTING[idgv]) {
-    await fetchApiRouting();
-  }
-
-  const baseUrl = API_ROUTING[idgv];
+  const baseUrl = KETQUA_URL;
   if (!baseUrl) return alert("IDGV không tồn tại");
 
   const confirmDelete = window.confirm(
@@ -368,7 +403,7 @@ const scoreInfo = (() => {
       return;
     }
 
-    const url = API_ROUTING[idgv];
+    const url = KETQUA_URL;
     if (!url) {
       alert("Không tìm thấy API của giáo viên này");
       return;
@@ -395,7 +430,7 @@ const handleStudentSubmit = async (e) => {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
   const currentIDGV = studentInfo.idgv.toString().trim();
-  const targetUrl = API_ROUTING[currentIDGV];
+  const targetUrl = KETQUA_URL;
 
   if (!targetUrl) {
     alert(`❌ Không tìm thấy link Script của mã GV: "${currentIDGV}"`);
@@ -480,7 +515,7 @@ const handleSaveMatrix = async () => {
   }
 
   // 3. Tự động chọn Link Script dựa trên mã IDGV
-  const targetURL = API_ROUTING[idgv] || DEFAULT_API_URL;
+  const targetURL = KETQUA_URL;
 
   // 4. Gom dữ liệu vào Payload
   const payload = {
@@ -540,7 +575,7 @@ const handleSearchLG = async () => {
   if (!searchId) return alert("Nhập mã ID đã thầy ơi!");
   setLoadingLG(true);
   try {
-    const response = await fetch(`${DANHGIA_URL}?action=getLG&id=${searchId}`);
+    const response = await fetch(`${KETQUA_URL}?action=getLG&id=${searchId}`);
     const text = await response.text();
     
     // Tìm phần nội dung sau "a:" và bóc tách nó ra khỏi dấu ngoặc kép
@@ -799,7 +834,7 @@ const handleRedirect = () => {
   setExamStarted(false); 
 
   const currentIDGV = studentInfo.idgv.toString().trim();
-  const targetUrl = API_ROUTING[currentIDGV];
+  const targetUrl = KETQUA_URL;
 
   try {
     const response = await fetch(targetUrl, {
@@ -866,7 +901,7 @@ const handleRedirect = () => {
       scoreSA={scoreSA}
       onFinish={async (resultData) => {
   setExamStarted(false);
-  const targetUrl = API_ROUTING[studentInfo.idgv];
+  const targetUrl = KETQUA_URL;
 
   // Hứng điểm an toàn: Kiểm tra cả totalScore và tongdiem để không bị undefined
   const rawScore = resultData.totalScore ?? resultData.tongdiem ?? 0;
@@ -874,13 +909,14 @@ const handleRedirect = () => {
 
   const payload = {
     action: "submitExam",
-    timestamp: new Date().toLocaleString('vi-VN'),
+    timestamp: new Date().toLocaleString('vi-VN'),   
     exams: String(studentInfo.examCode || "").toUpperCase(),
     sbd: String(studentInfo.sbd || ""),
     name: String(studentInfo.name || ""),
     class: String(studentInfo.className || ""), // Đảm bảo key này khớp với GAS
     tongdiem: diemHienThi, 
     time: resultData.time || 0,
+    idgv: String(studentInfo.idgv || ""),
     details: JSON.stringify(resultData.details || [])
   };
 
@@ -965,16 +1001,54 @@ const handleRedirect = () => {
        {/* CỘT TRÁI: MENU CHỨC NĂNG (NÚT + LABEL) */}
         <div className="lg:col-span-3 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible snap-x snap-mandatory order-1 lg:order-1">
          <div className="w-full text-[10px] font-black text-slate-400 uppercase ml-2">
-      Tiện ích học tập
+     Quản lý và tiện ích
       </div>
           
-          <button onClick={() => window.open("https://forms.gle/5ZAbDHHAbaDz2u959", '_blank')} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95 touch-manipulation">
-            <div className="flex items-center gap-3">
-              <div className="bg-indigo-600 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-users"></i></div>
-              <span className="text-sm font-black text-slate-700 uppercase text-left">Đăng ký học Toán</span>
-            </div>
-            <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-600">Hot</span>
-          </button>
+          {/* NÚT ADMIN QUẢN LÝ */}
+<div className="relative mt-2">
+  <button 
+    onClick={handleAdminLogin}
+    className="flex-shrink-0 group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all active:scale-95"
+  >
+    <div className="flex items-center gap-3">
+      <div className="bg-indigo-600 w-9 h-9 rounded-lg flex items-center justify-center text-white">
+        <i className={`fas ${loading ? 'fa-spinner fa-spin' : 'fa-users-cog'}`}></i>
+      </div>
+      <span className="text-sm font-black text-slate-700 uppercase">Admin quản lý</span>
+    </div>
+    <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-indigo-600">Hot</span>
+  </button>
+
+  {/* DANH SÁCH APP SỔ LÊN */}
+  {showAdminMenu && (
+  <div className="absolute left-0 bottom-full mb-3 w-full bg-white rounded-2xl shadow-2xl border border-slate-100 z-[110] p-2 animate-in fade-in slide-in-from-bottom-2">
+    <div className="flex justify-between items-center p-2 border-b border-slate-50 mb-1">
+      <span className="text-[9px] font-bold text-slate-400 uppercase ml-2">Quản trị viên</span>
+      <button onClick={() => setShowAdminMenu(false)} className="text-slate-300 hover:text-red-500">
+        <i className="fas fa-times text-xs"></i>
+      </button>
+    </div>
+    
+    {adminApps.map((app, idx) => (
+      <a 
+        key={idx} 
+        href={app.link} 
+        target="_blank" 
+        rel="noreferrer" 
+        className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl transition-colors group"
+      >
+        <i className={`${app.icon} text-indigo-600 w-5 text-center`}></i>
+        <span className="text-xs font-black text-slate-700 uppercase group-hover:text-indigo-700">
+          {app.name}
+        </span>
+      </a>
+    ))}
+  </div>
+)}
+</div>
+
+
+          
 
           <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all active:scale-95 touch-manipulation">
             <div className="flex items-center gap-3">
@@ -992,25 +1066,27 @@ const handleRedirect = () => {
             <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-600">New</span>
           </button>
 
-          <button onClick={() => setshowLichOptions(true)} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-purple-200 transition-all active:scale-95 touch-manipulation">
-            <div className="flex items-center gap-3">
-              <div className="bg-purple-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-calendar-alt"></i></div>
-              <span className="text-sm font-black text-slate-700 uppercase text-left">Lịch học Toán</span>
-            </div>
-            <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-purple-500">Schedules</span>
-          </button>
+         
 
-          <button onClick={() => setShowVipOptions(true)} className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95 touch-manipulation">
-            <div className="flex items-center gap-3">
-              <div className="bg-amber-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs"><i className="fas fa-gem"></i></div>
-              <span className="text-sm font-black text-slate-700 uppercase text-left">Nâng cấp VIP</span>
-            </div>
-            <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-amber-500">Vip</span>
-          </button>
+          <a 
+  href="https://gameshow-beryl.vercel.app/"
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="flex-shrink-0 snap-start group flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all active:scale-95 touch-manipulation"
+>
+  <div className="flex items-center gap-3">
+    <div className="bg-amber-500 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs">
+      <i className="fas fa-gem"></i>
+    </div>
+    <span className="text-sm font-black text-slate-700 uppercase text-left">GAME SHOW</span>
+  </div>
+  <span className="text-[8px] font-black px-2 py-1 rounded-md text-white uppercase bg-amber-500 shadow-sm shadow-amber-200">Vip</span>
+</a>
 
        {/* ỨNG DỤNG KHÁC - CLICK ĐỂ HIỆN LIST */}
           <div className="relative mt-2">
             <button 
+              type="button"
               onClick={() => setShowAppList(!showAppList)}
               className="flex items-center justify-between w-full py-4 px-4 min-h-[56px] bg-teal-600 text-white rounded-2xl shadow-lg border-b-4 border-teal-800 transition-all active:scale-95 touch-manipulation"
             >
@@ -1021,18 +1097,18 @@ const handleRedirect = () => {
               <i className={`fas fa-chevron-${showAppList ? 'down' : 'right'} text-xs opacity-50 transition-transform`}></i>
             </button>
 
-            {/* List hiện lên khi showAppList = true */}
+            {/* List hiện lên ngay lập tức từ biến EXTRA_APPS_DATA */}
             {showAppList && (
               <div className="absolute left-0 bottom-full mb-3 w-full bg-white rounded-2xl shadow-2xl border border-slate-100 z-[110] p-2 animate-in fade-in slide-in-from-bottom-2">
                 <div className="flex justify-between items-center p-2 border-b border-slate-50 mb-1">
                    <span className="text-[9px] font-bold text-slate-400 uppercase ml-2">Danh sách ứng dụng</span>
-                   <button onClick={() => setShowAppList(false)} className="text-slate-300 hover:text-red-500">
+                   <button type="button" onClick={() => setShowAppList(false)} className="text-slate-300 hover:text-red-500">
                      <i className="fas fa-times text-xs"></i>
                    </button>
                 </div>
                 
-                {extraApps.length > 0 ? (
-                  extraApps.map((app, idx) => (
+                <div className="max-h-[60vh] overflow-y-auto">
+                  {EXTRA_APPS_DATA.map((app, idx) => (
                     <a 
                       key={idx} 
                       href={app.link} 
@@ -1043,12 +1119,8 @@ const handleRedirect = () => {
                       <i className={`${app.icon || 'fas fa-link'} text-teal-600 w-5 text-center`}></i>
                       <span className="text-xs font-black text-slate-700 uppercase group-hover:text-teal-700">{app.name}</span>
                     </a>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-xs font-bold text-slate-400 italic">
-                    Đang tải dữ liệu...
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -1125,12 +1197,14 @@ const handleRedirect = () => {
            <div className="grid grid-cols-2 gap-2">
  {[12, 11, 10].map(g => (
   <a
-    key={g} 
-      onClick={() => onSelectGrade(g)} 
-      className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-blue-800 transition-all active:scale-95 flex items-center justify-center gap-2"
-    >
-      <i className="fas fa-graduation-cap text-[10px]"></i> 
-      <span>Lớp {g}</span>
+    key={g}
+    href={`https://thayhabacninh.vercel.app/?grade=${g}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-blue-600 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+  >
+    <i className="fas fa-graduation-cap text-xs"></i>
+    <span>Lớp {g}</span>
   </a>
 ))}
 
@@ -1180,38 +1254,6 @@ const handleRedirect = () => {
   {/* Menu xổ xuống */}
   {showResetMenu && (
     <div className="absolute left-0 mt-2 w-full bg-slate-900 border border-red-500 rounded-xl shadow-xl z-50 flex flex-col gap-2 p-3">
-
-{/* X.Quiz */}
-      <button
-        onClick={async () => {
-          const password = window.prompt("🔐 Nhập mật khẩu Admin để reset:");
-          if (!password) return;
-
-          if (!API_ROUTING["admin2"]) {
-            await fetchApiRouting();
-          }
-
-          const baseUrl = API_ROUTING["admin2"];
-
-          const res = await fetch(
-            `${baseUrl}?action=resetQuiz&password=${encodeURIComponent(password)}`
-          );
-
-          const data = await res.json();
-
-          if (data.status === "success") {
-            alert("🔥 Reset Quiz thành công!");
-          } else {
-            alert("❌ " + data.message);
-          }
-
-          setShowResetMenu(false);
-        }}
-        className="bg-red-600 text-white px-3 py-1.5 text-xs sm:text-sm rounded-lg hover:bg-red-700 transition"
-      >
-        X.QuiZ
-      </button>
-
       {/* X.KQ */}
      <button
       onClick={() => {
@@ -2032,7 +2074,8 @@ const handleRedirect = () => {
         </>
       ) : (
         <>
-          <div className="bg-slate-50 p-5 rounded-xl space-y-2 text-slate-800 shadow-inner">
+          <div className="bg-slate-50 p-6 rounded-xl space-y-2 text-slate-800 shadow-inner">
+            <p><span className="font-semibold">Mã giáo viên:</span> {scoreData.idgv}</p>
             <p><span className="font-semibold">Họ tên:</span> {scoreData.name}</p>
             <p><span className="font-semibold">Lớp:</span> {scoreData.class}</p>
             <p><span className="font-semibold">SBD:</span> {scoreData.sbd}</p>
