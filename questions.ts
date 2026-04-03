@@ -5,9 +5,9 @@ import { DANHGIA_URL, API_ROUTING  } from './config';
 export let questionsBank: Question[] = [];
 
 // 2. Hàm nạp dữ liệu từ Google Sheet
-export const fetchQuestionsBank = async (monId: String): Promise<Question[]> => {
+export const fetchQuestionsBank = async (): Promise<Question[]> => {
   try {
-    const response = await fetch(`${DANHGIA_URL}?action=getQuestions&mon=${monId}`);
+    const response = await fetch(`${DANHGIA_URL}?action=getQuestions`);
     const result = await response.json();
     
     if (result.status === "success" && Array.isArray(result.data)) {
@@ -144,4 +144,5 @@ export const resetQuiz = async () => {
     return false;
   }
 };
+
 
