@@ -10,7 +10,7 @@ interface ExamPortalProps {
 }
 
 const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStart }) => {
-  // 1. Đồng bộ hóa Grade ngay từ đầu
+  // 1. Đồng bộ hóa Grade ngay từ đầu chạy luôn
   const grade = useMemo(() => rawGrade.toString(), [rawGrade]);
 
   // 2. States
@@ -24,12 +24,12 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
   // 3. Helpers (Đã ép kiểu String chuẩn)
   const getRelatedGrades = (g: string) => {
-    if (g === "12") return ["12", "11", "10"];
-    if (g === "11") return ["11", "10"];
+    if (g === "12") return ["10", "11", "12"];
+    if (g === "11") return ["10", "11"];
     if (g === "10") return ["10"];
-    if (g === "9") return ["9", "8", "7", "6"];
-    if (g === "8") return ["8", "7", "6"];
-    if (g === "7") return ["7", "6"];
+    if (g === "9") return ["6", "7", "8", "9"];
+    if (g === "8") return ["6", "7", "8"];
+    if (g === "7") return ["6", "7"];
     if (g === "6") return ["6"];
     return [g];
   };
@@ -47,7 +47,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   useEffect(() => {
     const fetchSystemCodes = async () => {
       try {
-        const url = new URL(KETQUA_URL);
+        const url = new URL(KETQUA_UR);
         url.searchParams.append("type", "getExamCodes");
         url.searchParams.append("idnumber", "SYSTEM");
         url.searchParams.append("grade", grade);
@@ -74,7 +74,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   [selectedCode, allAvailableCodes]);
 
   const combinedTopics = useMemo(() => {
-     const relatedGrades = getRelatedGrades(grade).reverse();
+  const relatedGrades = getRelatedGrades(grade).reverse();
     let topics: { id: string; name: string; grade: string }[] = [];
     relatedGrades.forEach(g => {
       const gradeTopics = TOPICS_DATA[g] || [];
@@ -92,7 +92,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
     if (!idInput || !sbdInput) return alert("Vui lòng nhập đủ ID Giáo viên và SBD!");
     setIsVerifying(true);
     try {
-      const targetUrl = KETQUA_URL;
+      const targetUrl = KETQUA_UR;
       const url = new URL(targetUrl);
       url.searchParams.append("type", "verifyStudent");
       url.searchParams.append("idnumber", idInput.trim());
@@ -101,7 +101,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       const resp = await fetch(url.toString());
       const result = await resp.json();
       
-       if (result.status === "success") {
+      if (result.status === "success") {
         setVerifiedStudent({
           ...result.data,
         idgv: idInput.trim() // 👈 FIX CHUẨN NHẤT
@@ -153,19 +153,19 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 font-sans">
+    <div className="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 font-sans">
       {/* Header */}
-      <div className="bg-blue-700 p-4 md:p-8 text-white flex flex-col md:flex-row gap-3 md:gap-0 justify-between items-start md:items-center border-b-8 border-blue-900">
+      <div className="bg-blue-700 p-8 text-white flex justify-between items-center border-b-8 border-blue-900">
         <div>
-          <h2 className="text-xl md:text-3xl font-black uppercase">Xác Minh Danh Tính</h2>
+          <h2 className="text-3xl font-black uppercase">Xác Minh Danh Tính</h2>
           <p className="opacity-80 font-bold uppercase text-xs tracking-widest">Khối {grade} - Thiết lập bài thi</p>
         </div>
         <button onClick={onBack} className="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full font-black">QUAY LẠI</button>
       </div>
 
-      <div className="p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
+      <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Cột 1: Xác minh */}
-        <div className="space-y-6 order-1">
+        <div className="space-y-6">
           <h3 className="text-xl font-black border-l-8 border-blue-600 pl-4 uppercase">Thí sinh</h3>
           <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-200 space-y-4">
             <input type="text" placeholder="ID GIÁO VIÊN" className="w-full p-4 rounded-xl border font-black uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
@@ -188,7 +188,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
             <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Chào mừng thí sinh</span>
             <div className="flex items-center gap-1.5">
               <span className="font-black text-blue-900 uppercase truncate">{verifiedStudent.name}</span>
-              <svg className="w-4 h-4 text-blue-500 fill-current shadow-sm" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+              <svg className="w-4 h-4 text-blue-500 fill-current" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
             </div>
           </div>
         </div>
@@ -263,7 +263,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   </div>
 </div>
 
-         {/* Cột 2: Chọn mã đề */}
+        {/* Cột 2: Chọn mã đề */}
 <div className="space-y-6">
   <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
   <div className="space-y-4">
@@ -325,13 +325,13 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 </div>
 
         {/* Cột 3: Chuyên đề */}
-        <div className="space-y-6 order-3">
+        <div className="space-y-6">
           <h3 className="text-xl font-black border-l-8 border-blue-600 pl-4 uppercase">Kiến thức</h3>
-          <div className="bg-slate-50 rounded-[2rem] p-4 border border-slate-200 h-[250px] md:h-[350px] overflow-y-auto no-scrollbar shadow-inner">
+          <div className="bg-slate-50 rounded-[2rem] p-4 border border-slate-200 h-[350px] overflow-y-auto no-scrollbar shadow-inner">
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-3">
                 {combinedTopics.map(t => (
-                  <label key={t.id} className={`flex items-start gap-3 p-3 min-h-[44px] rounded-xl border-2 transition-all cursor-pointer ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white'}`}>
+                  <label key={t.id} className={`flex items-start gap-3 p-3 rounded-xl border-2 transition-all cursor-pointer ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white'}`}>
                     <input type="checkbox" className="hidden" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
                     <span className="text-[10px] font-black leading-tight">
                       <span className="bg-slate-200 text-slate-700 px-1 rounded mr-2 uppercase">K{t.grade}</span>
@@ -363,8 +363,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       </div>
 
       {/* Footer Button */}
-      <div className="p-4 md:p-10 border-t bg-slate-50 flex justify-center sticky bottom-0">
-        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-xl py-4 md:py-5 bg-blue-700 text-white rounded-2xl md:rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
+      <div className="p-10 border-t bg-slate-50 flex justify-center">
+        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-xl py-5 bg-blue-700 text-white rounded-full font-black text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
           BẮT ĐẦU LÀM BÀI
         </button>
       </div>
