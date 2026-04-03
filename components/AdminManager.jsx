@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, API_ROUTING } from '../config';
-import { getSubjectFromPass } from "../utils/subject";
-
-
-
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
-  // Hàm xác định môn học từ 2 ký tự đầu của Password
+
   useEffect(() => { setTempValue(value); }, [value]);
+
   // Ép MathJax quét lại sau khi render hoặc sửa xong
  useEffect(() => {
   if (!isEditing && window.MathJax?.typesetPromise) {
@@ -126,8 +123,6 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   );
 };
 const AdminPanel = ({ mode, onBack }) => {
-  const [authPass, setAuthPass] = useState("");
-  const [idgv, setIdgv] = useState("")
   const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
@@ -173,7 +168,6 @@ const chuan_hoa = (data) => ({
   id: data.id          // Giữ nguyên id
 });
   // ========= Chọn môn học ======================
- // ========= Chọn môn học ======================
   useEffect(() => {
   const loadConfig = async () => {
     try {
@@ -217,10 +211,7 @@ const chuan_hoa = (data) => ({
  const findQuestion = async () => {
   setLoading(true);
   try {
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}&mon=${monId}`;
-
-    const resp = await fetch(url);
+    const resp = await fetch(`${DANHGIA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
     const res = await resp.json();
     if (res.status === 'success') {
       // 💡 Hợp nhất dữ liệu thông minh
@@ -287,17 +278,13 @@ const chuan_hoa = (data) => ({
 setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
- const handleLoadQuestions = async () => {
-  // 1. Lấy ID môn học dựa trên Password hiện tại
-  const subjectId = getSubjectFromPass(authPass).id;
-
-  // 2. Truyền thêm tham số mon vào URL
-  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions&mon=${subjectId}`);
+  const handleLoadQuestions = async () => {
+  const resp = await fetch(`${DANHGIA_URL}?action=loadQuestions`);
   const res = await resp.json();
 
   if (res.status === 'success') {
     setAllQuestions(res.data);
-    alert(`📚 Đã load ngân hàng môn ${getSubjectFromPass(authPass).name}!`);
+    alert("📚 Đã load ngân hàng câu hỏi!");
   } else {
     alert("Lỗi load!");
   }
@@ -311,10 +298,8 @@ setPreviewData(results);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
     const dataArray = previewData;
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=saveQuestions&mon=${monId}`;
     
-    const resp = await fetch(url, {
+    const resp = await fetch(`${DANHGIA_URL}?action=saveQuestions`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' }, 
       body: JSON.stringify(dataArray) 
@@ -322,8 +307,8 @@ setPreviewData(results);
     
     const res = await resp.json();
     if (res.status === 'success') { 
-      alert(`🚀 Thành công! Đã chèn thêm ${dataArray.length} câu hỏi vào ngân hàng môn ${getSubjectFromPass(authPass).name}.`); 
-      setJsonInput('');
+      alert(`🚀 Thành công! Đã chèn thêm ${dataArray.length} câu hỏi vào ngân hàng .`); 
+      setJsonInput(''); 
     } else {
       alert("Lỗi: " + res.message);
     }
@@ -356,72 +341,60 @@ const handleUploadLG = async () => {
     }).filter(item => item.id !== null);
 
     // Cách thầy đề xuất: Đưa action lên URL cho chắc chắn
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=saveLG&mon=${monId}`;
-    const resp = await fetch(url, {
+    const resp = await fetch(`${DANHGIA_URL}?action=saveLG`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(itemsToUpload) // Chỉ gửi mảng phẳng thôi
     });
     
-    const result = await resp.json();
-    alert(result.message);
+    const result = await resp.text();
+    alert(result);
     setJsonInput('');
   } catch (e) { alert("Lỗi gửi dữ liệu thầy ạ!"); }
   finally { setLoading(false); }
 };
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
-const handleVerifyAdminOTP = async () => {
-  if (!idgv) return alert("Vui lòng nhập ID Giáo viên (VD: admin)");
+ const handleVerifyAdminOTP = async () => {
   if (!otp) return alert("Vui lòng nhập mật khẩu!");
   
   setLoading(true);
   try {
-    // Gửi IDGV và OTP lên Server
-    const url = `${DANHGIA_URL}?action=checkAdminOTP&otp=${encodeURIComponent(otp.trim())}&idgv=${idgv.trim().toLowerCase()}`;
-    const resp = await fetch(url);
+    // Gửi tham số otp lên để Server đối chiếu với biến ADMIN_PASSWORD_DEFAULT
+    const resp = await fetch(`${DANHGIA_URL}?action=checkAdminOTP&otp=${encodeURIComponent(otp.trim())}`);
     const res = await resp.json();
     
-   // Sửa dòng này:
-if (res.status === "success") { // Chỉ cần check status là đủ, hoặc check res.data
-  setIsAdminVerified(true);
-  setAuthPass(otp.trim());
-  
-  const subject = getSubjectFromPass(otp.trim());
-  alert(`✅ Xác minh thành công môn ${subject ? subject.name : "hệ thống"}!`);
-
+    if (res.status === "success") {
+      if (res.verified === true) {
+        setIsAdminVerified(true);
+        // Có thể xóa otp sau khi verify thành công để bảo mật
+        setOtp(""); 
+      } else {
+        alert("Mật khẩu Admin không chính xác!");
+      }
     } else {
-      alert(res.message || "Thông tin xác minh không chính xác!");
+      alert("Lỗi phản hồi từ hệ thống!");
     }
   } catch (e) {
+    console.error(e);
     alert("Lỗi kết nối server!");
   } finally {
     setLoading(false);
   }
 };
-  if (!isAdminVerified) {
+  // Tìm đến đoạn này trong code của bạn (khoảng dòng 270-280)
+if (!isAdminVerified) {
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
       <div className="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md text-center">
         <h2 className="text-2xl font-black mb-8">ADMIN SECURITY</h2>
-        {/* Thêm ô nhập IDGV */}
-  <input 
-    type="text" 
-    placeholder="ID Giáo viên (VD: admin)" 
-    className="w-full p-4 bg-slate-50 border-2 rounded-2xl text-center mb-4 font-bold uppercase text-slate-600"
-    value={idgv} // Bạn khai báo thêm state [idgv, setIdgv] = useState("admin")
-    onChange={e => setIdgv(e.target.value)}
-  />
-
-  {/* Ô Password của bạn giữ nguyên */}
         
         <input 
-          type="text" 
+          type="password" 
           className="w-full p-5 bg-slate-50 border-2 rounded-2xl text-center text-4xl mb-8" 
           value={otp} 
           onChange={e => setOtp(e.target.value)} 
-          placeholder="Nhập mật khẩu"
+          placeholder="••••"
         />
 
         {/* THAY THẾ NÚT CŨ BẰNG NÚT MỚI Ở ĐÂY */}
@@ -445,10 +418,7 @@ if (res.status === "success") { // Chỉ cần check status là đủ, hoặc ch
 const handleFindDuplicates = async () => {
   setLoading(true);
   try {
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=findDuplicateQuestions&mon=${monId}`;
-
-    const resp = await fetch(url);
+    const resp = await fetch(`${DANHGIA_URL}?action=findDuplicateQuestions`);
     const res = await resp.json();
     if (res.status === 'success') {
       setDuplicateGroups(res.data);
@@ -466,10 +436,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}&mon=${monId}`;
-
-    const resp = await fetch(url);
+    const resp = await fetch(`${DANHGIA_URL}?action=deleteQuestionRow&rowIdx=${rowIdx}`);
     const res = await resp.json();
     
    if(res.status === 'success') {
@@ -531,9 +498,7 @@ const handleQuickUpdate = async (field, newValue) => {
     };
 
     // 3. Gửi lên Google Apps Script
-    const monId = getSubjectFromPass(authPass).id;
-    const url = `${DANHGIA_URL}?action=updateQuestion&mon=${monId}`;
-    const res = await fetch(url, {
+    const res = await fetch(`${DANHGIA_URL}?action=updateQuestion`, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
@@ -560,16 +525,18 @@ const handleQuickUpdate = async (field, newValue) => {
   return (
  <div className="p-3 md:p-8 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl max-w-6xl mx-auto my-4 md:my-6 border border-slate-50">
       <div className="flex items-center gap-2 mb-8 bg-white/50 backdrop-blur-md p-2 rounded-3xl w-fit shadow-sm border border-slate-200">
-   {/* NÚT HIỂN THỊ MÔN MẶC ĐỊNH - Dựa theo Pass */}
-  {authPass && (
-    <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl border text-[10px] font-black uppercase shadow-sm ${getSubjectFromPass(authPass).color}`}>
-      <i className="fa-solid fa-book-open-reader"></i>
-      Môn: {getSubjectFromPass(authPass).name}
-    </div>
-  )}
-
-  {/* Vạch ngăn cách nhẹ */}
-  <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
+  {/* Nút Sửa câu hỏi */}
+  <button 
+    onClick={() => setCurrentTab('cauhoi')} 
+    className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
+      currentTab === 'cauhoi' 
+      ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
+      : 'text-slate-500 hover:bg-slate-100'
+    }`}
+  >
+    <i className="fa-solid fa-pen-to-square"></i> Sửa câu hỏi
+  </button>
+  
   {/* Nút Import Word */}
   <button 
     onClick={() => setCurrentTab('word')} 
@@ -603,17 +570,6 @@ const handleQuickUpdate = async (field, newValue) => {
 >
   <i className="fa-solid fa-clone"></i> {loading ? 'Đang quét...' : 'Tìm câu trùng'}
 </button>
-         {/* Nút Sửa câu hỏi */}
-  <button 
-    onClick={() => setCurrentTab('cauhoi')} 
-    className={`flex items-center gap-2 px-4 py-2 text-[10px] rounded-2xl font-black text-xs uppercase transition-all ${
-      currentTab === 'cauhoi' 
-      ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
-      : 'text-slate-500 hover:bg-slate-100'
-    }`}
-  >
-    <i className="fa-solid fa-pen-to-square"></i> Sửa câu hỏi
-  </button>
 
   {/* Vạch ngăn cách tinh tế */}
   <div className="w-[1px] h-6 bg-slate-300 mx-2"></div>
@@ -744,7 +700,7 @@ const handleQuickUpdate = async (field, newValue) => {
             </button>
           </div>
 
-          <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200 max-h-[600px]">
+          <div className="flex-1 bg-slate-50 rounded-[1.5rem] p-4 overflow-y-auto border border-dashed border-slate-200">
             {previewData.length > 0 ? (
               <QuestionPreviewBlock
   data={previewData}
@@ -868,7 +824,7 @@ const handleQuickUpdate = async (field, newValue) => {
       </div>
 
       {/* Body */}
-      <div className="p-4 md:p-6 flex-1 overflow-y-auto scroll-smooth space-y-4">
+      <div className="p-4 md:p-6 flex-1 overflow-y-auto space-y-4">
 
                <EditableSection
           title="Nội dung câu hỏi"

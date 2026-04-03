@@ -4,7 +4,6 @@ import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
 import { fetchScore, resetQuiz } from '../questions';
-import { getSubjectFromPass } from "../utils/subject";
 
 
 
@@ -33,7 +32,6 @@ const LandingPage: React.FC<LandingPageProps> = ({
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   // Thêm/Kiểm tra dòng này ở đầu Component
-  const [authPass, setAuthPass] = useState("");
   const [appConfig, setAppConfig] = useState({ topics: [], classes: [] });
   const [showNotice, setShowNotice] = useState(false); // 110326
   const [maxthi, setMaxthi] = useState(1); // 110326
@@ -200,6 +198,9 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   };
   loadMatrixData();
 }, [DANHGIA_URL]);
+ 
+
+  
 // 2. Hàm tính toán tổng điểm (Dùng để hiển thị nhanh trên UI)
 const scoreInfo = (() => {
   const sMC = parseFloat(maTranForm.scoreMC) || 0;
@@ -1113,7 +1114,7 @@ const handleRedirect = () => {
           {/* CỤM NÚT ĐIỀU KHIỂN */}
           <div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
             <a
-  href="https://thayhabacninh-phi.vercel.app/?mode=quiz"
+  href="https://thayhabacninh.vercel.app/?mode=quiz"
   target="_blank"
   rel="noopener noreferrer"
   className="w-full bg-orange-500 text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-orange-700 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-2"
@@ -1124,12 +1125,14 @@ const handleRedirect = () => {
            <div className="grid grid-cols-2 gap-2">
  {[12, 11, 10].map(g => (
   <a
-    key={g} 
-      onClick={() => onSelectGrade(g)} 
-      className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-blue-800 transition-all active:scale-95 flex items-center justify-center gap-2"
-    >
-      <i className="fas fa-graduation-cap text-[10px]"></i> 
-      <span>Lớp {g}</span>
+    key={g}
+    href={`https://thayhabacninh.vercel.app/?grade=${g}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-blue-600 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+  >
+    <i className="fas fa-graduation-cap text-xs"></i>
+    <span>Lớp {g}</span>
   </a>
 ))}
 
@@ -1186,11 +1189,11 @@ const handleRedirect = () => {
           const password = window.prompt("🔐 Nhập mật khẩu Admin để reset:");
           if (!password) return;
 
-          if (!API_ROUTING["111"]) {
+          if (!API_ROUTING["admin2"]) {
             await fetchApiRouting();
           }
 
-          const baseUrl = API_ROUTING["111"];
+          const baseUrl = API_ROUTING["admin2"];
 
           const res = await fetch(
             `${baseUrl}?action=resetQuiz&password=${encodeURIComponent(password)}`
