@@ -17,26 +17,7 @@ import { fetchQuestionsBankW } from '@/questionsWord';
 import ExamRoom from '@/components/ExamRoom';
 
 const App: React.FC = () => {
-  // --- PHẦN 1: BẢO MẬT (CHẶN VÀO TRỰC TIẾP) ---
-  useEffect(() => {
-  const REQUIRED_ORIGIN = "smarteduv2.vercel.app";
-  const referrer = document.referrer;
-  const currentUrl = window.location.href;
-
-  // 1. Kiểm tra xem người dùng có đang ở chính trang chủ không
-  // Nếu URL hiện tại đã là trang chủ, thì không cần chặn nữa
-  const isAtHome = currentUrl === "https://" + REQUIRED_ORIGIN + "/" || 
-                   currentUrl.includes("localhost"); // Để thầy còn test được máy nhà
-
-  if (isAtHome) return; // Đang ở trang chủ thì cho qua, không check referrer nữa
-
-  // 2. Nếu đang ở các trang con mà referrer không hợp lệ thì mới chặn
-  if (!referrer || !referrer.includes(REQUIRED_ORIGIN)) {
-    alert("⚠️ Bạn cần đăng ký/đăng nhập để tiếp tục");
-    window.location.href = "https://" + REQUIRED_ORIGIN;
-  }
-}, []);
-
+  
   // --- PHẦN 2: QUẢN LÝ TRẠNG THÁI (STATES) ---
 
   // 1. Quản lý các màn hình (Views)
