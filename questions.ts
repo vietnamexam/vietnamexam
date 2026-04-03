@@ -1,5 +1,5 @@
 import { Question } from './types';
-import { DANHGIA_URL, API_ROUTING  } from './config';
+import { KETQUA_URL, ADMIN2_URL } from './config';
 
 // 1. Lưu trữ ngân hàng câu hỏi
 export let questionsBank: Question[] = [];
@@ -7,7 +7,7 @@ export let questionsBank: Question[] = [];
 // 2. Hàm nạp dữ liệu từ Google Sheet
 export const fetchQuestionsBank = async (): Promise<Question[]> => {
   try {
-    const response = await fetch(`${DANHGIA_URL}?action=getQuestions`);
+    const response = await fetch(`${KETQUA_URL}?action=getQuestions`);
     const result = await response.json();
     
     if (result.status === "success" && Array.isArray(result.data)) {
@@ -103,14 +103,7 @@ export const fetchScore = async (
   exams: string
 ) => {
 
-  if (!API_ROUTING[idgv]) {
-    await fetchApiRouting();   // 👈 bắt buộc load lại
-  }
-
-  const baseUrl = API_ROUTING[idgv];
-  if (!baseUrl) return null;
-
-  const url = `${baseUrl}?action=getScore&sbd=${sbd}&exams=${exams}`;
+  const url = `${KETQUA_URL}?action=getScore&sbd=${sbd}&exams=${exams}&idgv=${idgv}`;
 
   const res = await fetch(url);
   const data = await res.json();
@@ -120,29 +113,6 @@ export const fetchScore = async (
   }
 
   return null;
-};
-export const resetQuiz = async () => {
-
-  if (!API_ROUTING["admin2"]) {
-    await fetchApiRouting();
-  }
-
-  const baseUrl = API_ROUTING["admin2"];
-
-  if (!baseUrl) {
-    alert("Không tìm thấy routing admin2");
-    return false;
-  }
-
-  try {
-    const res = await fetch(`${baseUrl}?action=resetQuiz`);
-    const data = await res.json();
-
-    return data.status === "success";
-  } catch (err) {
-    console.error("Lỗi resetQuiz:", err);
-    return false;
-  }
 };
 
 

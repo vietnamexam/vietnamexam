@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Student, ExamResult, Question, AppUser } from './types';
-import { API_ROUTING, DEFAULT_API_URL, DANHGIA_URL, fetchApiRouting, fetchAdminConfig } from './config';
+import { KETQUA_URL , DANHGIA_URL, fetchAdminConfig } from './config';
 // Sửa lại đoạn này trong App.tsx của thầy:
 import LandingPage from '@/components/LandingPage';
 import ExamPortal from '@/components/ExamPortal';
@@ -17,6 +17,28 @@ import { fetchQuestionsBankW } from '@/questionsWord';
 import ExamRoom from '@/components/ExamRoom';
 
 const App: React.FC = () => {
+  // --- PHẦN 1: BẢO MẬT (CHẶN VÀO TRỰC TIẾP) ---
+  useEffect(() => {
+  const REQUIRED_ORIGIN = "smarteduv2.vercel.app";
+  const referrer = document.referrer;
+  const currentUrl = window.location.href;
+
+  // 1. Kiểm tra xem người dùng có đang ở chính trang chủ không
+  // Nếu URL hiện tại đã là trang chủ, thì không cần chặn nữa
+  const isAtHome = currentUrl === "https://" + REQUIRED_ORIGIN + "/" || 
+                   currentUrl.includes("localhost"); // Để thầy còn test được máy nhà
+
+  if (isAtHome) return; // Đang ở trang chủ thì cho qua, không check referrer nữa
+
+  // 2. Nếu đang ở các trang con mà referrer không hợp lệ thì mới chặn
+  if (!referrer || !referrer.includes(REQUIRED_ORIGIN)) {
+    alert("⚠️ Bạn cần đăng ký/đăng nhập để tiếp tục");
+    window.location.href = "https://" + REQUIRED_ORIGIN;
+  }
+}, []);
+
+  // --- PHẦN 2: QUẢN LÝ TRẠNG THÁI (STATES) ---
+
   // 1. Quản lý các màn hình (Views)
  const [currentView, setCurrentView] = useState<'landing' | 'portal' | 'quiz' | 'result' | 'admin' | 'teacher_task' | 'exam'>('landing');
   
@@ -45,8 +67,7 @@ const App: React.FC = () => {
       try {
         console.log("🚀 Hệ thống bắt đầu khởi tạo...");
         await Promise.all([
-          fetchAdminConfig(),
-          fetchApiRouting(),
+          fetchAdminConfig(),          
           fetchQuestionsBank(),
           fetchQuestionsBankW()
         ]);
@@ -120,20 +141,14 @@ const App: React.FC = () => {
 
   setCurrentView('result');
 
-  let targetUrl = DEFAULT_API_URL;
-
-  if (activeStudent && API_ROUTING[activeStudent.idnumber]) {
-    targetUrl = API_ROUTING[activeStudent.idnumber];
-  }
+  let targetUrl = KETQUA_URL;  
 
   try {
     await fetch(targetUrl, {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(matrixPayload)
-    });
-
-    console.log("🚀 Đã nộp bài MA TRẬN:", matrixPayload);
+    });   
   } catch (e) {
     console.error("❌ Lỗi gửi kết quả:", e);
   }
@@ -153,11 +168,7 @@ const App: React.FC = () => {
   setExamResult(normalizedResult);
   setCurrentView('result');
 
-  let targetUrl = DEFAULT_API_URL;
-  if (activeStudent && API_ROUTING[activeStudent.idnumber]) {
-    targetUrl = API_ROUTING[activeStudent.idnumber];
-  }
-
+  let targetUrl = KETQUA_URL;
   try {
     await fetch(targetUrl, {
       method: 'POST',
@@ -168,8 +179,6 @@ const App: React.FC = () => {
     console.error("Lỗi gửi kết quả:", e);
   }
 };
-
-
  return (
     <AppProvider>
       <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 bg-slate-50 text-slate-900">

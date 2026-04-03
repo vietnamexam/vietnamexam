@@ -1,5 +1,5 @@
 import { Question } from './types';
-import { DANHGIA_URL, API_ROUTING } from './config';
+import { KETQUA_URL } from './config';
 
 export let questionsBankW: Question[] = [];
 
@@ -56,13 +56,7 @@ export const fetchQuestionsBankW = async (
   customUrl?: string
 ): Promise<Question[]> => {
   try {
-    let targetUrl = DANHGIA_URL;
-    if (customUrl) {
-      targetUrl = customUrl;
-    } else if (idgv && API_ROUTING[idgv]) {
-      targetUrl = API_ROUTING[idgv];
-    }
-
+    let targetUrl = KETQUA_URL;
     const finalUrl = examCode
       ? `${targetUrl}?action=getQuestionsByCode&examCode=${examCode}`
       : `${targetUrl}?action=getQuestions`;
