@@ -1196,15 +1196,17 @@ const handleRedirect = () => {
 </a>
            <div className="grid grid-cols-2 gap-2">
  {[12, 11, 10].map(g => (
- <button 
-      key={g} 
-      onClick={() => onSelectGrade(g)} 
-      className="bg-blue-600 text-white p-2.5 rounded-xl font-black text-[10px] uppercase border-b-4 border-blue-800 transition-all active:scale-95 flex items-center justify-center gap-2"
-    >
-      <i className="fas fa-graduation-cap text-[10px]"></i> 
-      <span>Lớp {g}</span>
-    </button>
-  ))}
+  <a
+    key={g}
+    href={`https://thayhabacninh.vercel.app/?grade=${g}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-blue-600 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
+  >
+    <i className="fas fa-graduation-cap text-xs"></i>
+    <span>Lớp {g}</span>
+  </a>
+))}
 
 
 

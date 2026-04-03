@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+
 import { ExamConfig, Question, UserAnswer, ExamResult, Student } from '../types';
 
 import MathText from './MathText';
@@ -25,14 +27,17 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-   const [answers, setAnswers] = useState<UserAnswer[]>(
-  questions.map(q => ({ 
-    questionId: q.id, 
-    answer: q.type === 'true-false'
-      ? [null, null, null, null]
-      : null 
-  }))
-);
+  const [answers, setAnswers] = useState<UserAnswer[]>(
+
+    questions.map(q => ({ 
+
+      questionId: q.id, 
+
+      answer: q.type === 'true-false' ? [undefined, undefined, undefined, undefined] : null 
+
+    }))
+
+  );
 
   const TOTAL_TIME = config.time * 60; // giây
 
@@ -78,12 +83,12 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
       else if (q.type === 'true-false') {
 
-        const correctCount = q.s!.reduce(
-  (acc, s, si) => acc + (((u as any) ?? [])[si] === s.a ? 1 : 0),
-  0
-);
+        const correctCount = q.s!.reduce((acc, s, si) => acc + ((u as any)[si] === s.a ? 1 : 0), 0);
+
         score += config.tfPoints * ([0, 0.1, 0.25, 0.5, 1][correctCount] || 0);
+
       }
+
     });
 
 
@@ -131,37 +136,80 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
   });
 
   }, [answers, config, questions, student, timeLeft, tabSwitches, isQuizMode, onFinish]);
-  useEffect(() => {
-  const handleVisibilityChange = () => {
-    if (document.hidden) {
-      setTabSwitches(prev => {
-        const newCount = prev + 1;
-        if (newCount >= student.limittab) {
-          alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần, vượt quá giới hạn (${student.limittab}). Hệ thống sẽ tự động nộp bài!`);
-          handleSubmit();
-        } else {
-          alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần.`);
-        }
-        return newCount;
-      });
-    }
-  };
 
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-  return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-}, [student.limittab, handleSubmit]);
+
+
+  useEffect(() => {
+
+    const handleVisibilityChange = () => {
+
+      if (document.hidden) {
+
+        setTabSwitches(prev => {
+
+          const newCount = prev + 1;
+
+          if (newCount >= student.limittab) {
+
+            alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần, vượt quá giới hạn (${student.limittab}). Hệ thống sẽ tự động nộp bài!`);
+
+            handleSubmit();
+
+          } else {
+
+            alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần. Nếu vượt quá ${student.limittab} lần, hệ thống sẽ tự nộp bài!`);
+
+          }
+
+          return newCount;
+
+        });
+
+      }
+
+    };
+
+
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+  }, [student.limittab, handleSubmit]);
+
+
+
+  useEffect(() => {
+
+    if (config.id === 'QUIZ' && config.time > 900) return; 
+
+    const timer = setInterval(() => {
+
+      setTimeLeft(prev => {
+
+        if (prev <= 0) { clearInterval(timer); handleSubmit(); return 0; }
+
+        return prev - 1;
+
+      });
+
+    }, 1000);
+
+    return () => clearInterval(timer);
+
+  }, [config.id, config.time, handleSubmit]);
+
+
 
   const isAnswered = (idx: number) => {
 
     const ans = answers[idx].answer;
 
-    if (questions[idx].type === "true-false") {
-    if (!Array.isArray(ans)) return false;
-    return ans.filter(v => v === true || v === false).length === 4;
-  }
+    if (questions[idx].type === 'true-false') return (ans as any[]).some(v => v !== undefined);
 
-  return ans !== null && ans !== "";
-};
+    return ans !== null && ans !== "";
+
+  };
 
 
 
@@ -187,14 +235,16 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
 
 
- const currentQuestion = useMemo(
-  () => questions[currentIndex],
-  [questions, currentIndex]
-);
+  const currentQuestion = questions[currentIndex];
+
   const pStr = currentQuestion.part.toUpperCase();
+
   const colorSet = pStr.includes("PHẦN I") ? { bg: "bg-blue-600", text: "text-blue-600" } : 
+
                    pStr.includes("PHẦN II") ? { bg: "bg-pink-600", text: "text-pink-600" } :
+
                    { bg: "bg-orange-600", text: "text-orange-600" };
+
 
 
   return (
@@ -410,8 +460,3 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
 
 export default QuizInterface;
-
-
-
-
-    
