@@ -23,21 +23,25 @@ interface QuizInterfaceProps {
 
 
 
-const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, questions, onFinish, isQuizMode = false }) => {
-
+const QuizInterface: React.FC<QuizInterfaceProps> = ({ 
+    config, 
+    student, 
+    questions, 
+    onFinish, 
+    isQuizMode = false 
+   }) => {
+  const studentInfo = {
+  sbd: "anonymous"
+};
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [answers, setAnswers] = useState<UserAnswer[]>(
-
-    questions.map(q => ({ 
-
-      questionId: q.id, 
-
-      answer: q.type === 'true-false' ? [undefined, undefined, undefined, undefined] : null 
-
-    }))
-
-  );
+  questions.map(q => ({ 
+    questionId: q.id, 
+    answer: q.type === 'true-false'
+      ? [null, null, null, null]
+      : null 
+  }))
+);
 
   const TOTAL_TIME = config.time * 60; // giây
 
@@ -60,121 +64,103 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
     return `${m}:${s < 10 ? '0' : ''}${s}`;
 
   };
+  useEffect(() => {
+  const key = "exam_" + config.id + "_" + student.sbd;
+
+  localStorage.setItem(
+    key,
+    JSON.stringify({
+      answers,
+      currentIndex,
+      timeLeft
+    })
+  );
+}, [answers, currentIndex, config.id, student.sbd]);
+
+  useEffect(() => {
+  const key = "exam_" + config.id + "_" + student.sbd;
+
+  const saved = localStorage.getItem(key);
+
+  if (saved) {
+    const data = JSON.parse(saved);
+
+    if (data.answers) setAnswers(data.answers);
+    if (data.currentIndex !== undefined) setCurrentIndex(data.currentIndex);
+    if (data.timeLeft !== undefined) setTimeLeft(data.timeLeft);
+  }
+}, []);
 
 
 
-  const handleSubmit = useCallback(() => {
-
+ const handleSubmit = useCallback(() => {
     if (hasFinished.current) return;
-
     hasFinished.current = true;
 
-
-
     let score = 0;
-
     questions.forEach((q, idx) => {
-
-      const u = answers[idx].answer;
-
+      const u = answers[idx]?.answer;
       if (q.type === 'mcq' && u === q.a) score += config.mcqPoints;
-
       else if (q.type === 'short-answer' && u?.toString().trim().toLowerCase() === q.a?.toString().trim().toLowerCase()) score += config.saPoints;
-
       else if (q.type === 'true-false') {
-
-        const correctCount = q.s!.reduce((acc, s, si) => acc + ((u as any)[si] === s.a ? 1 : 0), 0);
-
+        const correctCount = q.s!.reduce(
+  (acc, s, si) => acc + (((u as any) ?? [])[si] === s.a ? 1 : 0),
+  0
+);
         score += config.tfPoints * ([0, 0.1, 0.25, 0.5, 1][correctCount] || 0);
-
       }
-
     });
 
-
-
     const elapsedSeconds = TOTAL_TIME - timeLeft;
-
     const timeDisplay = formatTime(elapsedSeconds);
-
-
-
+    localStorage.removeItem("exam_" + config.id + "_" + student.sbd);
+    console.log("DATA SUBMIT:", {
+  ...student,
+  idgv: student.idgv
+});
     onFinish({ 
-
     type: isQuizMode ? 'quiz' : 'exam',
-
     timestamp: new Date().toISOString(), 
-
     examCode: "'" + config.id, 
-
     sbd: "'" + student.sbd, 
-
     name: student.name, 
-
     className: student.class,
-
     school: student.school,
-
     phoneNumber: "'" + student.phoneNumber,   
-
     score, 
-
     totalTime: elapsedSeconds, // timeDisplay
-
+    idgv: "'" + student.idgv,
        // THÊM 2 DÒNG NÀY VÀO ĐÂY:
-
-    stk: "'" + student.stk || "",
-
+    stk: student.stk ? "'" + student.stk : "",
     bank: student.bank || "",
-
     // -----------------------
-
     tabSwitches,
-
     details: answers 
-
   });
-
   }, [answers, config, questions, student, timeLeft, tabSwitches, isQuizMode, onFinish]);
 
 
 
   useEffect(() => {
 
+    useEffect(() => {
     const handleVisibilityChange = () => {
-
       if (document.hidden) {
-
         setTabSwitches(prev => {
-
           const newCount = prev + 1;
-
           if (newCount >= student.limittab) {
-
             alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần, vượt quá giới hạn (${student.limittab}). Hệ thống sẽ tự động nộp bài!`);
-
             handleSubmit();
-
           } else {
-
             alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần. Nếu vượt quá ${student.limittab} lần, hệ thống sẽ tự nộp bài!`);
-
           }
-
           return newCount;
-
         });
-
       }
-
     };
 
-
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-
   }, [student.limittab, handleSubmit]);
 
 
@@ -310,153 +296,127 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
         </div>
 
       </div>
-
-
-
-     <div className="lg:col-span-3">
-
+      <div className="lg:col-span-3">
         {/* KHUNG CÂU HỎI CHÍNH - Thêm relative và overflow-hidden */}
-
         <div className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-50 min-h-[600px] flex flex-col animate-fade-in relative overflow-hidden" key={currentIndex}>
-
           
-
           {/* --- LỚP PHỦ WATERMARK BẢO MẬT (Nằm dưới nội dung) --- */}
-
           <div className="absolute inset-0 pointer-events-none z-0 flex flex-wrap justify-around align-content-around opacity-[0.07] select-none" style={{ display: 'flex', flexWrap: 'wrap' }}>
-
             {Array.from({ length: 16 }).map((_, i) => (
-
               <div key={i} className="text-slate-900 font-black text-lg p-10 whitespace-nowrap" style={{ transform: 'rotate(-25deg)' }}>
-
                 {student.phoneNumber} - {student.name}
-
               </div>
-
             ))}
-
           </div>
 
-
-
           {/* --- NỘI DUNG CÂU HỎI (Nằm trên Watermark) --- */}
-
           <div className="relative z-10 flex flex-col flex-grow">
-
             <div className="mb-8">
-
               <div className="flex flex-col gap-2 mb-6">
-
-                 <span className={`w-fit px-3 py-1 ${colorSet.bg} text-white text-[11px] font-black rounded shadow-md uppercase`}>ID: {currentQuestion.id} - Tác giả: Nguyễn Văn Hà: 0988.948.882</span>
-
+                 <span className={`w-fit px-3 py-1 ${colorSet.bg} text-white text-[11px] font-black rounded shadow-md uppercase`}>ID: {currentQuestion.id}</span>
                  <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${colorSet.text}`}>{currentQuestion.part}</span>
-
               </div>
-
               <div className="text-xl md:text-2xl font-semibold text-slate-800 leading-relaxed">
-
                  <span className="text-blue-600 font-black mr-2 select-none">Câu {currentIndex+1}.</span>
-
                  <MathText content={currentQuestion.question} />
-
               </div>
-
             </div>
-
-
 
             <div className="flex-grow space-y-4">
-
               {/* Câu hỏi trắc nghiệm MCQ */}
-
               {currentQuestion.type === 'mcq' && currentQuestion.shuffledOptions?.map((opt, i) => (
-
                 <label key={i} className={`flex items-center p-5 rounded-2xl border-2 transition-all cursor-pointer group ${answers[currentIndex].answer === opt ? 'border-blue-500 bg-blue-50/50' : 'border-slate-100 hover:border-blue-100 bg-slate-50/30'}`}>
-
-                  <input type="radio" className="hidden" checked={answers[currentIndex].answer === opt} onChange={() => { const n = [...answers]; n[currentIndex].answer = opt; setAnswers(n); }} />
-
+                  <input type="radio" 
+                    className="hidden" checked={answers[currentIndex].answer === opt} 
+                    onChange={() => {
+  setAnswers(prev => {
+    const copy = [...prev];
+    copy[currentIndex] = {
+      ...copy[currentIndex],
+      answer: opt
+    };
+    return copy;
+  });
+}}
+                    />
                   <span className={`w-10 h-10 rounded-full flex items-center justify-center font-black mr-4 border-2 transition-colors shrink-0 ${answers[currentIndex].answer === opt ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-300 border-slate-200 group-hover:border-blue-200'}`}>{String.fromCharCode(65+i)}</span>
-
                   <MathText className="text-base md:text-lg font-bold text-slate-700" content={opt} />
-
                 </label>
-
               ))}
-
               
-
               {/* Câu hỏi trả lời ngắn */}
-
               {currentQuestion.type === 'short-answer' && (
-
-                <input type="text" className="w-full p-5 border-2 border-blue-100 rounded-2xl font-black bg-slate-50 text-blue-900 outline-none" placeholder="Nhập đáp án của bạn...(dùng dấu chấm (.) thay dấu phẩy(,) nhé). Ví dụ: 6.04" value={answers[currentIndex].answer as string || ''} onChange={e => { const n = [...answers]; n[currentIndex].answer = e.target.value; setAnswers(n); }} />
-
+                <input 
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  className="w-full p-5 border-2 border-blue-100 rounded-2xl font-black text-base bg-slate-50 text-blue-900 outline-none" placeholder="Ví dụ: 6.32(dùng dấu (.))" 
+                  value={(answers[currentIndex]?.answer as string) || ''} 
+                  onChange={e => {
+                  const value = e.target.value.replace(",", ".");
+                  setAnswers(prev => {
+                  const copy = [...prev];
+                  copy[currentIndex] = {
+                    ...copy[currentIndex],
+                    answer: value
+                    };
+                return copy;
+              });
+                }} 
+                  />
               )}
-
               
-
               {/* Câu hỏi Đúng/Sai */}
-
               {currentQuestion.type === 'true-false' && currentQuestion.s?.map((s, si) => (
-
                 <div key={si} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 group hover:border-blue-200 transition-colors shadow-sm">
-
                   <div className="text-slate-700 font-bold text-base md:text-lg flex items-start flex-1">
-
                     <span className="text-blue-600 font-black mr-3">{String.fromCharCode(97+si)}.</span>
-
                     <MathText content={s.text} />
-
                   </div>
-
                   <div className="flex gap-2 shrink-0">
-
                     {[true, false].map(v => (
+                      <button key={v?1:0} 
+                        onClick={() => {
+                        setAnswers(prev => {
+                        const copy = [...prev];
 
-                      <button key={v?1:0} onClick={() => { const n = [...answers]; (n[currentIndex].answer as any)[si] = v; setAnswers(n); }} className={`px-6 py-2 rounded-xl font-black border-2 transition-all shadow-sm text-xs ${ (answers[currentIndex].answer as any)[si] === v ? (v ? 'bg-blue-600 text-white border-blue-600' : 'bg-red-600 text-white border-red-600') : 'bg-white text-slate-300 border-slate-200 hover:border-blue-100'}`}>
+                        const current = [...(copy[currentIndex].answer as (boolean | undefined)[])];
 
+                          current[si] = v;
+
+    copy[currentIndex] = {
+      ...copy[currentIndex],
+      answer: current
+    };
+
+    return copy;
+  });
+}} 
+                        className={`px-6 py-3 min-w-[70px] rounded-xl font-black border-2 transition-all shadow-sm text-xs ${ ((answers[currentIndex]?.answer as any) ?? [])[si] === v ? (v ? 'bg-blue-600 text-white border-blue-600' : 'bg-red-600 text-white border-red-600') : 'bg-white text-slate-300 border-slate-200 hover:border-blue-100'}`}>
                         {v?'ĐÚNG':'SAI'}
-
                       </button>
-
                     ))}
-
                   </div>
-
                 </div>
-
               ))}
-
             </div>
-
-
 
             {/* Nút điều hướng */}
-
             <div className="mt-10 flex justify-between gap-4">
-
               <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(p => p - 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Câu Trước</button>
-
               <button disabled={currentIndex === questions.length - 1} onClick={() => setCurrentIndex(p => p + 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Câu Tiếp</button>
-
             </div>
-
           </div> 
-
           {/* Hết phần z-10 */}
 
-
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 };
 
-
-
 export default QuizInterface;
+
+
+
+    
