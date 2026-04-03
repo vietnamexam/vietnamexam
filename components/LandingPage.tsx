@@ -96,6 +96,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   const [duration, setDuration] = useState(90);          
   const [examStarted, setExamStarted] = useState(false);
   const [studentClass, setStudentClass] = useState("");
+  const [selectedMon, setSelectedMon] = useState(null);
  
  
  
@@ -1181,20 +1182,54 @@ const handleRedirect = () => {
   </div>
 </div>       
 
-     {/* CỘT PHẢI: QUIZ & TOP 10 (VUỐT) */}
+     {/* CỘT PHẢI: CHỌN MÔN */}
         <div className="lg:col-span-3 flex flex-col gap-4 order-3">
           {/* CỤM NÚT ĐIỀU KHIỂN */}
-          <div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
-            <a
-  href="https://thayhabacninh-phi.vercel.app/?mode=quiz"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="w-full bg-orange-500 text-white p-4 rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-orange-700 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-2"
->
-  <i className="fas fa-gift animate-bounce"></i>
-  SĂN QUÀ QUIZ
-</a>
-           <div className="grid grid-cols-2 gap-2">
+         {/* --- PHẦN CHỌN MÔN HỌC --- */}
+<div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
+  {/* Hiển thị kết quả chọn để GV/HS dễ nhìn */}
+  <div className="flex justify-between items-center px-2">
+    <span className="text-[10px] font-black text-slate-400 uppercase">Chọn môn học:</span>
+    {selectedMon && (
+      <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-lg">
+        ID: {selectedMon.id}
+      </span>
+    )}
+  </div>
+
+  <div className="grid grid-cols-2 gap-2">
+    {[
+      { id: "toan", name: "Toán" },
+      { id: "vat-li", name: "Vật lí" },
+      { id: "hoa-hoc", name: "Hóa học" },
+      { id: "sinh-hoc", name: "Sinh" },
+      { id: "ngu-van", name: "Văn" },
+      { id: "tieng-anh", name: "T.Anh" },
+      { id: "lich-su", name: "Lịch sử" },
+      { id: "dia-li", name: "Địa lí" },
+      { id: "kt-pl", name: "KT&PL" },
+      { id: "cn-cn", name: "CNCN" },
+      { id: "cn-nn", name: "CNNN" }
+    ].map((mon) => (
+      <button
+        key={mon.id}
+        onClick={() => {
+          // 'setSelectedMon' là state bạn đặt ở đầu LandingPage nhé
+          setSelectedMon(mon);
+          // Log ra để làm cơ sở chọn sheet cho GV/HS
+          console.log("Selected:", mon.id, mon.name);
+        }}
+        className={`p-3 rounded-2xl font-black text-xs uppercase transition-all border-b-4 active:scale-95 touch-manipulation ${
+          selectedMon?.id === mon.id
+            ? "bg-blue-600 text-white border-blue-800 shadow-inner"
+            : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
+        }`}
+      >
+        {mon.name}
+      </button>
+    ))}
+  </div>
+</div>
  {[12, 11, 10].map(g => (
   <a
     key={g}
