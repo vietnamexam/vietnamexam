@@ -1,3 +1,28 @@
+// --- PHẦN 1: BẢO MẬT (CHẶN VÀO TRỰC TIẾP) ---
+useEffect(() => {
+  // Danh sách các domain được phép truy cập vào trang con
+  const ALLOWED_ORIGINS = ["smarteduv2.vercel.app", "thayhabacninh.vercel.app"];
+  const HOME_URL = "https://smarteduv2.vercel.app";
+  
+  const referrer = document.referrer;
+  const currentUrl = window.location.href;
+
+  // 1. Kiểm tra xem người dùng có đang ở chính trang chủ không (hoặc localhost để test)
+  const isAtHome = currentUrl === HOME_URL + "/" || 
+                   currentUrl.includes("localhost");
+
+  if (isAtHome) return; // Nếu là trang chủ thì không cần check referrer
+
+  // 2. Kiểm tra xem referrer có thuộc danh sách được phép hay không
+  // Sử dụng .some() để kiểm tra nếu referrer chứa bất kỳ domain nào trong mảng
+  const isAuthorized = ALLOWED_ORIGINS.some(domain => referrer.includes(domain));
+
+  if (!referrer || !isAuthorized) {
+    alert("⚠️ Bạn cần đăng ký/đăng nhập để tiếp tục");
+    window.location.href = HOME_URL;
+  }
+}, []);
+
 // =====================ADMIN =======================================================
 const SPREADSHEET_ID_ADMIN = "1LlFAI1J0b7YQ84BL674r2kr3wSoW9shgsXSIXVPDypM";
 
