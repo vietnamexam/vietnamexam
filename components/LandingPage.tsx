@@ -1187,49 +1187,62 @@ const handleRedirect = () => {
           {/* CỤM NÚT ĐIỀU KHIỂN */}
           <div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
            {/* --- PHẦN CHỌN MÔN HỌC --- */}
-<div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
-  {/* Hiển thị kết quả chọn để GV/HS dễ nhìn */}
-  <div className="flex justify-between items-center px-2">
-    <span className="text-[10px] font-black text-slate-400 uppercase">Chọn môn học:</span>
-    {selectedMon && (
-      <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-lg">
-        ID: {selectedMon.id}
-      </span>
-    )}
+{/* --- PHẦN CHỌN MÔN HỌC (TỐI ƯU DIỆN TÍCH) --- */}
+<div className="bg-white p-3 rounded-2xl shadow-md border border-slate-100 flex flex-col gap-2">
+  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+    Môn học đang chọn:
+  </label>
+  
+  <div className="relative group">
+    <select
+      value={selectedMon?.id || ""}
+      onChange={(e) => {
+        const mon = [
+          { id: "toan", name: "Toán" },
+          { id: "vat-li", name: "Vật lí" },
+          { id: "hoa-hoc", name: "Hóa học" },
+          { id: "sinh-hoc", name: "Sinh" },
+          { id: "ngu-van", name: "Văn" },
+          { id: "tieng-anh", name: "T.Anh" },
+          { id: "lich-su", name: "Lịch sử" },
+          { id: "dia-li", name: "Địa lí" },
+          { id: "kt-pl", name: "KT&PL" },
+          { id: "cn-cn", name: "CNCN" },
+          { id: "cn-nn", name: "CNNN" }
+        ].find(m => m.id === e.target.value);
+        setSelectedMon(mon);
+        console.log("Cơ sở chọn Sheet:", mon?.id);
+      }}
+      className="w-full bg-slate-50 border-2 border-slate-200 text-slate-700 py-3 px-4 rounded-xl font-bold text-sm appearance-none focus:outline-none focus:border-blue-500 transition-all cursor-pointer shadow-sm"
+    >
+      <option value="" disabled>-- Bấm để chọn môn --</option>
+      <option value="toan">📘 Toán</option>
+      <option value="vat-li">🔬 Vật lí</option>
+      <option value="hoa-hoc">🧪 Hóa học</option>
+      <option value="sinh-hoc">🌿 Sinh học</option>
+      <option value="ngu-van">📖 Ngữ văn</option>
+      <option value="tieng-anh">🔤 Tiếng Anh</option>
+      <option value="lich-su">📜 Lịch sử</option>
+      <option value="dia-li">🌍 Địa lí</option>
+      <option value="kt-pl">⚖️ KT & Pháp luật</option>
+      <option value="cn-cn">🛠️ Công nghệ (CN)</option>
+      <option value="cn-nn">🌽 Công nghệ (NN)</option>
+    </select>
+    
+    {/* Icon mũi tên cho đẹp */}
+    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+      <i className="fas fa-chevron-down text-xs"></i>
+    </div>
   </div>
 
-  <div className="grid grid-cols-2 gap-2">
-    {[
-      { id: "toan", name: "Toán" },
-      { id: "vat-li", name: "Vật lí" },
-      { id: "hoa-hoc", name: "Hóa học" },
-      { id: "sinh-hoc", name: "Sinh" },
-      { id: "ngu-van", name: "Văn" },
-      { id: "tieng-anh", name: "T.Anh" },
-      { id: "lich-su", name: "Lịch sử" },
-      { id: "dia-li", name: "Địa lí" },
-      { id: "kt-pl", name: "KT&PL" },
-      { id: "cn-cn", name: "CNCN" },
-      { id: "cn-nn", name: "CNNN" }
-    ].map((mon) => (
-      <button
-        key={mon.id}
-        onClick={() => {
-          // 'setSelectedMon' là state bạn đặt ở đầu LandingPage nhé
-          setSelectedMon(mon);
-          // Log ra để làm cơ sở chọn sheet cho GV/HS
-          console.log("Selected:", mon.id, mon.name);
-        }}
-        className={`p-3 rounded-2xl font-black text-xs uppercase transition-all border-b-4 active:scale-95 touch-manipulation ${
-          selectedMon?.id === mon.id
-            ? "bg-blue-600 text-white border-blue-800 shadow-inner"
-            : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
-        }`}
-      >
-        {mon.name}
-      </button>
-    ))}
-  </div>
+  {/* Badge nhỏ hiển thị ID để Thầy tiện debug */}
+  {selectedMon && (
+    <div className="flex justify-end">
+      <span className="text-[9px] font-mono text-blue-500 bg-blue-50 px-2 py-0.5 rounded">
+        Active Sheet ID: {selectedMon.id}
+      </span>
+    </div>
+  )}
 </div>
            <div className="grid grid-cols-2 gap-2">
  {[12, 11, 10].map(g => (
