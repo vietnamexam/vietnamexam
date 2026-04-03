@@ -60,14 +60,19 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   }, [grade]);
 
   // 5. Memos: Xử lý dữ liệu hiển thị
-  const allAvailableCodes = useMemo(() => {
-    const defaults = EXAM_CODES[grade] || [];
-    const combined = [...defaults];
-    dynamicCodes.forEach(dc => {
-      if (!combined.find(c => c.code === dc.code)) combined.push(dc);
-    });
-    return combined;
-  }, [grade, dynamicCodes]);
+ const allAvailableCodes = useMemo(() => {
+  const defaults = (window.EXAM_CODES?.[grade]) || [];
+
+  const combined = [...defaults];
+
+  dynamicCodes.forEach(dc => {
+    if (!combined.find(c => c.code === dc.code)) {
+      combined.push(dc);
+    }
+  });
+
+  return combined;
+}, [grade, dynamicCodes]);
 
   const currentCodeDef = useMemo(() => 
     allAvailableCodes.find(c => c.code === selectedCode), 
