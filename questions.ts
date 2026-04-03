@@ -1,5 +1,5 @@
 import { Question } from './types';
-import { KETQUA_URL, ADMIN2_URL } from './config';
+import { KETQUA_URL, DANHGIA_URL, ADMIN2_URL } from './config';
 
 // 1. Lưu trữ ngân hàng câu hỏi
 // Lọc câu trùng
@@ -49,7 +49,7 @@ export let questionsBank: Question[] = [];
 // 2. Hàm nạp dữ liệu từ Google Sheet
 export const fetchQuestionsBank = async (): Promise<Question[]> => {
   try {
-    const response = await fetch(`${KETQUA_URL}?action=getQuestions`);
+    const response = await fetch(`${DANHGIA_URL}?action=getQuestions`);
     const result = await response.json();
     
     if (result.status === "success" && Array.isArray(result.data)) {
