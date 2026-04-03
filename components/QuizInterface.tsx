@@ -187,16 +187,14 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
 
 
 
-  const currentQuestion = questions[currentIndex];
-
+ const currentQuestion = useMemo(
+  () => questions[currentIndex],
+  [questions, currentIndex]
+);
   const pStr = currentQuestion.part.toUpperCase();
-
   const colorSet = pStr.includes("PHẦN I") ? { bg: "bg-blue-600", text: "text-blue-600" } : 
-
                    pStr.includes("PHẦN II") ? { bg: "bg-pink-600", text: "text-pink-600" } :
-
                    { bg: "bg-orange-600", text: "text-orange-600" };
-
 
 
   return (
