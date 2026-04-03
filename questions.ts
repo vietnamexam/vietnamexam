@@ -49,7 +49,7 @@ export let questionsBank: Question[] = [];
 // 2. Hàm nạp dữ liệu từ Google Sheet
 export const fetchQuestionsBank = async (): Promise<Question[]> => {
   try {
-    const response = await fetch(`${ADMIN2_URL}?action=getQuestions`);
+    const response = await fetch(`${KETQUA_URL}?action=getQuestions`);
     const result = await response.json();
     
     if (result.status === "success" && Array.isArray(result.data)) {
