@@ -260,14 +260,14 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   </div>
 </div>
 
-        {/* Cột 2: Chọn mã đề */}
-<div className="space-y-6 order-2">
+         {/* Cột 2: Chọn mã đề */}
+<div className="space-y-6">
   <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
   <div className="space-y-4">
     <div className="relative">
-      <select className="w-full p-4 md:p-5 min-h-[44px] bg-slate-50 border-2 border-slate-100 rounded-2xl md:rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
-        <option value="">-- CHỌN MÃ ĐỀ --</option>
-        {allAvailableCodes.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+      <select className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
+        <option value="">-- MÃ ĐỀ - TÊN ĐỀ --</option>
+        {allAvailableCodes.map(c => <option key={c.code} value={c.code}>{c.code} - {c.name}</option>)}
       </select>
       <i className="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"></i>
     </div>
