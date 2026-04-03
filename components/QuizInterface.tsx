@@ -219,9 +219,10 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({
 
   };
 
-
-
-  const currentQuestion = questions[currentIndex];
+  const currentQuestion = useMemo(
+  () => questions[currentIndex],
+  [questions, currentIndex]
+);
 
   const pStr = currentQuestion.part.toUpperCase();
 
