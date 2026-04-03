@@ -96,7 +96,6 @@ const LandingPage: React.FC<LandingPageProps> = ({
   const [duration, setDuration] = useState(90);          
   const [examStarted, setExamStarted] = useState(false);
   const [studentClass, setStudentClass] = useState("");
-  const [selectedMon, setSelectedMon] = useState(null);
  
  
  
@@ -1182,10 +1181,11 @@ const handleRedirect = () => {
   </div>
 </div>       
 
-     {/* CỘT PHẢI: CHỌN MÔN */}
+     {/* CỘT PHẢI: QUIZ & TOP 10 (VUỐT) */}
         <div className="lg:col-span-3 flex flex-col gap-4 order-3">
           {/* CỤM NÚT ĐIỀU KHIỂN */}
-         {/* --- PHẦN CHỌN MÔN HỌC --- */}
+          <div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
+           {/* --- PHẦN CHỌN MÔN HỌC --- */}
 <div className="bg-white p-4 rounded-[2rem] shadow-lg border border-slate-100 flex flex-col gap-3">
   {/* Hiển thị kết quả chọn để GV/HS dễ nhìn */}
   <div className="flex justify-between items-center px-2">
@@ -1230,6 +1230,7 @@ const handleRedirect = () => {
     ))}
   </div>
 </div>
+           <div className="grid grid-cols-2 gap-2">
  {[12, 11, 10].map(g => (
   <a
     key={g}
