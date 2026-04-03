@@ -74,7 +74,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
   [selectedCode, allAvailableCodes]);
 
   const combinedTopics = useMemo(() => {
-    const relatedGrades = getRelatedGrades(grade);
+     const relatedGrades = getRelatedGrades(grade).reverse();
     let topics: { id: string; name: string; grade: string }[] = [];
     relatedGrades.forEach(g => {
       const gradeTopics = TOPICS_DATA[g] || [];
@@ -101,8 +101,11 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       const resp = await fetch(url.toString());
       const result = await resp.json();
       
-      if (result.status === "success") {
-        setVerifiedStudent(result.data);
+       if (result.status === "success") {
+        setVerifiedStudent({
+          ...result.data,
+        idgv: idInput.trim() // 👈 FIX CHUẨN NHẤT
+          });
         // Tải thêm mã đề riêng của GV nếu có
         const matrixUrl = new URL(targetUrl);
         matrixUrl.searchParams.append("type", "getExamCodes");
