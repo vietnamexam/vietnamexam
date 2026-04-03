@@ -1189,9 +1189,12 @@ const handleRedirect = () => {
            {/* --- PHẦN CHỌN MÔN HỌC --- */}
 {/* --- PHẦN CHỌN MÔN HỌC (TỐI ƯU DIỆN TÍCH) --- */}
 <div className="bg-white p-3 rounded-2xl shadow-md border border-slate-100 flex flex-col gap-2">
-  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
-    Môn học đang chọn:
+  <div className="flex justify-center mb-1">
+  <label className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-sm tracking-widest flex items-center gap-2">
+    <i className="fas fa-book-open text-[9px]"></i>
+    Xin mời chọn môn học
   </label>
+</div>
   
   <div className="relative group">
     <select
