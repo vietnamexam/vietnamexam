@@ -96,6 +96,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   const [duration, setDuration] = useState(90);          
   const [examStarted, setExamStarted] = useState(false);
   const [studentClass, setStudentClass] = useState("");
+  const [selectedMon, setSelectedMon] = useState(null);
  
  
  
