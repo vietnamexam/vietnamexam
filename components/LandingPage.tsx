@@ -1192,7 +1192,7 @@ const handleRedirect = () => {
   <div className="flex justify-center mb-1">
   <label className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-sm tracking-widest flex items-center gap-2">
     <i className="fas fa-book-open text-[9px]"></i>
-    Xin mời chọn môn học
+    Mời thầy/cô chọn môn học
   </label>
 </div>
   
