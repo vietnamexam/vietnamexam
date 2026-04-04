@@ -278,15 +278,30 @@ const chuan_hoa = (data) => ({
 setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
-  const handleLoadQuestions = async () => {
-  const resp = await fetch(`${KETQUA_URL}?action=loadQuestions`);
-  const res = await resp.json();
+  // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
+const handleLoadQuestions = async () => {
+  // 1. Kiểm tra xem Thầy đã chọn môn chưa
+  if (!selectedMon?.id) {
+    alert("⚠️ Thầy/Cô vui lòng chọn môn học trước khi load ngân hàng!");
+    return;
+  }
 
-  if (res.status === 'success') {
-    setAllQuestions(res.data);
-    alert("📚 Đã load ngân hàng câu hỏi!");
-  } else {
-    alert("Lỗi load!");
+  try {
+    // 2. Truyền thêm tham số idmon vào URL
+    const url = `${KETQUA_URL}?action=loadQuestions&idmon=${selectedMon.id}`;
+    
+    const resp = await fetch(url);
+    const res = await resp.json();
+
+    if (res.status === 'success') {
+      setAllQuestions(res.data);
+      alert(`📚 Đã load ngân hàng môn: ${selectedMon.name.toUpperCase()}`);
+    } else {
+      alert("Lỗi load: " + res.message);
+    }
+  } catch (error) {
+    console.error("Lỗi kết nối GAS:", error);
+    alert("Không thể kết nối với hệ thống!");
   }
 };
 
