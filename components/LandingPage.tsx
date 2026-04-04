@@ -110,7 +110,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
 const [showStudentLogin, setShowStudentLogin] = useState(false);
 
 // Nơi chứa dữ liệu HS nhập vào (IDGV, SBD, Mã Đề)
-const [studentInfo, setStudentInfo] = useState({ idgv: '', sbd: '', examCode: '' });
+const [studentInfo, setStudentInfo] = useState({ idgv: '', sbd: '', examCode: '', modeId: ''});
 
 
   // Trạng thái chờ khi đang xác thực
@@ -853,6 +853,7 @@ const handleRedirect = () => {
         className: studentInfo.className,
         idgv: currentIDGV,
         name: studentInfo.name,
+        modeId: studentInfo.examCode + "." " + currentIDGV,
         ...resultData // Đẩy toàn bộ tongdiem, time... vào body
       }),
     });
