@@ -4,6 +4,19 @@ export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbwZdb9kvZk6a
 export const KETQUA_URL = "https://script.google.com/macros/s/AKfycbw06Dnf2Spsrm19NseYX-mucqa8b8Ayg0ni8B2hZNGVmjb3uoGW7VGkKSnOepKeYFQdGQ/exec";
 export const ADMIN2_URL = "https://script.google.com/macros/s/AKfycbyQzEh1xGZFoAEas0fmxBY0bcz3P82nBtqSZKpbu9K7JzGEjVxCvCM8lIs24mp8IGg/exec";
 export const SPREADSHEET_ID_ADMIN = "1LlFAI1J0b7YQ84BL674r2kr3wSoW9shgsXSIXVPDypM"; // Admin 1
+export const URL_MAP = {
+  "toan": "https://script.google.com/macros/s/AKfycbw06Dnf2Spsrm19NseYX-mucqa8b8Ayg0ni8B2hZNGVmjb3uoGW7VGkKSnOepKeYFQdGQ/exec",
+  "vat-li": "https://script.google.com/macros/s/ID_SCRIPT_LY/exec",
+  "hoa-hoc": "https://script.google.com/macros/s/ID_SCRIPT_HOA/exec",
+  "sinh-hoc": "https://script.google.com/macros/s/ID_SCRIPT_SINH/exec",
+  "ngu-van": "https://script.google.com/macros/s/ID_SCRIPT_VAN/exec",
+  "tieng-anh": "https://script.google.com/macros/s/ID_SCRIPT_ANH/exec",
+  "lich-su": "https://script.google.com/macros/s/ID_SCRIPT_SU/exec",
+  "dia-li": "https://script.google.com/macros/s/ID_SCRIPT_DIA/exec",
+  "kt-pl": "https://script.google.com/macros/s/ID_SCRIPT_KTPL/exec",
+  "cn-cn": "https://script.google.com/macros/s/ID_SCRIPT_CNCN/exec",
+  "cn-nn": "https://script.google.com/macros/s/ID_SCRIPT_CNNN/exec"
+};
 // Khởi tạo rỗng, chúng ta sẽ lấp đầy nó sau khi App chạy
 export let TOPICS_DATA: Record<string, Topic[]> = {
   "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": []
