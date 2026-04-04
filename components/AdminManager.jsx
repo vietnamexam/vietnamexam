@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
-import { DANHGIA_URL, KETQUA_URL } from '../config';
+import { DANHGIA_URL, KETQUA_URL, URL_MAP } from '../config';
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -280,28 +280,33 @@ setPreviewData(results);
 // ===================================load ngân hàng đề =====================
   // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
 const handleLoadQuestions = async () => {
-  // 1. Kiểm tra xem Thầy đã chọn môn chưa
+  // 1. Kiểm tra xem đã chọn môn ở Landing Page chưa
   if (!selectedMon?.id) {
-    alert("⚠️ Thầy/Cô vui lòng chọn môn học trước khi load ngân hàng!");
+    alert("Thầy ơi, chọn môn ở ngoài Landing Page trước nhé!");
+    return;
+  }
+
+  // 2. Lấy đúng link Script của môn đó
+  const currentURL = URL_MAP[selectedMon.id];
+  
+  if (!currentURL) {
+    alert("Môn này chưa được cấu hình Link Script!");
     return;
   }
 
   try {
-    // 2. Truyền thêm tham số idmon vào URL
-    const url = `${KETQUA_URL}?action=loadQuestions&idmon=${selectedMon.id}`;
-    
-    const resp = await fetch(url);
+    // 3. Gọi fetch với đúng link của môn đó
+    const resp = await fetch(`${currentURL}?action=loadQuestions`);
     const res = await resp.json();
 
     if (res.status === 'success') {
       setAllQuestions(res.data);
-      alert(`📚 Đã load ngân hàng môn: ${selectedMon.name.toUpperCase()}`);
+      alert(`📚 Đã tải xong ngân hàng môn: ${selectedMon.name}`);
     } else {
-      alert("Lỗi load: " + res.message);
+      alert("Lỗi: " + res.message);
     }
   } catch (error) {
-    console.error("Lỗi kết nối GAS:", error);
-    alert("Không thể kết nối với hệ thống!");
+    alert("Không thể kết nối với Script môn " + selectedMon.name);
   }
 };
 
