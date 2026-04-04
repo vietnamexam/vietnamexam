@@ -381,13 +381,15 @@ const scoreInfo = (() => {
       `&type=${resetType}` +
       `&password=${encodeURIComponent(resetPassword)}` +
       `&mode=${resetMode}` +
-      `&exams=${resetExams || ""}`
+      `&exams=${resetExams || ""}`+
+      `&idgv=${idgv}`
     );
 
     const data = await res.json();
 
     if (data?.status === "success") {
   alert(data.message || "Đã xóa thành công");
+  setShowResetModal(false);
 } else {
   alert(data?.message || "Lỗi không xác định");
 }
@@ -399,6 +401,7 @@ const scoreInfo = (() => {
   // 
   const callResetAPI = async (action, extraParams = {}) => {
   try {
+    // 1. Kiểm tra idgv có tồn tại trong state/localStorage không
     if (!idgv) {
       alert("Chưa nhập IDGV");
       return;
@@ -410,8 +413,10 @@ const scoreInfo = (() => {
       return;
     }
 
+    // 2. Đưa idgv vào tham số gửi đi
     const params = new URLSearchParams({
       action,
+      idgv, // <--- BẮT BUỘC PHẢI CÓ Ở ĐÂY
       ...extraParams
     });
 
