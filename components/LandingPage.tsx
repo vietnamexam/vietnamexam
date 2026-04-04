@@ -110,7 +110,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
 const [showStudentLogin, setShowStudentLogin] = useState(false);
 
 // Nơi chứa dữ liệu HS nhập vào (IDGV, SBD, Mã Đề)
-const [studentInfo, setStudentInfo] = useState({ idgv: '', sbd: '', examCode: '', modeId: ''});
+const [studentInfo, setStudentInfo] = useState({ idgv: '', sbd: '', examCode: '', modeKq: ''});
 
 
   // Trạng thái chờ khi đang xác thực
@@ -145,7 +145,7 @@ const [loading, setLoading] = useState(false);
   scoreSA: '',
   saL3: '',
   saL4: ''
-});
+  });
   
     // Form ma trận mới 12/03/26
   const [selectedTopics, setSelectedTopics] = useState([
@@ -853,7 +853,7 @@ const handleRedirect = () => {
         className: studentInfo.className,
         idgv: currentIDGV,
         name: studentInfo.name,
-        modeId: studentInfo.examCode + "." " + currentIDGV,
+        modeKq: studentInfo.examCode + "." " + currentIDGV,
         ...resultData // Đẩy toàn bộ tongdiem, time... vào body
       }),
     });
