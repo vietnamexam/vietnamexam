@@ -1192,7 +1192,7 @@ const handleRedirect = () => {
   <div className="flex justify-center mb-1">
   <label className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-sm tracking-widest flex items-center gap-2">
     <i className="fas fa-book-open text-[9px]"></i>
-   Mời thầy cô chọn
+   CHỌN MÔN HỌC
   </label>
 </div>
   
@@ -1242,7 +1242,7 @@ const handleRedirect = () => {
   {selectedMon && (
     <div className="flex justify-end">
       <span className="text-[9px] font-mono text-blue-500 bg-blue-50 px-2 py-0.5 rounded">
-        Active Sheet ID: {selectedMon.id}
+        ID môn: {selectedMon.id}
       </span>
     </div>
   )}
