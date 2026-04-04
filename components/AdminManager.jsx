@@ -282,7 +282,7 @@ setPreviewData(results);
 const handleLoadQuestions = async () => {
   // 1. Kiểm tra xem đã chọn môn ở Landing Page chưa
   if (!selectedMon?.id) {
-    alert("Thầy ơi, chọn môn ở ngoài Landing Page trước nhé!");
+    alert("Thầy / cô chưa chọn môn học kìa!");
     return;
   }
 
@@ -313,13 +313,23 @@ const handleLoadQuestions = async () => {
 // ======================================================================================Ghi câu hoi ngân hàng=========
   
  const handleSaveQuestions = async () => {
+   if (!selectedMon?.id) {
+    alert("Thầy / cô chưa chọn môn học kìa!");
+    return;
+  }
+    const currentURL = URL_MAP[selectedMon.id];
+  
+  if (!currentURL) {
+    alert("Môn này chưa được cấu hình Link Script!");
+    return;
+  }
   if (!jsonInput) return alert("Chưa có dữ liệu!");
   setLoading(true);
   try {
     // Phải parse jsonInput thành mảng Object trước khi gửi
     const dataArray = previewData;
     
-    const resp = await fetch(`${KETQUA_URL}?action=saveQuestions`, {
+    const resp = await fetch(`${currentURL}?action=saveQuestions`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' }, 
       body: JSON.stringify(dataArray) 
