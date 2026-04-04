@@ -853,7 +853,7 @@ const handleRedirect = () => {
         className: studentInfo.className,
         idgv: currentIDGV,
         name: studentInfo.name,
-        modeKq: studentInfo.examCode + "." " + currentIDGV,
+        modeKq: studentInfo.examCode + "." + currentIDGV,
         ...resultData // Đẩy toàn bộ tongdiem, time... vào body
       }),
     });
