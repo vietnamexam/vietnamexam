@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, KETQUA_URL, } from '../config';
+import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, KETQUA_URL, URL_MAP } from '../config';
 import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
