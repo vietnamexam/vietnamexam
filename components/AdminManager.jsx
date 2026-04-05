@@ -144,6 +144,10 @@ const AdminPanel = ({ mode, onBack, selectedMon }) => {
   const [editForm, setEditForm] = useState({ 
     idquestion: '', classTag: '', question: '', options: '', answer: '', loigiai: '' 
   });
+
+  useEffect(() => {
+  console.log("💎 AdminPanel đã nhận môn:", selectedMon?.name);
+}, [selectedMon]);
   useEffect(() => {
   if (showPreview && window.MathJax) {
     // Chờ một chút để Modal render xong HTML rồi mới quét Latex
