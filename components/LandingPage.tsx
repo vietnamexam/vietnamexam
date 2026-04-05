@@ -928,8 +928,8 @@ const handleRedirect = () => {
   tongdiem: diemHienThi, 
   time: resultData.time || 0,
   idgv: String(studentInfo.idgv || ""),
-  modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
-  // details: JSON.stringify(resultData.details || []) 
+  //modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
+  details: JSON.stringify(resultData.details || []) 
 };
 
   try {
