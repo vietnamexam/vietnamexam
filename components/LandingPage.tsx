@@ -924,6 +924,8 @@ const handleRedirect = () => {
     tongdiem: diemHienThi, 
     time: resultData.time || 0,
     idgv: String(studentInfo.idgv || ""),
+    modeKq: exams + "." + idgv
+    
     details: JSON.stringify(resultData.details || [])
   };
 
