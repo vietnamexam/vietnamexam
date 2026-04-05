@@ -835,31 +835,33 @@ const handleRedirect = () => {
   
   setShowSubjectModal(false);
 };
+// Ghi kết quả thi từ ngân hàng
   const handleFinishExam = async (resultData) => {
   setExamStarted(false); 
   const currentIDGV = studentInfo.idgv.toString().trim();
   const targetUrl = KETQUA_URL;
 
   try {
+    // Bỏ dấu ...resultData, khai báo tường minh để không bao giờ lệch cột
     const payload = {
-  action: "submitExam",
-  timestamp: resultData.timestamp || new Date().toLocaleString('vi-VN'),
-  exams: String(studentInfo.examCode || "").toUpperCase(),
-  sbd: String(studentInfo.sbd || ""),
-  name: String(studentInfo.name || ""),
-  class: String(studentInfo.className || ""),
-  tongdiem: resultData.tongdiem, // Lấy từ kết quả chấm bài
-  time: resultData.time,        // Lấy từ kết quả chấm bài
-  idgv: String(studentInfo.idgv || ""),  
-  details: JSON.stringify(resultData.details || [])
-};
+      action: "submitExam",
+      timestamp: new Date().toLocaleString('vi-VN'),
+      exams: String(studentInfo.examCode || "").toUpperCase(),
+      sbd: String(studentInfo.sbd || ""),
+      name: String(studentInfo.name || ""),
+      class: String(studentInfo.className || ""),
+      tongdiem: resultData.tongdiem || 0, 
+      time: resultData.time || 0,
+      idgv: currentIDGV,
+      // PHẢI CÓ DÒNG NÀY ĐỂ CỘT I KHÔNG TRỐNG
+      modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + currentIDGV,
+      details: JSON.stringify(resultData.details || [])
+    };
 
-// Sau đó mới fetch payload này
-
-    await fetch(targetUrl, {
+    const response = await fetch(targetUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload), // Gửi payload đã chuẩn hóa
     });
 
     const finalRes = await response.json();
@@ -868,9 +870,10 @@ const handleRedirect = () => {
     }
   } catch (error) {
     console.error("Lỗi gửi điểm:", error);
-    alert("❌ Lỗi kết nối, không thể lưu điểm. Hãy chụp màn hình kết quả!");
   }
 };
+
+  
   const updateTopicRow = (index, field, value) => {
     const newTopics = [...selectedTopics];
     newTopics[index][field] = value;
