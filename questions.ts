@@ -97,20 +97,21 @@ export const pickQuestionsSmart = (
     return newQ;
   });
 };
-export const fetchScore = async (url) (
-  idgv: string,
-  sbd: string,
-  exams: string
-) => {
+export const fetchScore = async (url, idgv, sbd, exams) => {
+  try {
+    // Nối tham số vào URL để gửi lên GAS
+    const finalUrl = `${url}?action=getScore&idgv=${idgv}&sbd=${sbd}&exams=${exams}`;
+    const res = await fetch(finalUrl);
+    const data = await res.json();
 
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (data.status === "success") {
-    return data.data;
+    if (data.status === "success") {
+      return data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Lỗi fetchScore:", error);
+    return null;
   }
-
-  return null;
 };
 
 
