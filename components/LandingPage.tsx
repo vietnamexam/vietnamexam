@@ -2267,6 +2267,16 @@ const handleRedirect = () => {
     </div>
   </div>
 )}
+
+// Tại LandingPage.jsx
+{showAdmin && (
+  <AdminPanel 
+    mode={adminMode} 
+    onBack={() => setShowAdmin(false)} 
+    selectedMon={selectedMon} // 👈 QUAN TRỌNG: Truyền "lửa" sang đây
+  />
+)}
+
       
       {showIdgvModal && (
   <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
