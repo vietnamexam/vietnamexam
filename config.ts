@@ -17,6 +17,16 @@ export const URL_MAP = {
   "cn-cn": "https://script.google.com/macros/s/ID_SCRIPT_CNCN/exec",
   "cn-nn": "https://script.google.com/macros/s/ID_SCRIPT_CNNN/exec"
 };
+
+// --- HÀM KIỂM TRA CHỌN MÔN DÙNG CHUNG ---
+export const handle_chonmon = (selectedMon, action) => {
+  if (!selectedMon || !selectedMon.id) {
+    alert("⚠️ Vui lòng lòng chọn MÔN HỌC ở bảng điều khiển trước nhé!");
+    return;
+  }
+  // Nếu đã chọn môn, thực thi hành động (callback)
+  action();
+};
 // Khởi tạo rỗng, chúng ta sẽ lấp đầy nó sau khi App chạy
 export let TOPICS_DATA: Record<string, Topic[]> = {
   "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": []
