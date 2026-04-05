@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
-import { DANHGIA_URL, KETQUA_URL, URL_MAP } from '../config';
+import { DANHGIA_URL, KETQUA_URL, URL_MAP, handle_chonmon } from '../config';
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -170,8 +170,12 @@ const chuan_hoa = (data) => ({
   // ========= Chọn môn học ======================
   useEffect(() => {
   const loadConfig = async () => {
+    handle_chonmon(selectedMon, async () => {
+    
+    const currentURL = URL_MAP[selectedMon.id];
+    console.log("🚀 Đang gọi Script môn:", selectedMon.name);
     try {
-      const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
+      const response = await fetch(`${currentURL}?action=getAppConfig`);
       const result = await response.json();
       if (result.status === "success") {
         setSubjects(result.data.topics);
@@ -180,6 +184,7 @@ const chuan_hoa = (data) => ({
     } catch (err) {
       console.error("❌ Lỗi nạp Config:", err);
     }
+    });
   };
   loadConfig();
 }, []);
@@ -209,6 +214,10 @@ const chuan_hoa = (data) => ({
 
   // --- 1. XỬ LÝ WORD ---===========================================================================================================================================================================
  const findQuestion = async () => {
+   handle_chonmon(selectedMon, async () => {
+    
+    const KETQUA_URL = URL_MAP[selectedMon.id];
+    console.log("🚀 Đang gọi Script môn:", selectedMon.name);
   setLoading(true);
   try {
     const resp = await fetch(`${KETQUA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
@@ -280,14 +289,10 @@ setPreviewData(results);
 // ===================================load ngân hàng đề =====================
   // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
 const handleLoadQuestions = async () => {
-  // 1. Kiểm tra xem đã chọn môn ở Landing Page chưa
-  if (!selectedMon?.id) {
-    alert("Thầy / cô chưa chọn môn học kìa!");
-    return;
-  }
-
-  // 2. Lấy đúng link Script của môn đó
-  const currentURL = URL_MAP[selectedMon.id];
+ handle_chonmon(selectedMon, async () => {
+    
+    const currentURL = URL_MAP[selectedMon.id];
+    console.log("🚀 Đang gọi Script môn:", selectedMon.name); 
   
   if (!currentURL) {
     alert("Môn này chưa được cấu hình Link Script!");
@@ -308,6 +313,7 @@ const handleLoadQuestions = async () => {
   } catch (error) {
     alert("Không thể kết nối với Script môn " + selectedMon.name);
   }
+   });
 };
 
 // ======================================================================================Ghi câu hoi ngân hàng=========
