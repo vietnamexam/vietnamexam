@@ -842,19 +842,20 @@ const handleRedirect = () => {
 
   try {
     const payload = {
-      action: "submitExam",
-      timestamp: new Date().toLocaleString('vi-VN'),
-      exams: studentInfo.examCode,
-      sbd: studentInfo.sbd,
-      name: studentInfo.name,
-      class: studentInfo.className,
-      idgv: currentIDGV,
-      // Gán trực tiếp, không để resultData đè lên
-      tongdiem: resultData.tongdiem,
-      time: resultData.time,
-      modeKq: studentInfo.examCode + "." + currentIDGV,
-      details: JSON.stringify(resultData.details || [])
-    };
+  action: "submitExam",
+  timestamp: resultData.timestamp || new Date().toLocaleString('vi-VN'),
+  exams: String(studentInfo.examCode || "").toUpperCase(),
+  sbd: String(studentInfo.sbd || ""),
+  name: String(studentInfo.name || ""),
+  class: String(studentInfo.className || ""),
+  tongdiem: resultData.tongdiem, // Lấy từ kết quả chấm bài
+  time: resultData.time,        // Lấy từ kết quả chấm bài
+  idgv: String(studentInfo.idgv || ""),
+  modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
+  details: JSON.stringify(resultData.details || [])
+};
+
+// Sau đó mới fetch payload này
 
     await fetch(targetUrl, {
       method: "POST",
