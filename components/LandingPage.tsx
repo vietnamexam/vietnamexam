@@ -1263,7 +1263,7 @@ const handleRedirect = () => {
  {[12, 11, 10].map(g => (
   <a
     key={g}
-    href={`https://thayhabacninh.vercel.app/?grade=${g}`}
+    href={`https://thayhabacninh-phi.vercel.app/?grade=${g}`}
     target="_blank"
     rel="noopener noreferrer"
     className="bg-blue-600 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-blue-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
