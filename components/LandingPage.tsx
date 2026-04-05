@@ -299,6 +299,17 @@ const scoreInfo = (() => {
     setLoading(false);
   }
 };
+
+  // --- HÀM KIỂM TRA CHỌN MÔN (Dùng chung cho tất cả các nút chức năng) ---
+const handle_chonmon = (action) => {
+  if (!selectedMon) {
+    alert("⚠️ Vui lòng bấm chọn Môn Học trước khi thực hiện chức năng này nhé!");
+    // Thầy có thể thêm logic cuộn trang lên chỗ chọn môn ở đây nếu muốn
+    return;
+  }
+  // Nếu đã chọn môn thì thực thi hành động truyền vào
+  action();
+};
   // Admin
   // =================================xem điểm ============================
  const handleViewScore = async () => {
@@ -1277,7 +1288,7 @@ const handleRedirect = () => {
 
 {/* Nút Thi đề lẻ - Chốt ngay sau Lớp 12 */}
 <button 
-  onClick={() => setShowStudentLogin(true)} 
+  onClick={() => handle_chonmon(() => setShowStudentLogin(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
@@ -1285,7 +1296,7 @@ const handleRedirect = () => {
 </button>
              {/* Nút xem điểm */}
 <button 
-  onClick={() => setShowScoreModal(true)}
+  onClick={() => handle_chonmon(() => setShowScoreModal(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
@@ -1294,7 +1305,7 @@ const handleRedirect = () => {
 
 {/* Nút Lời giải - Nằm bên dưới */}
 <button 
-  onClick={() => setShowModal(true)}
+  onClick={() => handle_chonmon(() => setShowModal(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-orange-700 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-search text-xs"></i> 
@@ -1304,17 +1315,18 @@ const handleRedirect = () => {
   
   {/* Nút Reset chính */}
   <button
-    onClick={() => {
-      if (!idgv) {
-        setShowIdgvModal(true);
-      } else {
-        setShowResetMenu(!showResetMenu);
-      }
-    }}
-    className="bg-red-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-800 transition w-full"
-  >
-    🔥 Reset
-  </button>
+  onClick={() => handle_chonmon(() => {
+    // Logic cũ của Thầy giữ nguyên bên trong này
+    if (!idgv) {
+      setShowIdgvModal(true);
+    } else {
+      setShowResetMenu(!showResetMenu);
+    }
+  })}
+  className="bg-red-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-800 transition w-full shadow-lg flex items-center justify-center gap-2"
+>
+  🔥 Reset
+</button>
 
   {/* Menu xổ xuống */}
   {showResetMenu && (
@@ -1374,7 +1386,9 @@ const handleRedirect = () => {
 
             {/* QUẢN TRỊ */}
             <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3 w-full">
-              <button onClick={() => setView('word')} className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 min-h-[56px] rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-emerald-800 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-3 group">
+              <button 
+                onClick={() => handle_chonmon(() => setView('word'))} 
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 min-h-[56px] rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-emerald-800 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-3 group">
                 <i className="fas fa-chalkboard-teacher text-lg"></i>
                 <div className="flex flex-col items-start text-left">
                   <span className="leading-none mb-1 text-sm">Tạo đề từ Word</span>
@@ -1382,11 +1396,15 @@ const handleRedirect = () => {
                 </div>
               </button>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => setIsMatrixOpen(true)} className="p-3 bg-white border-2 border-emerald-50 rounded-2xl hover:border-emerald-500 transition-all shadow-sm flex flex-col items-center gap-1">
+                <button 
+                  onClick={() => handle_chonmon(() => setIsMatrixOpen(true))}
+                  className="p-3 bg-white border-2 border-emerald-50 rounded-2xl hover:border-emerald-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-th-large text-emerald-600"></i>
                   <span className="text-[8px] font-black uppercase">Tạo Ma Trận Đề</span>
                 </button>
-                <button onClick={() => setView('cauhoi')} className="p-3 bg-white border-2 border-rose-50 rounded-2xl hover:border-rose-500 transition-all shadow-sm flex flex-col items-center gap-1">
+                <button 
+                  onClick={() => handle_chonmon(() => setView('cauhoi'))}                  
+                  className="p-3 bg-white border-2 border-rose-50 rounded-2xl hover:border-rose-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-database text-rose-600"></i>
                   <span className="text-[8px] font-black uppercase">Ngân Hàng Câu Hỏi</span>
                 </button>
