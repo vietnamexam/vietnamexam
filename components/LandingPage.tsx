@@ -852,7 +852,7 @@ const handleRedirect = () => {
   time: resultData.time,        // Lấy từ kết quả chấm bài
   idgv: String(studentInfo.idgv || ""),
   modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
-  details: JSON.stringify(resultData.details || [])
+  // details: JSON.stringify(resultData.details || [])
 };
 
 // Sau đó mới fetch payload này
@@ -930,7 +930,7 @@ const handleRedirect = () => {
   time: resultData.time || 0,
   idgv: String(studentInfo.idgv || ""),
   modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
-  details: JSON.stringify(resultData.details || []) 
+  // details: JSON.stringify(resultData.details || []) 
 };
 
   try {
