@@ -836,26 +836,30 @@ const handleRedirect = () => {
   setShowSubjectModal(false);
 };
   const handleFinishExam = async (resultData) => {
-  // resultData chứa { tongdiem, time, timestamp, details } truyền từ ExamRoom sang
   setExamStarted(false); 
-
   const currentIDGV = studentInfo.idgv.toString().trim();
   const targetUrl = KETQUA_URL;
 
   try {
-    const response = await fetch(targetUrl, {
+    const payload = {
+      action: "submitExam",
+      timestamp: new Date().toLocaleString('vi-VN'),
+      exams: studentInfo.examCode,
+      sbd: studentInfo.sbd,
+      name: studentInfo.name,
+      class: studentInfo.className,
+      idgv: currentIDGV,
+      // Gán trực tiếp, không để resultData đè lên
+      tongdiem: resultData.tongdiem,
+      time: resultData.time,
+      modeKq: studentInfo.examCode + "." + currentIDGV,
+      details: JSON.stringify(resultData.details || [])
+    };
+
+    await fetch(targetUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify({
-        action: "submitExam", // Hành động ghi điểm
-        sbd: studentInfo.sbd,
-        examCode: studentInfo.examCode,
-        className: studentInfo.className,
-        idgv: currentIDGV,
-        name: studentInfo.name,
-        modeKq: studentInfo.examCode + "." + currentIDGV,
-        ...resultData // Đẩy toàn bộ tongdiem, time... vào body
-      }),
+      body: JSON.stringify(payload),
     });
 
     const finalRes = await response.json();
