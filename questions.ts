@@ -97,13 +97,11 @@ export const pickQuestionsSmart = (
     return newQ;
   });
 };
-export const fetchScore = async (
+export const fetchScore = async (url) (
   idgv: string,
   sbd: string,
   exams: string
 ) => {
-
-  const url = `${KETQUA_URL}?action=getScore&sbd=${sbd}&exams=${exams}&idgv=${idgv}`;
 
   const res = await fetch(url);
   const data = await res.json();
