@@ -110,7 +110,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
 const [showStudentLogin, setShowStudentLogin] = useState(false);
 
 // Nơi chứa dữ liệu HS nhập vào (IDGV, SBD, Mã Đề)
-const [studentInfo, setStudentInfo] = useState({ idgv: '', sbd: '', examCode: '', modeKq: ''});
+const [studentInfo, setStudentInfo] = useState({ idgv: '', sbd: '', examCode: '' });
 
 
   // Trạng thái chờ khi đang xác thực
@@ -850,9 +850,8 @@ const handleRedirect = () => {
   class: String(studentInfo.className || ""),
   tongdiem: resultData.tongdiem, // Lấy từ kết quả chấm bài
   time: resultData.time,        // Lấy từ kết quả chấm bài
-  idgv: String(studentInfo.idgv || ""),
-  modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
-  // details: JSON.stringify(resultData.details || [])
+  idgv: String(studentInfo.idgv || ""),  
+  details: JSON.stringify(resultData.details || [])
 };
 
 // Sau đó mới fetch payload này
