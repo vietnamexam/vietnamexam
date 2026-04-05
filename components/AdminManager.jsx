@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
-import { DANHGIA_URL, KETQUA_URL, URL_MAP, handle_chonmon } from '../config';
+import { DANHGIA_URL, URL_MAP, handle_chonmon } from '../config';
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -29,7 +29,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   // 1. Tự động hiển thị ảnh nếu nội dung là link ảnh
   const imgRegex = /(https?:\/\/[^\s]+?\.(png|jpg|jpeg|gif|webp))/gi;
   if (!content.includes('<img') && imgRegex.test(content)) {
-    content = content.replace(imgRegex, '<img src="$1" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
+    content = content.replace(imgRegex, '<img src="$1" loading="lazy" class="max-w-full h-auto rounded-lg my-2 shadow-sm" />');
   }
 
   // 2. Hiển thị ĐÁP ÁN ĐÚNG dạng Badge gọn gàng (Đã xóa chữ ĐÁP ÁN/KẾT QUẢ thừa)
@@ -122,7 +122,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
     </div>
   );
 };
-const AdminPanel = ({ mode, onBack }) => {
+const AdminPanel = ({ mode, onBack, selectedMon }) => {
   const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
@@ -168,26 +168,34 @@ const chuan_hoa = (data) => ({
   id: data.id          // Giữ nguyên id
 });
   // ========= Chọn môn học ======================
-  useEffect(() => {
+ useEffect(() => {
+  // Nếu chưa chọn môn thì không làm gì cả, không báo lỗi alert ở đây 
+  // để tránh làm phiền giáo viên lúc vừa vào web.
+  if (!selectedMon?.id) return;
+
   const loadConfig = async () => {
-    handle_chonmon(selectedMon, async () => {
-    
-    const currentURL = URL_MAP[selectedMon.id];
-    console.log("🚀 Đang gọi Script môn:", selectedMon.name);
-    try {
-      const response = await fetch(`${currentURL}?action=getAppConfig`);
-      const result = await response.json();
-      if (result.status === "success") {
-        setSubjects(result.data.topics);
-        console.log("✅ Đã nạp cấu hình thành công!");
+    // Gọi hàm helper để lấy KETQUA_URL chuẩn của môn đã chọn
+    handle_chonmon(selectedMon, async (KETQUA_URL) => {
+      try {      
+        console.log(`🚀 Đang nạp cấu hình cho môn: ${selectedMon.name}`);
+        const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          setSubjects(result.data.topics);
+          console.log("✅ Đã nạp cấu hình thành công!");
+        }
+      } catch (err) {
+        console.error("❌ Lỗi nạp Config:", err);
       }
-    } catch (err) {
-      console.error("❌ Lỗi nạp Config:", err);
-    }
     });
   };
+
   loadConfig();
-}, []);
+  
+// --- QUAN TRỌNG: Thêm selectedMon vào đây ---
+// Mỗi khi giáo viên đổi môn (Toán -> Lý), useEffect sẽ tự chạy lại để nạp topics của môn mới.
+}, [selectedMon]);
   
   const [gvInfo, setGvInfo] = useState({ id: '', pass: '' });  
   const [maTranForm, setMaTranForm] = useState({
@@ -214,12 +222,10 @@ const chuan_hoa = (data) => ({
 
   // --- 1. XỬ LÝ WORD ---===========================================================================================================================================================================
  const findQuestion = async () => {
-   handle_chonmon(selectedMon, async () => {
-    
-    const KETQUA_URL = URL_MAP[selectedMon.id];
-    console.log("🚀 Đang gọi Script môn:", selectedMon.name);
-  setLoading(true);
-  try {
+   handle_chonmon(selectedMon, async (KETQUA_URL) => {
+     setLoading(true)
+    try {      
+        console.log(`🚀 Đang nạp cấu hình cho môn: ${selectedMon.name}`);
     const resp = await fetch(`${KETQUA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
     const res = await resp.json();
     if (res.status === 'success') {
@@ -237,6 +243,7 @@ const chuan_hoa = (data) => ({
   } catch (e) {
     alert("Lỗi kết nối!");
   } finally { setLoading(false); }
+});
 };
   // ===========================================================================================================================================tách dữ liệu câu hỏi
   const handleWordParser = (text) => {
@@ -289,19 +296,11 @@ setPreviewData(results);
 // ===================================load ngân hàng đề =====================
   // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
 const handleLoadQuestions = async () => {
- handle_chonmon(selectedMon, async () => {
-    
-    const currentURL = URL_MAP[selectedMon.id];
-    console.log("🚀 Đang gọi Script môn:", selectedMon.name); 
-  
-  if (!currentURL) {
-    alert("Môn này chưa được cấu hình Link Script!");
-    return;
-  }
-
-  try {
+ handle_chonmon(selectedMon, async (KETQUA_URL) => {
+     try {  
+      console.log(`🔎 Đang tìm câu hỏi môn ${selectedMon.name}`);
     // 3. Gọi fetch với đúng link của môn đó
-    const resp = await fetch(`${currentURL}?action=loadQuestions`);
+    const resp = await fetch(`${KETQUA_URL}?action=loadQuestions`);
     const res = await resp.json();
 
     if (res.status === 'success') {
@@ -319,23 +318,14 @@ const handleLoadQuestions = async () => {
 // ======================================================================================Ghi câu hoi ngân hàng=========
   
  const handleSaveQuestions = async () => {
-   if (!selectedMon?.id) {
-    alert("Thầy / cô chưa chọn môn học kìa!");
-    return;
-  }
-    const currentURL = URL_MAP[selectedMon.id];
-  
-  if (!currentURL) {
-    alert("Môn này chưa được cấu hình Link Script!");
-    return;
-  }
+   handle_chonmon(selectedMon, async (KETQUA_URL) => {     
   if (!jsonInput) return alert("Chưa có dữ liệu!");
   setLoading(true);
   try {
-    // Phải parse jsonInput thành mảng Object trước khi gửi
+    console.log(`... Đang ghi câu hỏi môn ${selectedMon.name} `);
     const dataArray = previewData;
     
-    const resp = await fetch(`${currentURL}?action=saveQuestions`, {
+    const resp = await fetch(`${KETQUA_URL}?action=saveQuestions`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' }, 
       body: JSON.stringify(dataArray) 
@@ -354,12 +344,15 @@ const handleLoadQuestions = async () => {
   } finally { 
     setLoading(false); 
   }
+   });
 };
 // Up lG
 const handleUploadLG = async () => {
+  handle_chonmon(selectedMon, async (KETQUA_URL) => {
   if (!jsonInput.trim()) return alert("Dán nội dung vào đã thầy ơi!");
   setLoading(true);
   try {
+    console.log(`.... Đang ghi lời giải môn ${selectedMon.name} `);
     const blocks = [];
     let current = '';
     let depth = 0;
@@ -388,6 +381,7 @@ const handleUploadLG = async () => {
     setJsonInput('');
   } catch (e) { alert("Lỗi gửi dữ liệu thầy ạ!"); }
   finally { setLoading(false); }
+});
 };
 
   // --- 2. XÁC MINHXỬ LÝ NHẬP CÂU HỎI & SỬA LẺ (Giữ nguyên logic của thầy) ---
@@ -452,8 +446,10 @@ if (!isAdminVerified) {
 }
 // Hàm tìm câu trùng
 const handleFindDuplicates = async () => {
+  handle_chonmon(selectedMon, async (KETQUA_URL) => {
   setLoading(true);
   try {
+    
     const resp = await fetch(`${KETQUA_URL}?action=findDuplicateQuestions`);
     const res = await resp.json();
     if (res.status === 'success') {
@@ -465,10 +461,12 @@ const handleFindDuplicates = async () => {
   } finally {
     setLoading(false);
   }
+  });
 };
 
 // Hàm xóa câu hỏi trùng
 const handleDeleteRow = async (rowIdx, idToDelete) => {
+  handle_chonmon(selectedMon, async (KETQUA_URL) => {
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
@@ -491,6 +489,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   } catch (e) { 
     alert("❌ Lỗi kết nối server rồi thầy ơi!"); 
   }
+  });
 };
   // ===== xem chi tiết câu trùng ============ 
 const handleOpenPreview = (item) => {
@@ -507,6 +506,7 @@ const handleOpenPreview = (item) => {
   // ========== Hàm sửa câu hỏi ========================================================================
   // =================================== CẬP NHẬT TỪNG PHẦN (4 LÔ) ===================================
 const handleQuickUpdate = async (field, newValue) => {
+  handle_chonmon(selectedMon, async (KETQUA_URL) => {
   if (!editForm.idquestion && !editForm.id) {
     alert("Không tìm thấy ID câu hỏi!");
     return;
@@ -557,6 +557,7 @@ const handleQuickUpdate = async (field, newValue) => {
   } finally {
     setLoading(false);
   }
+  });
 };
   return (
  <div className="p-3 md:p-8 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl max-w-6xl mx-auto my-4 md:my-6 border border-slate-50">
