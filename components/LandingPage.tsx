@@ -309,9 +309,10 @@ const scoreInfo = (() => {
   // Admin
   // =================================xem điểm ============================
  const handleViewScore = async () => {
+  const url = URL_MAP[selectedMon?.id];
   setLoadingScore(true);
 
-  const result = await fetchScore(
+  const result = await fetchScore(url) (
     idgv.trim(),
     sbd.trim(),
     exams.trim()
