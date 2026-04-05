@@ -97,6 +97,9 @@ const LandingPage: React.FC<LandingPageProps> = ({
   const [examStarted, setExamStarted] = useState(false);
   const [studentClass, setStudentClass] = useState("");
   const [selectedMon, setSelectedMon] = useState(null);
+
+  const [showAdmin, setShowAdmin] = useState(false); 
+// Nếu Thầy đã có biến tương tự tên khác (ví dụ isAdminOpen), hãy đổi tên cho khớp.
  
  
  
