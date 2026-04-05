@@ -854,8 +854,7 @@ const handleRedirect = () => {
       time: resultData.time || 0,
       idgv: currentIDGV,
       // PHẢI CÓ DÒNG NÀY ĐỂ CỘT I KHÔNG TRỐNG
-      modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + currentIDGV,
-      details: JSON.stringify(resultData.details || [])
+      modeKq: String(studentInfo.examCode || "") + "." + currentIDGV      
     };
 
     const response = await fetch(targetUrl, {
@@ -931,8 +930,7 @@ const handleRedirect = () => {
   tongdiem: diemHienThi, 
   time: resultData.time || 0,
   idgv: String(studentInfo.idgv || ""),
-  //modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
-  details: JSON.stringify(resultData.details || []) 
+  modeKq: String(studentInfo.examCode || "") + "." + String(studentInfo.idgv || "") 
 };
 
   try {
