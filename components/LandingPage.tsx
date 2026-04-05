@@ -310,11 +310,12 @@ const scoreInfo = (() => {
   // =================================xem điểm ============================
  const handleViewScore = async () => {
   const url = URL_MAP[selectedMon?.id];
-  setLoadingScore(true);
+  if (!url) return alert("Chưa có cấu hình môn này!");
 
-  const result = await fetchScore(url) (
-    idgv.trim(),
-    sbd.trim(),
+  const result = await fetchScore(
+    url, 
+    idgv.trim(), 
+    sbd.trim(), 
     exams.trim()
   );
 
@@ -587,9 +588,11 @@ const handleSaveMatrix = async () => {
 
 
   // kết thuc form ma trận mới
-  // Tìm câu hỏi
+  // Tìm lời giải
 const handleSearchLG = async () => {
   if (!searchId) return alert("Nhập mã ID đã thầy ơi!");
+  const KETQUA_URL = URL_MAP[selectedMon?.id];
+  if (!KETQUA_URL) return alert("Lỗi: Không tìm thấy link môn học!");
   setLoadingLG(true);
   try {
     const response = await fetch(`${KETQUA_URL}?action=getLG&id=${searchId}`);
@@ -1305,17 +1308,17 @@ const handleRedirect = () => {
 
 {/* Nút Lời giải - Nằm bên dưới */}
 <button 
-  onClick={() => handle_chonmon(() => setShowModal(true))}
+   onClick={() => handle_chonmon(selectedMon, (url) => setShowModal(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-orange-700 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-search text-xs"></i> 
   <span>Lời giải</span>
 </button>
-            <div className="relative w-full">
+<div className="relative w-full">
   
   {/* Nút Reset chính */}
   <button
-  onClick={() => handle_chonmon(() => {
+  onClick={() => handle_chonmon(selectedMon, (url) => {
     // Logic cũ của Thầy giữ nguyên bên trong này
     if (!idgv) {
       setShowIdgvModal(true);
@@ -2034,12 +2037,12 @@ const handleRedirect = () => {
             type="text" 
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearchLG()}
+            onKeyPress={(e) => e.key === 'Enter' && handle_chonmon(selectedMon, (url) => handleSearchLG())}
             placeholder="Nhập mã ID (VD: 12260128001)..."
             className="flex-1 border-4 border-slate-100 rounded-3xl px-8 py-5 focus:border-orange-500 outline-none font-black text-2xl text-slate-700 shadow-inner"
           />
           <button 
-            onClick={handleSearchLG} 
+            onClick={() => handle_chonmon(selectedMon, (url) => handleSearchLG())} 
             className="bg-orange-500 hover:bg-orange-600 text-white px-10 rounded-3xl font-black text-xl shadow-lg transition-all active:scale-95 touch-manipulation"
           >
             {loadingLG ? <i className="fa-solid fa-spinner animate-spin"></i> : "TÌM KIẾM"}
