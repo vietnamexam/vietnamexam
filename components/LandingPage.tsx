@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, KETQUA_URL, URL_MAP } from '../config';
+import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, URL_MAP, handle_chonmon } from '../config';
 import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
@@ -56,6 +56,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   const [resetExams, setResetExams] = useState("");
   const [resetPassword, setResetPassword] = useState("");
  const [resetType, setResetType] = useState<"ketqua" | "matran" | "exams" | "exam_data">("ketqua");
+  const [loadingReset, setLoadingReset] = useState(false);
 
 
 
@@ -304,15 +305,7 @@ const scoreInfo = (() => {
 };
 
   // --- HÀM KIỂM TRA CHỌN MÔN (Dùng chung cho tất cả các nút chức năng) ---
-const handle_chonmon = (action) => {
-  if (!selectedMon) {
-    alert("⚠️ Vui lòng bấm chọn Môn Học trước khi thực hiện chức năng này nhé!");
-    // Thầy có thể thêm logic cuộn trang lên chỗ chọn môn ở đây nếu muốn
-    return;
-  }
-  // Nếu đã chọn môn thì thực thi hành động truyền vào
-  action();
-};
+
   // Admin
   // =================================xem điểm ============================
  const handleViewScore = async () => {
@@ -346,6 +339,8 @@ const handle_chonmon = (action) => {
   }
 }, []); 
   useEffect(() => {
+  if (!showResetModal || !idgv || !resetType) return;
+  handle_chonmon(selectedMon, async (KETQUA_URL) => {
   if (!showResetModal) return;
   if (!idgv || !resetType) return;
 
@@ -372,26 +367,25 @@ const handle_chonmon = (action) => {
     }
   };
   fetchExams();
-}, [showResetModal, idgv, resetType]);
+  });
+}, [showResetModal, idgv, resetType, selectedMon]);
   // HÀM reset chung==================================================================================================================================================================
-  const handleReset = async () => {
+  const handleReset = async (KETQUA_URL) => {
   if (!idgv) return alert("Nhập ID giáo viên");
   if (!resetPassword) return alert("Nhập mật khẩu");
 
   if (resetMode === "byExams" && !resetExams) {
     return alert("Chọn mã exams");
   }
-  const baseUrl = KETQUA_URL;
-  if (!baseUrl) return alert("IDGV không tồn tại");
 
   const confirmDelete = window.confirm(
     "⚠️ Hành động này không thể hoàn tác. Bạn chắc chắn?"
   );
   if (!confirmDelete) return;
-
+    setLoadingReset(true);
   try {
     const res = await fetch(
-      `${baseUrl}?action=resetData` +
+      `${KETQUA_URL}?action=resetData` +
       `&type=${resetType}` +
       `&password=${encodeURIComponent(resetPassword)}` +
       `&mode=${resetMode}` +
@@ -410,6 +404,8 @@ const handle_chonmon = (action) => {
 
   } catch (err) {
     alert("Không kết nối được server");
+  } finally {
+     setLoadingReset(false); // Xong việc thì tắt đi
   }
 };
   // 
@@ -450,7 +446,7 @@ const handleStudentSubmit = async (e) => {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
   const currentIDGV = studentInfo.idgv.toString().trim();
-  const targetUrl = KETQUA_URL;
+  const targetUrl = URL_MAP[selectedMon?.id];
 
   if (!targetUrl) {
     alert(`❌ Không tìm thấy link Script của mã GV: "${currentIDGV}"`);
@@ -1291,7 +1287,7 @@ const handleRedirect = () => {
 
 {/* Nút Thi đề lẻ - Chốt ngay sau Lớp 12 */}
 <button 
-  onClick={() => handle_chonmon(() => setShowStudentLogin(true))}
+  onClick={() => handle_chonmon(selectedMon, (url) => setShowStudentLogin(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
@@ -1299,7 +1295,7 @@ const handleRedirect = () => {
 </button>
              {/* Nút xem điểm */}
 <button 
-  onClick={() => handle_chonmon(() => setShowScoreModal(true))}
+  onClick={() => handle_chonmon(selectedMon, (url) => setShowScoreModal(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
@@ -2259,11 +2255,16 @@ const handleRedirect = () => {
           Quay lại
         </button>
 
-        <button
-          onClick={handleReset}
-          className="bg-red-600 text-white px-3 py-1.5 text-xs sm:text-sm rounded-lg hover:bg-red-700"
-        >
-          Xóa dữ liệu
+       <button
+          disabled={loadingReset}
+          onClick={() => handle_chonmon(selectedMon, (url) => handleReset(url))}
+          className="bg-red-600 text-white px-3 py-1.5 text-xs sm:text-sm rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loadingReset ? (
+        <><i className="fa-solid fa-spinner animate-spin mr-2"></i> Đang xóa...</>
+        ) : (
+        "Xóa dữ liệu"
+          )}
         </button>
       </div>
 
