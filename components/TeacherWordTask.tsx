@@ -315,6 +315,7 @@ const handleSaveQuestions = async (dataArray) => {
       body: JSON.stringify({
         action: "saveOnlySolutions",
         examCode,
+        idgv,
         solutions: jsonInputLG   // 🔥 ĐÚNG KIỂU
       })
     });
