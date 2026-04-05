@@ -20,6 +20,7 @@ interface ExamRoomProps {
     name: string;
     className: string;
     examCode: string;
+    modeKq: string;
   };
   duration: number;
   minSubmitTime?: number; 
