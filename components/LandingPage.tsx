@@ -915,19 +915,18 @@ const handleRedirect = () => {
   const diemHienThi = String(rawScore).replace('.', ',');
 
   const payload = {
-    action: "submitExam",
-    timestamp: new Date().toLocaleString('vi-VN'),   
-    exams: String(studentInfo.examCode || "").toUpperCase(),
-    sbd: String(studentInfo.sbd || ""),
-    name: String(studentInfo.name || ""),
-    class: String(studentInfo.className || ""), // Đảm bảo key này khớp với GAS
-    tongdiem: diemHienThi, 
-    time: resultData.time || 0,
-    idgv: String(studentInfo.idgv || ""),
-    modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
-    
-    details: JSON.stringify(resultData.details || [])
-  };
+  action: "submitExam",
+  timestamp: new Date().toLocaleString('vi-VN'),   
+  exams: String(studentInfo.examCode || "").toUpperCase(),
+  sbd: String(studentInfo.sbd || ""),
+  name: String(studentInfo.name || ""),
+  class: String(studentInfo.className || ""), 
+  tongdiem: diemHienThi, 
+  time: resultData.time || 0,
+  idgv: String(studentInfo.idgv || ""),
+  modeKq: String(studentInfo.examCode || "").toUpperCase() + "." + String(studentInfo.idgv || ""),
+  details: JSON.stringify(resultData.details || []) 
+};
 
   try {
     await fetch(targetUrl, {
