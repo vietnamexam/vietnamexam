@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { scoreWord } from '../scoreWord';
+import { LIST_MON } from '../config';
 
 import Watermark from "./Watermark";
 import WarningToast from "./WarningToast";
 interface Question {
+  selectedMon: string;
   id: string;
   type: 'mcq' | 'true-false' | 'sa' | 'short-answer'; 
   question: string;
@@ -13,6 +15,7 @@ interface Question {
 }
 
 interface ExamRoomProps {
+  selectedMon: string;
   questions: Question[];
   studentInfo: {
     idgv: string;
@@ -134,6 +137,7 @@ const formatTime = (seconds: number) => {
 };
 
 export default function ExamRoom({ 
+  selectedMon = LIST_MON[0],
   questions = [], 
   studentInfo, 
   duration, 
