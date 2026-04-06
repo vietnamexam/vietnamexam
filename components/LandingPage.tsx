@@ -853,34 +853,28 @@ const handleRedirect = () => {
   setShowSubjectModal(false);
 };
 // Ghi kết quả thi từ ngân hàng
-  const handleFinishExam = async (resultData) => {
-    if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+   const handleFinishExam = async (resultData) => {
+  // resultData chứa { tongdiem, time, timestamp, details } truyền từ ExamRoom sang
+  if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
   const KETQUA_URL = handle_chonmon(selectedMon);
   if(!KETQUA_URL) return alert("Có lẽ đang bảo trì web bạn nhé! Hãy quay lại sau.");
   setExamStarted(false); 
-  const currentIDGV = studentInfo.idgv.toString().trim();
-  const targetUrl = KETQUA_URL;
+
+  const currentIDGV = studentInfo.idgv.toString().trim();  
 
   try {
-    // Bỏ dấu ...resultData, khai báo tường minh để không bao giờ lệch cột
-    const payload = {
-      action: "submitExam",
-      timestamp: new Date().toLocaleString('vi-VN'),
-      exams: String(studentInfo.examCode || "").toUpperCase(),
-      sbd: String(studentInfo.sbd || ""),
-      name: String(studentInfo.name || ""),
-      class: String(studentInfo.className || ""),
-      tongdiem: resultData.tongdiem || 0, 
-      time: resultData.time || 0,
-      idgv: currentIDGV,
-      // PHẢI CÓ DÒNG NÀY ĐỂ CỘT I KHÔNG TRỐNG
-      modeKq: String(studentInfo.examCode || "") + "." + currentIDGV      
-    };
-
-    const response = await fetch(targetUrl, {
+    const response = await fetch(KETQUA_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify(payload), // Gửi payload đã chuẩn hóa
+      body: JSON.stringify({
+        action: "submitExam", // Hành động ghi điểm
+        sbd: studentInfo.sbd,
+        examCode: studentInfo.examCode,
+        className: studentInfo.className,
+        idgv: currentIDGV,
+        name: studentInfo.name,
+        ...resultData // Đẩy toàn bộ tongdiem, time... vào body
+      }),
     });
 
     const finalRes = await response.json();
@@ -889,6 +883,7 @@ const handleRedirect = () => {
     }
   } catch (error) {
     console.error("Lỗi gửi điểm:", error);
+    alert("❌ Lỗi kết nối, không thể lưu điểm. Hãy chụp màn hình kết quả!");
   }
 };
 
@@ -923,6 +918,7 @@ const handleRedirect = () => {
     {examStarted ? (
   <div className="animate-in slide-in-from-bottom duration-500">
     <ExamRoom 
+      selectedmon
       questions={questions} 
       studentInfo={studentInfo}
       duration={duration} 
