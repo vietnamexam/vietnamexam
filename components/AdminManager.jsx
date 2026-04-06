@@ -176,11 +176,8 @@ const chuan_hoa = (data) => ({
   id: data.id          // Giữ nguyên id
 });
   // ========= Chọn môn học ======================
- useEffect(() => {
-  // Nếu chưa chọn môn thì không làm gì cả, không báo lỗi alert ở đây 
-  // để tránh làm phiền giáo viên lúc vừa vào web.
-  if (!selectedMon?.id) return;
-
+ useEffect(() => { 
+   if (!selectedMon?.id) return;
   const loadConfig = async () => {
     // Gọi hàm helper để lấy KETQUA_URL chuẩn của môn đã chọn
     const KETQUA_URL = handle_chonmon(selectedMon);
@@ -200,6 +197,7 @@ const chuan_hoa = (data) => ({
     };
 
   loadConfig();
+}, [selectedMon]); 
   
 // --- QUAN TRỌNG: Thêm selectedMon vào đây ---
 // Mỗi khi giáo viên đổi môn (Toán -> Lý), useEffect sẽ tự chạy lại để nạp topics của môn mới.
@@ -230,14 +228,14 @@ const chuan_hoa = (data) => ({
 
   // --- 1. XỬ LÝ WORD ---===========================================================================================================================================================================
  const findQuestion = async () => {   
-  const url = handle_chonmon(selectedMon);
-  if (!url) return;
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if (!KETQUA_URLl) return;
 
   setLoading(true);
 
   try {      
     const resp = await fetch(
-      `${url}?action=getQuestionById&id=${editForm.idquestion}`
+      `${KETQUA_URL}?action=getQuestionById&id=${editForm.idquestion}`
     );
 
     const res = await resp.json();
@@ -268,8 +266,8 @@ const chuan_hoa = (data) => ({
   const handleUpdateQuestion = async () => {
   setLoading(true);
   try {
-    const url = handle_chonmon(selectedMon);
-    if (!url) return;
+    const KETQUA_URL = handle_chonmon(selectedMon);
+    if (!KETQUA_URL) return;
     // Chỉ để data trong payload
     const payload = {
       data: {
@@ -282,7 +280,7 @@ const chuan_hoa = (data) => ({
     };
 
     // Thêm ?action=updateQuestion vào cuối URL
-    const res = await fetch(`${url}?action=updateQuestion`, {
+    const res = await fetch(`${KETQUA_URL}?action=updateQuestion`, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
@@ -1131,9 +1129,9 @@ const handleQuickUpdate = async (field, newValue) => {
         if(!input) return alert("Vui lòng nhập ít nhất một ID!");
         
         if(confirm(`Bạn có chắc chắn muốn xóa các câu: ${input}?`)) {
-         const urlBase = handle_chonmon(selectedMon);
-         if (!urlBase) return;
-          const url = `${urlBase}?action=deleteMultiple&ids=${encodeURIComponent(input)}`;
+         const KETQUA_URL = handle_chonmon(selectedMon);
+         if (!KETQUA_URL) return;
+          const url = `${KETQUA_URL}?action=deleteMultiple&ids=${encodeURIComponent(input)}`;
           const resp = await fetch(url);
           const res = await resp.json();
           if(res.status === "success") {
