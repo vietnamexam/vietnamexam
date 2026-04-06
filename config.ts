@@ -4,6 +4,19 @@ export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbwZdb9kvZk6a
 // export const KETQUA_URL = "https://script.google.com/macros/s/AKfycbw06Dnf2Spsrm19NseYX-mucqa8b8Ayg0ni8B2hZNGVmjb3uoGW7VGkKSnOepKeYFQdGQ/exec";
 export const ADMIN2_URL = "https://script.google.com/macros/s/AKfycbyQzEh1xGZFoAEas0fmxBY0bcz3P82nBtqSZKpbu9K7JzGEjVxCvCM8lIs24mp8IGg/exec";
 export const SPREADSHEET_ID_ADMIN = "1LlFAI1J0b7YQ84BL674r2kr3wSoW9shgsXSIXVPDypM"; // Admin 1
+export const LIST_MON = [
+  { id: "toan", name: "Toán", icon: "📘" },
+  { id: "vat-li", name: "Vật lí", icon: "🔬" },
+  { id: "hoa-hoc", name: "Hóa học", icon: "🧪" },
+  { id: "sinh-hoc", name: "Sinh học", icon: "🌿" },
+  { id: "ngu-van", name: "Ngữ văn", icon: "📖" },
+  { id: "tieng-anh", name: "Tiếng Anh", icon: "🔤" },
+  { id: "lich-su", name: "Lịch sử", icon: "📜" },
+  { id: "dia-li", name: "Địa lí", icon: "🌍" },
+  { id: "kt-pl", name: "KT & Pháp luật", icon: "⚖️" },
+  { id: "cn-cn", name: "Công nghệ (CN)", icon: "🛠️" },
+  { id: "cn-nn", name: "Công nghệ (NN)", icon: "🌽" }
+];
 export const URL_MAP = {
   "toan": "https://script.google.com/macros/s/AKfycbw06Dnf2Spsrm19NseYX-mucqa8b8Ayg0ni8B2hZNGVmjb3uoGW7VGkKSnOepKeYFQdGQ/exec",
   "vat-li": "https://script.google.com/macros/s/AKfycbw-DpEUUMXOxjk3NpSW8Luc3np7m6mLjbFau20pjgtA_tsBqosdhyYZ0i0toPhFfGoo/exec",
