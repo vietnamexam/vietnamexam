@@ -47,20 +47,6 @@ export const handle_chonmon = (selectedMon: any) => {
   return KETQUA_URL;
 };
 
-// Sửa hàm fetch để trả về dữ liệu thay vì gán biến ngoài
-export const fetchAdminConfig = async (selectedMon: any) => {
-  const KETQUA_URL = handle_chonmon(selectedMon);
-  if (!KETQUA_URL) return null;
-
-  try {
-    const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
-    const result = await response.json();
-    if (result.status === "success") return result.data.topics; 
-  } catch (e) {
-    console.error("Lỗi nạp chuyên đề:", e);
-  }
-  return null;
-};
 // Khởi tạo rỗng, chúng ta sẽ lấp đầy nó sau khi App chạy
 export let TOPICS_DATA: Record<string, Topic[]> = {
   "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": []
