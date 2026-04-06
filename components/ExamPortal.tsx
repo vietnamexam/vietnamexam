@@ -5,7 +5,7 @@ import { pickQuestionsSmart, fetchQuestionsBank } from '../questions';
 
 interface ExamPortalProps {
   grade: string | number; // Chấp nhận cả hai nhưng sẽ ép về string ngay
-  selectedMon: any;
+  selectedMon: string;
   onBack: () => void;
   onStart: (config: any, student: Student, examQuestions: Question[]) => void;
  }
@@ -44,6 +44,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
     );
   };
   useEffect(() => {
+  if (!selectedMon) return
   fetchQuestionsBank(selectedMon)
 }, [selectedMon])
 
