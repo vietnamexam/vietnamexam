@@ -59,7 +59,7 @@ export const GRADES = [6, 7, 8, 9, 10, 11, 12];
 export const fetchAdminConfig = async (selectedMon: any) => {
   try {
     const KETQUA_URL = handle_chonmon(selectedMon);
-    if (!KETQUA_URL) return null;
+    if (!KETQUA_URL) return false;
     const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
     const result = await response.json();
 
@@ -87,7 +87,7 @@ export const fetchAdminConfig = async (selectedMon: any) => {
   } catch (e) { 
     console.error("Lỗi nạp chuyên đề:", e); 
   }
-  return null;
+  return false;
 };
 
 export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Lớp khác"];
