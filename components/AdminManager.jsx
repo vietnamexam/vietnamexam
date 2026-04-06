@@ -179,7 +179,8 @@ const chuan_hoa = (data) => ({
 
   const loadConfig = async () => {
     // Gọi hàm helper để lấy KETQUA_URL chuẩn của môn đã chọn
-    handle_chonmon(selectedMon, async (KETQUA_URL) => {
+    const KETQUA_URL = handle_chonmon(selectedMon);
+  if (!KETQUA_URL) return;
       try {      
         console.log(`🚀 Đang nạp cấu hình cho môn: ${selectedMon.name}`);
         const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
@@ -192,8 +193,7 @@ const chuan_hoa = (data) => ({
       } catch (err) {
         console.error("❌ Lỗi nạp Config:", err);
       }
-    });
-  };
+    };
 
   loadConfig();
   
@@ -454,8 +454,8 @@ setPreviewData(results);
 // ===================================load ngân hàng đề =====================
   // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
 const handleLoadQuestions = async () => {
-  const url = handle_chonmon(selectedMon);
-  if (!url) return;
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if (!KETQUA_URL) return;
      try {  
       console.log(`🔎 Đang tìm câu hỏi môn ${selectedMon.name}`);
     // 3. Gọi fetch với đúng link của môn đó
@@ -623,7 +623,8 @@ if (!isAdminVerified) {
 
 // Hàm xóa câu hỏi trùng
 const handleDeleteRow = async (rowIdx, idToDelete) => {
-  handle_chonmon(selectedMon, async (KETQUA_URL) => {
+ const KETQUA_URL = handle_chonmon(selectedMon);
+  if (!KETQUA_URL) return;
   if(!window.confirm(`Thầy chắc chắn muốn xóa id [${idToDelete}] khỏi ngân hàng?`)) return;
   
   try {
@@ -646,7 +647,7 @@ const handleDeleteRow = async (rowIdx, idToDelete) => {
   } catch (e) { 
     alert("❌ Lỗi kết nối server rồi thầy ơi!"); 
   }
-  });
+  
 };
   // ===== xem chi tiết câu trùng ============ 
 const handleOpenPreview = (item) => {
@@ -663,7 +664,8 @@ const handleOpenPreview = (item) => {
   // ========== Hàm sửa câu hỏi ========================================================================
   // =================================== CẬP NHẬT TỪNG PHẦN (4 LÔ) ===================================
 const handleQuickUpdate = async (field, newValue) => {
-  handle_chonmon(selectedMon, async (KETQUA_URL) => {
+  h const KETQUA_URL = handle_chonmon(selectedMon);
+  if (!KETQUA_URL) return;
   if (!editForm.idquestion && !editForm.id) {
     alert("Không tìm thấy ID câu hỏi!");
     return;
@@ -714,7 +716,6 @@ const handleQuickUpdate = async (field, newValue) => {
   } finally {
     setLoading(false);
   }
-  });
 };
   return (
  <div className="p-3 md:p-8 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl max-w-6xl mx-auto my-4 md:my-6 border border-slate-50">
@@ -1142,38 +1143,7 @@ const handleQuickUpdate = async (field, newValue) => {
       <i className="fa-solid fa-trash-arrow-up"></i> Xác nhận xóa vĩnh viễn
     </button>
   </div>
-)}
-
-       {currentTab === 'duplicate' && (
-  <div className="p-8 bg-white rounded-[2.5rem] border-2 border-purple-50 shadow-xl animate-fade-in">
-    <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center">
-          <i className="fa-solid fa-magnifying-glass-chart text-xl"></i>
-        </div>
-        <div>
-          <h3 className="text-xl font-black text-slate-800 uppercase">Phân tích câu trùng</h3>
-          <p className="text-xs text-slate-400 font-bold">Dựa trên nội dung và đáp án</p>
-        </div>
-      </div>
-      <button 
-        onClick={() => {
-          // Hàm này thầy gọi logic tìm trùng em viết ở dưới
-          const result = handleDeepScan(); 
-          alert(`Tìm thấy ${result.length} nhóm nghi ngờ trùng!`);
-        }}
-        className="px-6 py-3 bg-purple-600 text-white rounded-xl font-black text-xs uppercase hover:bg-purple-700 transition-all"
-      >
-        Bắt đầu quét ngân hàng
-      </button>
-    </div>
-
-    {/* Nơi hiện kết quả tìm trùng */}
-    <div id="duplicateResult" className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-       <p className="text-center text-slate-400 italic text-sm">Nhấn nút quét để bắt đầu phân tích dữ liệu...</p>
-    </div>
-  </div>
-)}
+)}   
         
       </div>
     </div>
