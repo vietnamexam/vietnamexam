@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Student, ExamResult, Question, AppUser } from './types';
-import { URL_MAP , DANHGIA_URL, fetchAdminConfig, LIST_MON } from './config';
+import { DANHGIA_URL, fetchAdminConfig, LIST_MON, handle_chonmon } from './config';
 // Sửa lại đoạn này trong App.tsx của thầy:
 import LandingPage from '@/components/LandingPage';
 import ExamPortal from '@/components/ExamPortal';
@@ -54,7 +54,7 @@ const App: React.FC = () => {
       try {
         console.log("🚀 Hệ thống bắt đầu khởi tạo...");
         await Promise.all([
-          await fetchAdminConfig(selectedMon),          
+          fetchAdminConfig(selectedMon),          
           fetchQuestionsBank(selectedMon),
           fetchQuestionsBankW(selectedMon)
         ]);
