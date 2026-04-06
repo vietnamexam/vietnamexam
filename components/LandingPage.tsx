@@ -3,9 +3,7 @@ import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, URL_MAP, handle_chonmon, LIST_MO
 import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
-import { fetchScore } from '../questions';
-
-
+import { fetchScore } from '../questions'; 
 
 interface LandingPageProps {
   onSelectGrade: (grade: number) => void;
@@ -311,11 +309,11 @@ const scoreInfo = (() => {
   // Admin
   // =================================xem điểm ============================
  const handleViewScore = async () => {
-  const url = URL_MAP[selectedMon?.id];
-  if (!url) return alert("Chưa có cấu hình môn này!");
-
-  const result = await fetchScore(
-    url, 
+  if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return alert("Có lẽ đang bảo trì web bạn nhé! Hãy quay lại sau.");
+   const result = await fetchScore(
+    KETQUA_URL, 
     idgv.trim(), 
     sbd.trim(), 
     exams.trim()
@@ -918,7 +916,7 @@ const handleRedirect = () => {
     {examStarted ? (
   <div className="animate-in slide-in-from-bottom duration-500">
     <ExamRoom 
-      selectedmon
+      selectedMon
       questions={questions} 
       studentInfo={studentInfo}
       duration={duration} 
@@ -930,8 +928,7 @@ const handleRedirect = () => {
       scoreSA={scoreSA}
       onFinish={async (resultData) => {
   setExamStarted(false);
-  const targetUrl = KETQUA_URL;
-
+  const targetUrl = handle_chonmon(selectedMon);
   // Hứng điểm an toàn: Kiểm tra cả totalScore và tongdiem để không bị undefined
   const rawScore = resultData.totalScore ?? resultData.tongdiem ?? 0;
   const diemHienThi = String(rawScore).replace('.', ',');
@@ -1272,7 +1269,7 @@ const handleRedirect = () => {
 
 {/* Nút Thi đề lẻ - Chốt ngay sau Lớp 12 */}
 <button 
-  onClick={() => handle_chonmon(selectedMon) => setShowStudentLogin(true))}
+  onClick={setShowStudentLogin(true)}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
@@ -1280,7 +1277,7 @@ const handleRedirect = () => {
 </button>
              {/* Nút xem điểm */}
 <button 
-  onClick={() => handle_chonmon(selectedMon, (url) => setShowScoreModal(true))}
+  onClick={setShowScoreModal(true)}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
@@ -1289,7 +1286,7 @@ const handleRedirect = () => {
 
 {/* Nút Lời giải - Nằm bên dưới */}
 <button 
-   onClick={() => handle_chonmon(selectedMon, (url) => setShowModal(true))}
+   onClick={setShowModal(true)}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-orange-700 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-search text-xs"></i> 
@@ -1299,7 +1296,7 @@ const handleRedirect = () => {
   
   {/* Nút Reset chính */}
   <button
-  onClick={() => handle_chonmon(selectedMon, (url) => {
+  onClick={
     // Logic cũ của Thầy giữ nguyên bên trong này
     if (!idgv) {
       setShowIdgvModal(true);
