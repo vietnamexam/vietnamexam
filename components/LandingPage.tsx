@@ -2276,7 +2276,6 @@ const handleRedirect = () => {
   </div>
 )}
 
-// Tại LandingPage.jsx
 {showAdmin && (
   <AdminPanel 
     mode={adminMode} 
