@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
-import { DANHGIA_URL, URL_MAP, handle_chonmon } from '../config';
+import { DANHGIA_URL, handle_chonmon } from '../config';
 import { questionsBank } from '../questions';
 interface Props {
   selectedMon: string;
 };
+interface EditableSectionProps {
+  title: string;
+  value: string;
+  onSave: (v:string)=>void;
+  icon?: string;
+  isSmall?: boolean;
+}
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -126,13 +133,13 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
     </div>
   );
 };
-const AdminPanel = ({ mode, onBack, { selectedMon }: Props) }) => {
+const AdminPanel = ({ mode, onBack, selectedMon }) => {
   const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
   
   const [currentTab, setCurrentTab] = useState(mode || 'cauhoi');
-  const [loadingMatrix, setLoadingMatrix] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [isAdminVerified, setIsAdminVerified] = useState(false);
   const [otp, setOtp] = useState("");
@@ -148,10 +155,7 @@ const AdminPanel = ({ mode, onBack, { selectedMon }: Props) }) => {
   const [editForm, setEditForm] = useState({ 
     idquestion: '', classTag: '', question: '', options: '', answer: '', loigiai: '' 
   });
-
-  useEffect(() => {
-  console.log("💎 AdminPanel đã nhận môn:", selectedMon?.name);
-}, [selectedMon]);
+  
   useEffect(() => {
   if (showPreview && window.MathJax) {
     // Chờ một chút để Modal render xong HTML rồi mới quét Latex
@@ -197,31 +201,9 @@ const chuan_hoa = (data) => ({
     };
 
   loadConfig();
-}, [selectedMon]); 
-  
-// --- QUAN TRỌNG: Thêm selectedMon vào đây ---
-// Mỗi khi giáo viên đổi môn (Toán -> Lý), useEffect sẽ tự chạy lại để nạp topics của môn mới.
-}, [selectedMon]);
-  
-  const [gvInfo, setGvInfo] = useState({ id: '', pass: '' });  
-  const [maTranForm, setMaTranForm] = useState({
-  makiemtra: '',
-  name: '',
-  duration: '',
-  topics: '',
-  numMC: '',
-  scoreMC: '',
-  mcL3: '',
-  mcL4: '',
-  numTF: '',
-  scoreTF: '',
-  tfL3: '',
-  tfL4: '',
-  numSA: '',
-  scoreSA: '',
-  saL3: '',
-  saL4: ''
-});
+}, [selectedMon]);   
+
+
   useEffect(() => {
     if (mode) setCurrentTab(mode);
   }, [mode]);
@@ -229,7 +211,7 @@ const chuan_hoa = (data) => ({
   // --- 1. XỬ LÝ WORD ---===========================================================================================================================================================================
  const findQuestion = async () => {   
   const KETQUA_URL = handle_chonmon(selectedMon);
-  if (!KETQUA_URLl) return;
+  if (!KETQUA_URL) return;
 
   setLoading(true);
 
@@ -261,46 +243,7 @@ const chuan_hoa = (data) => ({
     setLoading(false); 
   }
 };
-  // update câu hỏi
-
-  const handleUpdateQuestion = async () => {
-  setLoading(true);
-  try {
-    const KETQUA_URL = handle_chonmon(selectedMon);
-    if (!KETQUA_URL) return;
-    // Chỉ để data trong payload
-    const payload = {
-      data: {
-        idquestion: editForm.idquestion,
-        classTag: editForm.classTag || "",
-        question: editForm.question,
-        datetime: editForm.datetime || "",
-        loigiai: editForm.loigiai || ""
-      }
-    };
-
-    // Thêm ?action=updateQuestion vào cuối URL
-    const res = await fetch(`${KETQUA_URL}?action=updateQuestion`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-    
-    const result = await res.json();
-    if(result.status === 'success') {
-      alert("Cập nhật thành công!");
-      // Thầy nên thêm logic đóng Modal hoặc cập nhật lại danh sách tại đây
-    }
-    
-  } catch (error) {
-    console.error("Lỗi cập nhật:", error);
-  } finally {
-    setLoading(false);
-  }
-};  
-
-  // tìm câu trùng  
+   // tìm câu trùng  
   const handleFindDuplicates = () => {
   const groups = []; // Chứa các nhóm câu trùng
   const bank = questionsBank;
@@ -455,7 +398,7 @@ setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
   // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
-const handleLoadQuestions = async () => {
+const handleLoadQuestions = async (selectedMon) => {
   const KETQUA_URL = handle_chonmon(selectedMon);
   if (!KETQUA_URL) return;
      try {  
