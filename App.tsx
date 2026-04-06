@@ -229,6 +229,7 @@ const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định l�
             {/* 5. Giao diện làm bài */}
             {currentView === 'quiz' && activeExam && activeStudent && (
               <QuizInterface 
+                selectedMon={selectedMon}
                 config={activeExam} 
                 student={activeStudent} 
                 questions={questions} 
