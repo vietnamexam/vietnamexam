@@ -1,5 +1,5 @@
 import { Question } from './types';
-import { handle_chonmon } from './config';
+import { handle_chonmon, LIST_MON } from './config';
 // Lọc câu trùng
 const findDuplicates = (bank) => {
   const groups = [];
@@ -45,7 +45,9 @@ const checkSimilarity = (str1, str2) => {
 export let questionsBank: Question[] = [];
 
 // 2. Hàm nạp dữ liệu từ Google Sheet
-export const fetchQuestionsBank = async (selectedMon): Promise<Question[]> => {
+type Mon = typeof LIST_MON[number];
+
+export const fetchQuestionsBank = async (selectedMon: Mon): Promise<Question[]> => {
   try {
     const KETQUA_URL = handle_chonmon(selectedMon);
     if (!KETQUA_URL) return [];
