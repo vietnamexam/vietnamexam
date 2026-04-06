@@ -33,7 +33,7 @@ const findDuplicates = (bank) => {
 };
 
 // Hàm kiểm tra độ giống nhau cơ bản (Có thể dùng thuật toán Levenshtein nâng cao hơn)
-const checkSimilarity = (str1, str2) => {
+export const checkSimilarity = (str1, str2) => {
   const s1 = str1.replace(/[0-9]/g, '').toLowerCase(); // Loại bỏ số để so sánh lời dẫn
   const s2 = str2.replace(/[0-9]/g, '').toLowerCase();
   // Nếu số liệu giống nhau thì quan trọng hơn, thầy có thể thêm logic lọc số ở đây
