@@ -28,9 +28,8 @@ const App: React.FC = () => {
   const [adminMode, setAdminMode] = useState<'matran' | 'cauhoi' | 'word'>('matran'); 
   // App.tsx
  // App.tsx
-import { LIST_MON } from './config';
 
-const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định là Toán
+// const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định là Toán
 // Chỉ để môn mặc định là Toán thôi, các môn khác nằm trong mảng danh sách dưới đây
   
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
@@ -65,7 +64,7 @@ const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định l�
       }
     };
     initApp();
-  }, []);
+  }, [selectedMon]);
 
   // Xử lý bắt đầu thi (Portal)
  const handleStartExam = (config: any, student: Student, selectedQuestions: Question[]) => {
@@ -101,7 +100,7 @@ const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định l�
       taikhoanapp: user?.isVip ? 'VIP' : 'FREE' 
     });
     setQuestions(quizQuestions);
-    set('quiz');
+    setCurrentView('quiz');
   };
 
   // Kết thúc bài thi và gửi dữ liệu từ đề ma trận
