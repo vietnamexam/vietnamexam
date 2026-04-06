@@ -1,16 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Question, Student, ExamCodeDefinition } from '../types';
 import { TOPICS_DATA, EXAM_CODES, handle_chonmon } from '../config';
-import { pickQuestionsSmart } from '../questions';
+import { pickQuestionsSmart, fetchQuestionsBank } from '../questions';
 
 interface ExamPortalProps {
   grade: string | number; // Chấp nhận cả hai nhưng sẽ ép về string ngay
+  selectedMon: any;
   onBack: () => void;
   onStart: (config: any, student: Student, examQuestions: Question[]) => void;
-  selectedMon
-}
+ }
 
-const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStart, selectedMon }) => {
+const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, onBack, onStart }) => {
   // 1. Đồng bộ hóa Grade ngay từ đầu
   const grade = useMemo(() => rawGrade.toString(), [rawGrade]);
 
@@ -43,6 +43,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       Math.floor(total / targetTopics.length) + (i < total % targetTopics.length ? 1 : 0)
     );
   };
+  useEffect(() => {
+  fetchQuestionsBank(selectedMon)
+}, [selectedMon])
 
   useEffect(() => {
   setSelectedTopics([])
@@ -55,6 +58,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       try {
         const KETQUA_URL = handle_chonmon(selectedMon);   
         if (!KETQUA_URL) return;
+        const url = new URL(KETQUA_URL);
         url.searchParams.append("type", "getExamCodes");
         url.searchParams.append("idnumber", "SYSTEM");
         url.searchParams.append("grade", grade);       
@@ -92,7 +96,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       }))];
     });
     return topics;
-  }, [grade, TOPICS_DATA]);
+  }, [grade]);
 
   // 6. Handlers
   const handleVerify = async () => {
