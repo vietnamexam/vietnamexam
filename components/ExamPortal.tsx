@@ -101,6 +101,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
 
   // 6. Handlers
   const handleVerify = async () => {
+    if (!selectedMon) {
+  alert("Chưa chọn môn")
+  return
+}
     const KETQUA_URL = handle_chonmon(selectedMon);   
         if (!KETQUA_URL) return;
     if (!idInput || !sbdInput) return alert("Vui lòng nhập đủ ID Giáo viên và SBD!");
