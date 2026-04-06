@@ -225,29 +225,70 @@ const chuan_hoa = (data) => ({
   }, [mode]);
 
   // --- 1. XỬ LÝ WORD ---===========================================================================================================================================================================
- const findQuestion = async () => {
-   handle_chonmon(selectedMon, async (KETQUA_URL) => {
-     setLoading(true)
-    try {      
-        console.log(`🚀 Đang nạp cấu hình cho môn: ${selectedMon.name}`);
-    const resp = await fetch(`${KETQUA_URL}?action=getQuestionById&id=${editForm.idquestion}`);
+ const findQuestion = async () => {   
+  const url = handle_chonmon(selectedMon);
+  if (!url) return;
+
+  setLoading(true);
+
+  try {      
+    const resp = await fetch(
+      `${url}?action=getQuestionById&id=${editForm.idquestion}`
+    );
+
     const res = await resp.json();
+
     if (res.status === 'success') {
-      // 💡 Hợp nhất dữ liệu thông minh
-      setEditForm({ 
-        ...editForm,     // Giữ ID đang gõ
-        ...res.data,     // Đè dữ liệu mới từ server lên
-        idquestion: res.data.id || res.data.idquestion, 
-        id: res.data.id || res.data.idquestion 
-      });
+
+      setEditForm(prev => ({
+        ...prev,
+        ...res.data,
+        idquestion: res.data.id || res.data.idquestion,
+        id: res.data.id || res.data.idquestion
+      }));
+
       setTimeout(() => window.MathJax?.typesetPromise(), 200);
+
     } else {
       alert("Không tìm thấy!");
     }
+
   } catch (e) {
     alert("Lỗi kết nối!");
-  } finally { setLoading(false); }
-});
+  } finally { 
+    setLoading(false); 
+  }
+};
+
+  // tìm câu trùng  
+  const handleFindDuplicates = () => {
+  const groups = []; // Chứa các nhóm câu trùng
+  const bank = questionsBank;
+  const processed = new Set();
+
+  for (let i = 0; i < bank.length; i++) {
+    if (processed.has(bank[i].id)) continue;
+    let currentGroup = [bank[i]];
+
+    for (let j = i + 1; j < bank.length; j++) {
+      const q1 = bank[i];
+      const q2 = bank[j];
+
+      // Tiêu chuẩn "Mềm" của thầy:
+      const sameAnswer = q1.loigiai === q2.loigiai; // Nếu thầy lưu đáp án trong loigiai
+      const similarContent = checkTextSimilarity(q1.question, q2.question) > 0.9;
+
+      if (sameAnswer || similarContent) {
+        currentGroup.push(q2);
+        processed.add(q2.id);
+      }
+    }
+    if (currentGroup.length > 1) {
+      groups.push(currentGroup);
+      processed.add(bank[i].id);
+    }
+  }
+  return groups;
 };
   // ===========================================================================================================================================tách dữ liệu câu hỏi
   const handleWordParser = (text) => {
@@ -449,24 +490,22 @@ if (!isAdminVerified) {
   );
 }
 // Hàm tìm câu trùng
-const handleFindDuplicates = async () => {
-  handle_chonmon(selectedMon, async (KETQUA_URL) => {
-  setLoading(true);
-  try {
+//const handleFindDuplicates = async () => {  
+  //try {
     
-    const resp = await fetch(`${KETQUA_URL}?action=findDuplicateQuestions`);
-    const res = await resp.json();
-    if (res.status === 'success') {
-      setDuplicateGroups(res.data);
-      setCurrentTab('duplicate'); // Chuyển sang tab hiển thị
-    }
-  } catch (e) {
-    alert("Lỗi tìm kiếm!");
-  } finally {
-    setLoading(false);
-  }
-  });
-};
+   //const resp = await fetch(`${KETQUA_URL}?action=findDuplicateQuestions`);
+    //const res = await resp.json();
+    //if (res.status === 'success') {
+      //setDuplicateGroups(res.data);
+      //setCurrentTab('duplicate'); // Chuyển sang tab hiển thị
+   // }
+ // } catch (e) {
+   // alert("Lỗi tìm kiếm!");
+ // } finally {
+  //  setLoading(false);
+ // }
+ // });
+//};
 
 // Hàm xóa câu hỏi trùng
 const handleDeleteRow = async (rowIdx, idToDelete) => {
