@@ -665,7 +665,7 @@ const handleOpenPreview = (item) => {
   // ========== Hàm sửa câu hỏi ========================================================================
   // =================================== CẬP NHẬT TỪNG PHẦN (4 LÔ) ===================================
 const handleQuickUpdate = async (field, newValue) => {
-  h const KETQUA_URL = handle_chonmon(selectedMon);
+  const KETQUA_URL = handle_chonmon(selectedMon);
   if (!KETQUA_URL) return;
   if (!editForm.idquestion && !editForm.id) {
     alert("Không tìm thấy ID câu hỏi!");
