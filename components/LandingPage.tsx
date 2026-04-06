@@ -342,9 +342,10 @@ const scoreInfo = (() => {
     }
   }
 }, []); 
-  useEffect(() => {
-  if (!showResetModal || !idgv || !resetType) return;
-  handle_chonmon(selectedMon, async (KETQUA_URL) => {
+  useEffect(() => {  
+  if (!selectedMon || !showResetModal || !idgv || !resetType) return;  
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return
   if (!showResetModal) return;
   if (!idgv || !resetType) return;
 
@@ -370,11 +371,13 @@ const scoreInfo = (() => {
       console.error("Lỗi load list:", err);
     }
   };
-  fetchExams();
-  });
+  fetchExams(); 
 }, [showResetModal, idgv, resetType, selectedMon]);
   // HÀM reset chung==================================================================================================================================================================
-  const handleReset = async (KETQUA_URL) => {
+  const handleReset = async () => {
+  if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return setLoadingReset(false);
   if (!idgv) return alert("Nhập ID giáo viên");
   if (!resetPassword) return alert("Nhập mật khẩu");
 
@@ -415,17 +418,14 @@ const scoreInfo = (() => {
   // 
   const callResetAPI = async (action, extraParams = {}) => {
   try {
+  if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return;
     // 1. Kiểm tra idgv có tồn tại trong state/localStorage không
     if (!idgv) {
       alert("Chưa nhập IDGV");
       return;
-    }
-
-    const url = KETQUA_URL;
-    if (!url) {
-      alert("Không tìm thấy API của giáo viên này");
-      return;
-    }
+    }   
 
     // 2. Đưa idgv vào tham số gửi đi
     const params = new URLSearchParams({
@@ -434,7 +434,7 @@ const scoreInfo = (() => {
       ...extraParams
     });
 
-    const res = await fetch(`${url}?${params.toString()}`);
+    const res = await fetch(`${KETQUA_URL}?${params.toString()}`);
     const data = await res.json();
 
     alert(data.message);
@@ -447,18 +447,14 @@ const scoreInfo = (() => {
  // TRONG REACT - Hàm handleStudentSubmit
 // Thêm (e) vào đây thầy nhé
 const handleStudentSubmit = async (e) => {
+  if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return;
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
-  const currentIDGV = studentInfo.idgv.toString().trim();
-  const targetUrl = URL_MAP[selectedMon?.id];
-
-  if (!targetUrl) {
-    alert(`❌ Không tìm thấy link Script của mã GV: "${currentIDGV}"`);
-    return;
-  }
-
+  const currentIDGV = studentInfo.idgv.toString().trim();   
   try {
-    const response = await fetch(targetUrl, {
+    const response = await fetch(KETQUA_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({
@@ -520,6 +516,9 @@ const handleStudentSubmit = async (e) => {
   // =========================================Ghi ma trận========================================================================
 
 const handleSaveMatrix = async () => {
+   if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return;
   // 1. Kiểm tra ID Giáo viên
   if (!idgv) {
     alert("❌ Lỗi: Không xác định được ID Giáo viên!");
@@ -592,9 +591,11 @@ const handleSaveMatrix = async () => {
   // kết thuc form ma trận mới
   // Tìm lời giải
 const handleSearchLG = async () => {
-  if (!searchId) return alert("Nhập mã ID đã thầy ơi!");
-  const KETQUA_URL = URL_MAP[selectedMon?.id];
-  if (!KETQUA_URL) return alert("Lỗi: Không tìm thấy link môn học!");
+  if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return alert("Có lẽ đang bảo trì web bạn nhé! Hãy quay lại sau.");
+  if (!searchId) return alert("Nhập mã ID đã cưng!");
+ 
   setLoadingLG(true);
   try {
     const response = await fetch(`${KETQUA_URL}?action=getLG&id=${searchId}`);
@@ -853,6 +854,9 @@ const handleRedirect = () => {
 };
 // Ghi kết quả thi từ ngân hàng
   const handleFinishExam = async (resultData) => {
+    if (!selectedMon) return alert("Chọn môn đã cưng ơi!");
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if(!KETQUA_URL) return alert("Có lẽ đang bảo trì web bạn nhé! Hãy quay lại sau.");
   setExamStarted(false); 
   const currentIDGV = studentInfo.idgv.toString().trim();
   const targetUrl = KETQUA_URL;
@@ -1272,7 +1276,7 @@ const handleRedirect = () => {
 
 {/* Nút Thi đề lẻ - Chốt ngay sau Lớp 12 */}
 <button 
-  onClick={() => handle_chonmon(selectedMon, (url) => setShowStudentLogin(true))}
+  onClick={() => handle_chonmon(selectedMon) => setShowStudentLogin(true))}
   className="bg-orange-500 text-white p-2.5 min-h-[44px] rounded-xl font-black text-xs uppercase border-b-4 border-emerald-800 transition-all active:scale-95 touch-manipulation flex items-center justify-center gap-2"
 >
   <i className="fas fa-user-edit text-xs"></i> 
