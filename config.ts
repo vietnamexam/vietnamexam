@@ -20,20 +20,33 @@ export const URL_MAP = {
 
 // --- HÀM KIỂM TRA CHỌN MÔN DÙNG CHUNG ---
 // --- HÀM KIỂM TRA & TRẢ VỀ URL MÔN HỌC ---
-export const handle_chonmon = (selectedMon) => {
+// Sửa handle_chonmon để linh hoạt hơn
+export const handle_chonmon = (selectedMon: any) => {
   if (!selectedMon || !selectedMon.id) {
     alert("⚠️ Vui lòng chọn MÔN HỌC trước nhé cưng!");
     return null;
   }
-
-  const url = URL_MAP[selectedMon.id];
-
-  if (!url) {
-    alert(`❌ Môn ${selectedMon.name} chưa được cấu hình hoặc đang bảo trì nhé`);
+  const KETQUA_URL = URL_MAP[selectedMon.id as keyof typeof URL_MAP];
+  if (!KETQUA_URL || KETQUA_URL.includes("ID_SCRIPT")) {
+    alert(`❌ Môn ${selectedMon.name} chưa được cấu hình hoặc đang bảo trì`);
     return null;
   }
+  return KETQUA_URL;
+};
 
-  return url;
+// Sửa hàm fetch để trả về dữ liệu thay vì gán biến ngoài
+export const fetchAdminConfig = async (selectedMon: any) => {
+  const KETQUA_URL = handle_chonmon(selectedMon);
+  if (!KETQUA_URL) return null;
+
+  try {
+    const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
+    const result = await response.json();
+    if (result.status === "success") return result.data.topics; 
+  } catch (e) {
+    console.error("Lỗi nạp chuyên đề:", e);
+  }
+  return null;
 };
 // Khởi tạo rỗng, chúng ta sẽ lấp đầy nó sau khi App chạy
 export let TOPICS_DATA: Record<string, Topic[]> = {
@@ -43,10 +56,10 @@ export const GRADES = [6, 7, 8, 9, 10, 11, 12];
 // Hàm này sẽ gọi lên Script Admin để lấy danh sách link
 // Nạp chuyên đề
 // config.ts
-export const fetchAdminConfig = async (selectedMon) => {
+export const fetchAdminConfig = async (selectedMon: any) => {
   try {
     const KETQUA_URL = handle_chonmon(selectedMon);
-    if (!KETQUA_URL) return false;
+    if (!KETQUA_URL) return null;
     const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
     const result = await response.json();
 
@@ -71,8 +84,10 @@ export const fetchAdminConfig = async (selectedMon) => {
       TOPICS_DATA = newTopics;
       return true;
     }
-  } catch (e) { console.error(e); }
-  return false;
+  } catch (e) { 
+    console.error("Lỗi nạp chuyên đề:", e); 
+  }
+  return null;
 };
 
 export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Lớp khác"];
