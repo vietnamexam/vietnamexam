@@ -43,21 +43,27 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
     );
   };
 
+  useEffect(() => {
+  setSelectedTopics([])
+}, [selectedCode])
+
   // 4. Effects: Tải mã đề hệ thống
   useEffect(() => {
     const fetchSystemCodes = async () => {
+      if(!selectedMon) return;
       try {
-        const url = new URL(KETQUA_URL);
+        const KETQUA_URL = handle_chonmon(selectedMon);   
+        if (!KETQUA_URL) return;
         url.searchParams.append("type", "getExamCodes");
         url.searchParams.append("idnumber", "SYSTEM");
-        url.searchParams.append("grade", grade);
+        url.searchParams.append("grade", grade);       
         const resp = await fetch(url.toString());
         const res = await resp.json();
         if (res.status === "success") setDynamicCodes(res.data);
       } catch (e) { console.error("Lỗi tải mã đề:", e); }
     };
     fetchSystemCodes();
-  }, [grade]);
+  }, [grade, selectedMon]);
 
   // 5. Memos: Xử lý dữ liệu hiển thị
   const allAvailableCodes = useMemo(() => {
@@ -89,6 +95,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
 
   // 6. Handlers
   const handleVerify = async () => {
+    const KETQUA_URL = handle_chonmon(selectedMon);   
+        if (!KETQUA_URL) return;
     if (!idInput || !sbdInput) return alert("Vui lòng nhập đủ ID Giáo viên và SBD!");
     setIsVerifying(true);
     try {
@@ -97,6 +105,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
       url.searchParams.append("type", "verifyStudent");
       url.searchParams.append("idnumber", idInput.trim());
       url.searchParams.append("sbd", sbdInput.trim());
+      
       
       const resp = await fetch(url.toString());
       const result = await resp.json();
@@ -147,7 +156,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStar
     onStart(finalConfig, verifiedStudent, examQuestions);
   };
 
-  const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
+  const isVip =
+  verifiedStudent?.taikhoanapp?.toUpperCase?.().includes("VIP") ?? false;
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 font-sans">
