@@ -1295,19 +1295,18 @@ const handleRedirect = () => {
 <div className="relative w-full">
   
   {/* Nút Reset chính */}
-  <button
-  onClick={
-    // Logic cũ của Thầy giữ nguyên bên trong này
-    if (!idgv) {
-      setShowIdgvModal(true);
-    } else {
-      setShowResetMenu(!showResetMenu);
-    }
-  })}
-  className="bg-red-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-800 transition w-full shadow-lg flex items-center justify-center gap-2"
->
-  🔥 Reset
-</button>
+ <button
+    onClick={() => {
+      if (!idgv) {
+        setShowIdgvModal(true);
+      } else {
+        setShowResetMenu(!showResetMenu);
+      }
+    }}
+    className="bg-red-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-800 transition w-full"
+  >
+    🔥 Reset
+  </button>
 
   {/* Menu xổ xuống */}
   {showResetMenu && (
@@ -1368,7 +1367,7 @@ const handleRedirect = () => {
             {/* QUẢN TRỊ */}
             <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3 w-full">
               <button 
-                onClick={() => handle_chonmon(() => setView('word'))} 
+                <button onClick={() => setView('word')}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 min-h-[56px] rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-emerald-800 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-3 group">
                 <i className="fas fa-chalkboard-teacher text-lg"></i>
                 <div className="flex flex-col items-start text-left">
@@ -1378,13 +1377,13 @@ const handleRedirect = () => {
               </button>
               <div className="grid grid-cols-2 gap-2">
                 <button 
-                  onClick={() => handle_chonmon(() => setIsMatrixOpen(true))}
+                  <button onClick={() => setIsMatrixOpen(true)}
                   className="p-3 bg-white border-2 border-emerald-50 rounded-2xl hover:border-emerald-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-th-large text-emerald-600"></i>
                   <span className="text-[8px] font-black uppercase">Tạo Ma Trận Đề</span>
                 </button>
                 <button 
-                  onClick={() => handle_chonmon(() => setView('cauhoi'))}                  
+                  <button onClick={() => setView('cauhoi')}                
                   className="p-3 bg-white border-2 border-rose-50 rounded-2xl hover:border-rose-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-database text-rose-600"></i>
                   <span className="text-[8px] font-black uppercase">Ngân Hàng Câu Hỏi</span>
@@ -2020,7 +2019,7 @@ const handleRedirect = () => {
             className="flex-1 border-4 border-slate-100 rounded-3xl px-8 py-5 focus:border-orange-500 outline-none font-black text-2xl text-slate-700 shadow-inner"
           />
           <button 
-            onClick={() => handle_chonmon(selectedMon, (url) => handleSearchLG())} 
+            onClick={handleSearchLG} 
             className="bg-orange-500 hover:bg-orange-600 text-white px-10 rounded-3xl font-black text-xl shadow-lg transition-all active:scale-95 touch-manipulation"
           >
             {loadingLG ? <i className="fa-solid fa-spinner animate-spin"></i> : "TÌM KIẾM"}
@@ -2239,7 +2238,7 @@ const handleRedirect = () => {
 
        <button
           disabled={loadingReset}
-          onClick={() => handle_chonmon(selectedMon, (url) => handleReset(url))}
+          onClick={handleReset}
           className="bg-red-600 text-white px-3 py-1.5 text-xs sm:text-sm rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loadingReset ? (
