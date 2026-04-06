@@ -51,9 +51,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
   useEffect(() => {
   setSelectedTopics([])
 }, [selectedCode])
-  useEffect(() => {
+ useEffect(() => {
   setVerifiedStudent(null)
   setSelectedCode("")
+  setDynamicCodes([])
 }, [selectedMon])
 
   // 4. Effects: Tải mã đề hệ thống
