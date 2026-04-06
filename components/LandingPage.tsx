@@ -1240,7 +1240,6 @@ const handleRedirect = () => {
     <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
       <i className="fas fa-chevron-down text-xs"></i>
     </div>
-  </div>
 
   {/* Badge nhỏ hiển thị ID để Thầy tiện debug */}
   {selectedMon && (
@@ -1365,9 +1364,9 @@ const handleRedirect = () => {
 
 
             {/* QUẢN TRỊ */}
-            <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3 w-full">
-              <button 
-                <button onClick={() => setView('word')}
+            <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3 w-full">             
+                <button 
+                onClick={() => setView('word')}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 min-h-[56px] rounded-2xl font-black text-xs uppercase shadow-lg border-b-4 border-emerald-800 hover:brightness-110 active:scale-95 touch-manipulation transition-all flex items-center justify-center gap-3 group">
                 <i className="fas fa-chalkboard-teacher text-lg"></i>
                 <div className="flex flex-col items-start text-left">
