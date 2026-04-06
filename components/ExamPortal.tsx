@@ -7,9 +7,10 @@ interface ExamPortalProps {
   grade: string | number; // Chấp nhận cả hai nhưng sẽ ép về string ngay
   onBack: () => void;
   onStart: (config: any, student: Student, examQuestions: Question[]) => void;
+  selectedMon
 }
 
-const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStart }) => {
+const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, onBack, onStart, selectedMon }) => {
   // 1. Đồng bộ hóa Grade ngay từ đầu
   const grade = useMemo(() => rawGrade.toString(), [rawGrade]);
 
