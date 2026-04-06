@@ -15,6 +15,7 @@ interface LandingPageProps {
   onOpenVip: () => void;
   setView: (mode: 'matran' | 'cauhoi' | 'word' | 'admin') => void;
   onOpenTeacherTask: () => void;
+  onSelectMon: (mon: string) => void;
 }
 interface UserAcc {
   phoneNumber: string;
@@ -27,7 +28,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onOpenAuth,
   onOpenVip,
   onOpenTeacherTask,
-  setView
+  setView,
+  onSelectMon 
 }) => {
   // ỨNG DỤNG KHÁC
   const EXTRA_APPS_DATA = [
