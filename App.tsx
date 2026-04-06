@@ -26,6 +26,9 @@ const App: React.FC = () => {
   
   // 2. Quản lý chế độ (Mode) cho Admin hoặc Giáo viên
   const [adminMode, setAdminMode] = useState<'matran' | 'cauhoi' | 'word'>('matran'); 
+  // App.tsx
+ const [selectedMon, setSelectedMon] = useState({ id: "toan", name: "Toán" }); 
+// Chỉ để môn mặc định là Toán thôi, các môn khác nằm trong mảng danh sách dưới đây
   
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [activeExam, setActiveExam] = useState<any>(null);
