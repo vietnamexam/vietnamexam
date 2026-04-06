@@ -1379,8 +1379,7 @@ const handleRedirect = () => {
                   className="p-3 bg-white border-2 border-emerald-50 rounded-2xl hover:border-emerald-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-th-large text-emerald-600"></i>
                   <span className="text-[8px] font-black uppercase">Tạo Ma Trận Đề</span>
-                </button>
-                <button 
+                </button>               
                   <button onClick={() => setView('cauhoi')}                
                   className="p-3 bg-white border-2 border-rose-50 rounded-2xl hover:border-rose-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-database text-rose-600"></i>
