@@ -270,7 +270,7 @@ const chuan_hoa = (data) => ({
 
       // Tiêu chuẩn "Mềm" của thầy:
       const sameAnswer = q1.loigiai === q2.loigiai; // Nếu thầy lưu đáp án trong loigiai
-      const similarContent = normalizeText(a) === normalizeText(b)
+      const similarContent = checkSimilarity(q1.question, q2.question) > 0.9;
 
       if (sameAnswer || similarContent) {
         currentGroup.push(q2);
