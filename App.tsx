@@ -128,11 +128,11 @@ const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định l�
   });
 
   setCurrentView('result');
-
-  let targetUrl = KETQUA_URL;  
+   const KETQUA_URL = handle_chonmon(selectedMon); 
+  if (!KETQUA_URL) return; 
 
   try {
-    await fetch(targetUrl, {
+    await fetch(KETQUA_URL, {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(matrixPayload)
@@ -155,13 +155,17 @@ const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định l�
 
   setExamResult(normalizedResult);
   setCurrentView('result');
-
-  let targetUrl = KETQUA_URL;
+  const KETQUA_URL = handle_chonmon(selectedMon); 
+  if (!KETQUA_URL) return;
+  
   try {
-    await fetch(targetUrl, {
+    await fetch(KETQUA_URL, {
       method: 'POST',
       mode: 'no-cors',
-      body: JSON.stringify(normalizedResult)
+     body: JSON.stringify({
+        ...result, // Gửi full data 7 cột của Thầy
+        mon: selectedMon.name // Gửi thêm tên môn cho chắc
+      })
     });
   } catch (e) {
     console.error("Lỗi gửi kết quả:", e);
