@@ -2276,17 +2276,7 @@ const handleRedirect = () => {
 
     </div>
   </div>
-)}
-
-{showAdmin && (
-  <AdminPanel 
-    mode={adminMode} 
-    onBack={() => setShowAdmin(false)} 
-    selectedMon={selectedMon} // 👈 QUAN TRỌNG: Truyền "lửa" sang đây
-  />
-)}
-
-      
+)}      
       {showIdgvModal && (
   <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
     <div className="bg-slate-900 p-6 rounded-2xl w-full max-w-sm space-y-4 border border-slate-700">
