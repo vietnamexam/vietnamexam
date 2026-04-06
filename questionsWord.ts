@@ -1,5 +1,5 @@
 import { Question } from './types';
-import { KETQUA_URL } from './config';
+import { handle_chonmon } from './config';
 
 export let questionsBankW: Question[] = [];
 
@@ -51,11 +51,14 @@ const shuffleByTypeParts = (data: Question[]): Question[] => {
 };
 
 export const fetchQuestionsBankW = async (
+  selectedMon,
   examCode?: string,
   idgv?: string,
   customUrl?: string
 ): Promise<Question[]> => {
   try {
+    const KETQUA_URL = handle_chonmon(selectedMon);
+    if (!KETQUA_URL) return [];
     let targetUrl = KETQUA_URL;
     const finalUrl = examCode
       ? `${targetUrl}?action=getQuestionsByCode&examCode=${examCode}`
