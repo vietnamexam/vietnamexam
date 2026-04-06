@@ -20,22 +20,20 @@ export const URL_MAP = {
 
 // --- HÀM KIỂM TRA CHỌN MÔN DÙNG CHUNG ---
 // --- HÀM KIỂM TRA & TRẢ VỀ URL MÔN HỌC ---
-export const handle_chonmon = (selectedMon, action) => {
+export const handle_chonmon = (selectedMon) => {
   if (!selectedMon || !selectedMon.id) {
-    alert("⚠️ Thầy/Cô vui lòng chọn MÔN HỌC ở bảng điều khiển trước nhé!");
-    return;
+    alert("⚠️ Vui lòng chọn MÔN HỌC trước nhé cưng!");
+    return null;
   }
 
-  // Lấy URL từ URL_MAP dựa trên ID môn đã chọn
-  const currentURL = URL_MAP[selectedMon.id];
+  const url = URL_MAP[selectedMon.id];
 
-  if (!currentURL) {
-    alert(`❌ Môn ${selectedMon.name} chưa được cấu hình Link Script trong config!`);
-    return;
+  if (!url) {
+    alert(`❌ Môn ${selectedMon.name} chưa được cấu hình hoặc đang bảo trì nhé`);
+    return null;
   }
 
-  // Thực thi hành động và TRUYỀN LUÔN URL vào làm tham số
-  action(currentURL);
+  return url;
 };
 // Khởi tạo rỗng, chúng ta sẽ lấp đầy nó sau khi App chạy
 export let TOPICS_DATA: Record<string, Topic[]> = {
