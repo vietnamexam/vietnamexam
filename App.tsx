@@ -49,7 +49,7 @@ const App: React.FC = () => {
       try {
         console.log("🚀 Hệ thống bắt đầu khởi tạo...");
         await Promise.all([
-          await fetchAdminConfig(selectedMon);,          
+          await fetchAdminConfig(selectedMon),          
           fetchQuestionsBank(selectedMon),
           fetchQuestionsBankW(selectedMon)
         ]);
