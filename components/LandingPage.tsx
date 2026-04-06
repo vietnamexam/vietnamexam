@@ -1249,7 +1249,6 @@ const handleRedirect = () => {
       </span>
     </div>
   )}
-</div>
            <div className="grid grid-cols-2 gap-2">
  {[12, 11, 10].map(g => (
   <a
@@ -1376,7 +1375,7 @@ const handleRedirect = () => {
               </button>
               <div className="grid grid-cols-2 gap-2">
                 <button 
-                  <button onClick={() => setIsMatrixOpen(true)}
+                  onClick={() => setIsMatrixOpen(true)}
                   className="p-3 bg-white border-2 border-emerald-50 rounded-2xl hover:border-emerald-500 transition-all shadow-sm flex flex-col items-center gap-1">
                   <i className="fas fa-th-large text-emerald-600"></i>
                   <span className="text-[8px] font-black uppercase">Tạo Ma Trận Đề</span>
