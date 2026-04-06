@@ -43,8 +43,10 @@ export const GRADES = [6, 7, 8, 9, 10, 11, 12];
 // Hàm này sẽ gọi lên Script Admin để lấy danh sách link
 // Nạp chuyên đề
 // config.ts
-export const fetchAdminConfig = async () => {
+export const fetchAdminConfig = async (selectedMon) => {
   try {
+    const KETQUA_URL = handle_chonmon(selectedMon);
+    if (!KETQUA_URL) return false;
     const response = await fetch(`${KETQUA_URL}?action=getAppConfig`);
     const result = await response.json();
 
