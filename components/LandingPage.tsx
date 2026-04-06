@@ -1387,8 +1387,7 @@ const handleRedirect = () => {
                 </button>
               </div>
             </div>
-          </div>
-
+         
           {/* TOP 10 CAO THỦ */}
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[420px] lg:h-[480px]">
             <div className="bg-slate-900 p-4 text-white font-black text-xs uppercase text-center tracking-widest flex items-center justify-center gap-2 font-black">
@@ -2085,8 +2084,7 @@ const handleRedirect = () => {
             </div>
           </div>
         )}
-      </div>
-    )}
+      
       {showScoreModal && (
   <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     
@@ -2367,6 +2365,6 @@ const handleRedirect = () => {
     `}</style>
   </>
   );
-}
+
 
 export default LandingPage;
