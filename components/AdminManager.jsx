@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, handle_chonmon } from '../config';
 import { questionsBank } from '../questions';
+interface Mon {
+  id: string;
+  name: string;
+  icon?: string;
+}
 interface Props {
-  selectedMon: string;
-};
+  selectedMon: Mon;
+}
 interface EditableSectionProps {
   title: string;
   value: string;
@@ -398,7 +403,7 @@ setPreviewData(results);
 };
 // ===================================load ngân hàng đề =====================
   // Đảm bảo AdminManager nhận props selectedMon từ cha (LandingPage)
-const handleLoadQuestions = async (selectedMon) => {
+const handleLoadQuestions = async () => {
   const KETQUA_URL = handle_chonmon(selectedMon);
   if (!KETQUA_URL) return;
      try {  
