@@ -19,25 +19,23 @@ const shuffleByTypeParts = (data: Question[]): Question[] => {
   const sa: Question[] = [];
   const other: Question[] = [];
 
-  data.forEach(q => {
+   data.forEach(q => {
     const type = (q.type || '').toLowerCase().trim();
-     // clone object để tránh mutate dữ liệu gốc
+
     const newQ: Question = { ...q };
 
-    // trộn đáp án trắc nghiệm
-    if (type === 'mcq' && Array.isArray(q.o)) {
-      q.o = shuffle(q.o);
+    if (type === 'mcq' && Array.isArray(newQ.o)) {
+      newQ.o = shuffle(newQ.o);
     }
 
-    // trộn mệnh đề đúng sai
-    if (type === 'true-false' && Array.isArray(q.s)) {
-      q.s = shuffle(q.s);
+    if (type === 'true-false' && Array.isArray(newQ.s)) {
+      newQ.s = shuffle(newQ.s);
     }
 
-    if (type === 'mcq') mcq.push(q);
-    else if (type === 'true-false' || type === 'tf') tf.push(q);
-    else if (type === 'short-answer' || type === 'sa') sa.push(q);
-    else other.push(q);
+    if (type === 'mcq') mcq.push(newQ);
+    else if (type === 'true-false' || type === 'tf') tf.push(newQ);
+    else if (type === 'short-answer' || type === 'sa') sa.push(newQ);
+    else other.push(newQ);
   });
   console.log("MCQ shuffled:", mcq);
   console.log("TF shuffled:", tf);
@@ -58,11 +56,10 @@ export const fetchQuestionsBankW = async (
 ): Promise<Question[]> => {
   try {
     const KETQUA_URL = handle_chonmon(selectedMon);
-    if (!KETQUA_URL) return [];
-    let targetUrl = KETQUA_URL;
+    if (!KETQUA_URL) return [];    
     const finalUrl = examCode
-      ? `${targetUrl}?action=getQuestionsByCode&examCode=${examCode}`
-      : `${targetUrl}?action=getQuestions`;
+      ? `${KETQUA_URL}?action=getQuestionsByCode&examCode=${examCode}`
+      : `${KETQUA_URL}?action=getQuestions`;
 
     const response = await fetch(finalUrl);
     const result = await response.json();
