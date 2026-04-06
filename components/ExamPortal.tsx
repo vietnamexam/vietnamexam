@@ -150,10 +150,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
 
   const handleStart = () => {
     if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề hoặc chưa xác minh!");
-    setIsCreating(true);
+   
     const fc = currentCodeDef?.fixedConfig;
     if (!fc) return alert("Cấu hình đề thi bị lỗi!");
-
+     setIsCreating(true);
     const finalConfig = { 
       id: selectedCode, title: currentCodeDef.name, time: fc.duration, 
       mcqPoints: fc.scoreMC, tfPoints: fc.scoreTF, saPoints: fc.scoreSA, 
@@ -389,10 +389,11 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
 
       {/* Footer Button */}
       <div className="p-4 md:p-10 border-t bg-slate-50 flex justify-center sticky bottom-0">
-        <button onClick={handleStart} 
+        <button 
+          onClick={handleStart} 
           disabled={!verifiedStudent || !selectedCode || isCreating}
-          className="w-full max-w-xl py-4 md:py-5 bg-blue-700 text-white rounded-2xl md:rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
-          BẮT ĐẦU LÀM BÀI
+          >
+          {isCreating ? "ĐANG TẠO ĐỀ..." : "BẮT ĐẦU LÀM BÀI"}
         </button>
       </div>
     </div>
