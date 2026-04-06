@@ -5,8 +5,8 @@ export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbwZdb9kvZk6a
 export const ADMIN2_URL = "https://script.google.com/macros/s/AKfycbyQzEh1xGZFoAEas0fmxBY0bcz3P82nBtqSZKpbu9K7JzGEjVxCvCM8lIs24mp8IGg/exec";
 export const SPREADSHEET_ID_ADMIN = "1LlFAI1J0b7YQ84BL674r2kr3wSoW9shgsXSIXVPDypM"; // Admin 1
 export const URL_MAP = {
-  "toan": "https://script.google.com/macros/s/AKfycbw-DpEUUMXOxjk3NpSW8Luc3np7m6mLjbFau20pjgtA_tsBqosdhyYZ0i0toPhFfGoo/exec",
-  "vat-li": "https://script.google.com/macros/s/AKfycbw06Dnf2Spsrm19NseYX-mucqa8b8Ayg0ni8B2hZNGVmjb3uoGW7VGkKSnOepKeYFQdGQ/exec"",
+  "toan": "https://script.google.com/macros/s/AKfycbw06Dnf2Spsrm19NseYX-mucqa8b8Ayg0ni8B2hZNGVmjb3uoGW7VGkKSnOepKeYFQdGQ/exec",
+  "vat-li": "https://script.google.com/macros/s/AKfycbw-DpEUUMXOxjk3NpSW8Luc3np7m6mLjbFau20pjgtA_tsBqosdhyYZ0i0toPhFfGoo/exec",
   "hoa-hoc": "https://script.google.com/macros/s/ID_SCRIPT_HOA/exec",
   "sinh-hoc": "https://script.google.com/macros/s/ID_SCRIPT_SINH/exec",
   "ngu-van": "https://script.google.com/macros/s/ID_SCRIPT_VAN/exec",
