@@ -1,12 +1,54 @@
 import { Question } from './types';
-import { KETQUA_URL, ADMIN2_URL } from './config';
+import { handle_chonmon } from './config';
+// Lọc câu trùng
+const findDuplicates = (bank) => {
+  const groups = [];
+  const usedIds = new Set();
+
+  for (let i = 0; i < bank.length; i++) {
+    if (usedIds.has(bank[i].id)) continue;
+    let group = [bank[i]];
+
+    for (let j = i + 1; j < bank.length; j++) {
+      const q1 = bank[i];
+      const q2 = bank[j];
+
+      // TIÊU CHUẨN LỌC TRÙNG CỦA THẦY:
+      // 1. Đáp án giống nhau (q1.a === q2.a)
+      // 2. Nội dung câu hỏi khá giống nhau (dùng độ dài hoặc từ khóa)
+      const contentSimilarity = checkSimilarity(q1.question, q2.question);
+      
+      if (q1.a === q2.a && contentSimilarity > 0.8) {
+        group.push(q2);
+        usedIds.add(q2.id);
+      }
+    }
+
+    if (group.length > 1) {
+      groups.push(group);
+      usedIds.add(bank[i].id);
+    }
+  }
+  return groups;
+};
+
+// Hàm kiểm tra độ giống nhau cơ bản (Có thể dùng thuật toán Levenshtein nâng cao hơn)
+const checkSimilarity = (str1, str2) => {
+  const s1 = str1.replace(/[0-9]/g, '').toLowerCase(); // Loại bỏ số để so sánh lời dẫn
+  const s2 = str2.replace(/[0-9]/g, '').toLowerCase();
+  // Nếu số liệu giống nhau thì quan trọng hơn, thầy có thể thêm logic lọc số ở đây
+  return s1 === s2 ? 1 : 0.5; // Tạm thời trả về 1 nếu giống hệt lời dẫn
+};
+
 
 // 1. Lưu trữ ngân hàng câu hỏi
 export let questionsBank: Question[] = [];
 
 // 2. Hàm nạp dữ liệu từ Google Sheet
-export const fetchQuestionsBank = async (): Promise<Question[]> => {
+export const fetchQuestionsBank = async (selectedMon): Promise<Question[]> => {
   try {
+    const KETQUA_URL = handle_chonmon(selectedMon);
+    if (!KETQUA_URL) return [];
     const response = await fetch(`${KETQUA_URL}?action=getQuestions`);
     const result = await response.json();
     
@@ -97,10 +139,12 @@ export const pickQuestionsSmart = (
     return newQ;
   });
 };
-export const fetchScore = async (url, idgv, sbd, exams) => {
+export const fetchScore = async (selectedMon, idgv, sbd, exams) => {
   try {
+    const KETQUA_URL = handle_chonmon(selectedMon);
+    if (!KETQUA_URL) return null;
     // Nối tham số vào URL để gửi lên GAS
-    const finalUrl = `${url}?action=getScore&idgv=${idgv}&sbd=${sbd}&exams=${exams}`;
+    const finalUrl = `${KETQUA_URL}?action=getScore&idgv=${idgv}&sbd=${sbd}&exams=${exams}`;
     const res = await fetch(finalUrl);
     const data = await res.json();
 
