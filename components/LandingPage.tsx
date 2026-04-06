@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, URL_MAP, handle_chonmon } from '../config';
+import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, URL_MAP, handle_chonmon, LIST_MON } from '../config';
 import { AppUser, Student } from '../types';
 import { postToScript } from '../postToScript';
 import ExamRoom from './ExamRoom';
@@ -1221,44 +1221,23 @@ const handleRedirect = () => {
   <label className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-sm tracking-widest flex items-center gap-2">
     <i className="fas fa-book-open text-[9px]"></i>
    CHỌN MÔN HỌC
-  </label>
-</div>
-  
-  <div className="relative group">
-    <select
-      value={selectedMon?.id || ""}
-      onChange={(e) => {
-        const mon = [
-          { id: "toan", name: "Toán" },
-          { id: "vat-li", name: "Vật lí" },
-          { id: "hoa-hoc", name: "Hóa học" },
-          { id: "sinh-hoc", name: "Sinh" },
-          { id: "ngu-van", name: "Văn" },
-          { id: "tieng-anh", name: "T.Anh" },
-          { id: "lich-su", name: "Lịch sử" },
-          { id: "dia-li", name: "Địa lí" },
-          { id: "kt-pl", name: "KT&PL" },
-          { id: "cn-cn", name: "CNCN" },
-          { id: "cn-nn", name: "CNNN" }
-        ].find(m => m.id === e.target.value);
-        setSelectedMon(mon);
-        console.log("Cơ sở chọn Sheet:", mon?.id);
-      }}
-      className="w-full bg-slate-50 border-2 border-slate-200 text-slate-700 py-3 px-4 rounded-xl font-bold text-sm appearance-none focus:outline-none focus:border-blue-500 transition-all cursor-pointer shadow-sm"
-    >
-      <option value="" disabled>-- Bấm để chọn môn --</option>
-      <option value="toan">📘 Toán</option>
-      <option value="vat-li">🔬 Vật lí</option>
-      <option value="hoa-hoc">🧪 Hóa học</option>
-      <option value="sinh-hoc">🌿 Sinh học</option>
-      <option value="ngu-van">📖 Ngữ văn</option>
-      <option value="tieng-anh">🔤 Tiếng Anh</option>
-      <option value="lich-su">📜 Lịch sử</option>
-      <option value="dia-li">🌍 Địa lí</option>
-      <option value="kt-pl">⚖️ KT & Pháp luật</option>
-      <option value="cn-cn">🛠️ Công nghệ (CN)</option>
-      <option value="cn-nn">🌽 Công nghệ (NN)</option>
-    </select>
+  <select
+  value={selectedMon?.id || ""}
+  onChange={(e) => {
+    // Tìm môn trong danh sách đã khai báo ở config
+    const mon = LIST_MON.find(m => m.id === e.target.value);
+    onSelectMon(mon); // Truyền ngược lên App.tsx
+    console.log("Đã đổi môn sang:", mon?.name);
+  }}
+  className="..."
+>
+  <option value="" disabled>-- Bấm để chọn môn --</option>
+  {LIST_MON.map((m) => (
+    <option key={m.id} value={m.id}>
+      {m.icon} {m.name}
+    </option>
+  ))}
+</select>
     
     {/* Icon mũi tên cho đẹp */}
     <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
