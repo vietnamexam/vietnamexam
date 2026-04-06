@@ -4,7 +4,7 @@ import { DANHGIA_URL, URL_MAP, handle_chonmon } from '../config';
 import { questionsBank } from '../questions';
 interface Props {
   selectedMon: string;
-}
+};
 const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
