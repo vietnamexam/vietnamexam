@@ -17,7 +17,13 @@ interface EditableSectionProps {
   icon?: string;
   isSmall?: boolean;
 }
-const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
+const EditableSection = ({ 
+  title, 
+  value, 
+  onSave, 
+  icon, 
+  isSmall 
+}: EditableSectionProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
 
@@ -138,7 +144,7 @@ const EditableSection = ({ title, value, onSave, icon, isSmall }) => {
     </div>
   );
 };
-const AdminPanel = ({ mode, onBack, selectedMon }) => {
+const AdminPanel = ({ mode, onBack, selectedMon }: Props) => {
   const [previewData, setPreviewData] = useState([]);
   const [previewEdit, setPreviewEdit] = useState(null);
   const [allQuestions, setAllQuestions] = useState([]);  
