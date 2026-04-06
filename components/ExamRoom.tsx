@@ -5,7 +5,7 @@ import { LIST_MON } from '../config';
 import Watermark from "./Watermark";
 import WarningToast from "./WarningToast";
 interface Question {
-  selectedMon: string;
+  selectedMon: any;
   id: string;
   type: 'mcq' | 'true-false' | 'sa' | 'short-answer'; 
   question: string;
@@ -15,7 +15,7 @@ interface Question {
 }
 
 interface ExamRoomProps {
-  selectedMon: string;
+  selectedMon: any;
   questions: Question[];
   studentInfo: {
     idgv: string;
@@ -137,7 +137,7 @@ const formatTime = (seconds: number) => {
 };
 
 export default function ExamRoom({ 
-  selectedMon = LIST_MON[0],
+  selectedMon,
   questions = [], 
   studentInfo, 
   duration, 
@@ -150,7 +150,7 @@ export default function ExamRoom({ 
   onFinish
 }: ExamRoomProps) {
 
-   const [tabPopup,setTabPopup] = useState(false)
+  const [tabPopup,setTabPopup] = useState(false)
   const [countdown,setCountdown] = useState(10)
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [answers, setAnswers] = useState<Record<number, any>>({});
