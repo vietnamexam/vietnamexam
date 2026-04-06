@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import QuestionPreviewBlock from './QuestionPreviewBlock'; // Đảm bảo đúng đường dẫn
 import { DANHGIA_URL, handle_chonmon } from '../config';
-import { questionsBank } from '../questions';
+import { questionsBank, checkSimilarity } from '../questions';
 interface Mon {
   id: string;
   name: string;
