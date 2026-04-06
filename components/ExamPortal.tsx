@@ -13,6 +13,7 @@ interface ExamPortalProps {
 const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, onBack, onStart }) => {
   // 1. Đồng bộ hóa Grade ngay từ đầu
   const grade = useMemo(() => rawGrade.toString(), [rawGrade]);
+  const [isCreating, setIsCreating] = useState(false);
 
   // 2. States
   const [selectedCode, setSelectedCode] = useState<string>("");
@@ -149,6 +150,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
 
   const handleStart = () => {
     if (!verifiedStudent || !selectedCode) return alert("Chưa chọn mã đề hoặc chưa xác minh!");
+    setIsCreating(true);
     const fc = currentCodeDef?.fixedConfig;
     if (!fc) return alert("Cấu hình đề thi bị lỗi!");
 
@@ -169,6 +171,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
 
     if (examQuestions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi!");
     onStart(finalConfig, verifiedStudent, examQuestions);
+    setIsCreating(false);
   };
 
   const isVip =
@@ -386,7 +389,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade: rawGrade, selectedMon, o
 
       {/* Footer Button */}
       <div className="p-4 md:p-10 border-t bg-slate-50 flex justify-center sticky bottom-0">
-        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-xl py-4 md:py-5 bg-blue-700 text-white rounded-2xl md:rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
+        <button onClick={handleStart} 
+          disabled={!verifiedStudent || !selectedCode || isCreating}
+          className="w-full max-w-xl py-4 md:py-5 bg-blue-700 text-white rounded-2xl md:rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all shadow-xl disabled:opacity-50 border-b-8 border-blue-900">
           BẮT ĐẦU LÀM BÀI
         </button>
       </div>
