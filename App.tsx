@@ -49,9 +49,9 @@ const App: React.FC = () => {
       try {
         console.log("🚀 Hệ thống bắt đầu khởi tạo...");
         await Promise.all([
-          fetchAdminConfig(),          
-          fetchQuestionsBank(),
-          fetchQuestionsBankW()
+          await fetchAdminConfig(selectedMon);,          
+          fetchQuestionsBank(selectedMon),
+          fetchQuestionsBankW(selectedMon)
         ]);
         console.log("✅ Tất cả dữ liệu đã nạp xong!");
       } catch (e) {
