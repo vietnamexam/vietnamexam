@@ -56,7 +56,7 @@ export const fetchQuestionsBankW = async (
 ): Promise<Question[]> => {
   try {
     const KETQUA_URL = handle_chonmon(selectedMon);
-    if (!KETQUA_URL) return [];    
+    if (!KETQUA_URL) return [];       
     const finalUrl = examCode
       ? `${KETQUA_URL}?action=getQuestionsByCode&examCode=${examCode}`
       : `${KETQUA_URL}?action=getQuestions`;
