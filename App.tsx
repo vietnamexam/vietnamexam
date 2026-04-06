@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Student, ExamResult, Question, AppUser } from './types';
-import { KETQUA_URL , DANHGIA_URL, fetchAdminConfig } from './config';
+import { URL_MAP , DANHGIA_URL, fetchAdminConfig, LIST_MON } from './config';
 // Sửa lại đoạn này trong App.tsx của thầy:
 import LandingPage from '@/components/LandingPage';
 import ExamPortal from '@/components/ExamPortal';
@@ -27,7 +27,10 @@ const App: React.FC = () => {
   // 2. Quản lý chế độ (Mode) cho Admin hoặc Giáo viên
   const [adminMode, setAdminMode] = useState<'matran' | 'cauhoi' | 'word'>('matran'); 
   // App.tsx
- const [selectedMon, setSelectedMon] = useState({ id: "toan", name: "Toán" }); 
+ // App.tsx
+import { LIST_MON } from './config';
+
+const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định là Toán
 // Chỉ để môn mặc định là Toán thôi, các môn khác nằm trong mảng danh sách dưới đây
   
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
@@ -186,6 +189,8 @@ const App: React.FC = () => {
             {currentView === 'landing' && (
               <LandingPage 
                 user={user} 
+                selectedMon={selectedMon}
+                onSelectMon={setSelectedMon} // Truyền hàm đổi môn xuống Landing
                 onOpenAuth={() => setShowAuth(true)} 
                 onOpenVip={() => user ? setShowVipModal(true) : setShowAuth(true)}
                 onSelectGrade={(grade) => { setSelectedGrade(grade.toString()); setCurrentView('portal'); }} 
@@ -204,17 +209,17 @@ const App: React.FC = () => {
 
             {/* 2. Quản lý Admin */}
             {currentView === 'admin' && (
-              <AdminPanel mode={adminMode} onBack={goHome} />
+              <AdminPanel selectedMon={selectedMon} mode={adminMode} onBack={goHome} />
             )}
 
             {/* 3. Nhiệm vụ Giáo viên (Từ App1) */}
             {currentView === 'teacher_task' && (
-              <TeacherWordTask mode={adminMode} onBack={goHome} />
+              <TeacherWordTask selectedMon={selectedMon} mode={adminMode} onBack={goHome} />
             )}
 
             {/* 4. Cổng chọn đề thi */}
             {currentView === 'portal' && selectedGrade && (
-              <ExamPortal grade={selectedGrade} onBack={goHome} onStart={handleStartExam} />
+              <ExamPortal selectedMon={selectedMon} grade={selectedGrade} onBack={goHome} onStart={handleStartExam} />
             )}
 
             {/* 5. Giao diện làm bài */}
@@ -228,8 +233,9 @@ const App: React.FC = () => {
               />
             )}
             {/* 5. Giao diện làm bài CHÍNH THỨC (Dành cho học sinh làm đề Word) */}
-{currentView === 'exam' && activeExam && activeStudent && (
+  {currentView === 'exam' && activeExam && activeStudent && (
   <ExamRoom 
+   selectedMon={selectedMon} 
     questions={questions}
     studentInfo={{
       idgv: activeStudent.idgv, 
@@ -249,7 +255,7 @@ const App: React.FC = () => {
 )}
             {/* 6. Kết quả bài thi */}
             {currentView === 'result' && examResult && (
-              <ResultView result={examResult} questions={questions} onBack={goHome} />
+              <ResultView selectedMon={selectedMon} result={examResult} questions={questions} onBack={goHome} />
             )}
           </div>
         </main>
