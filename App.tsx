@@ -26,10 +26,7 @@ const App: React.FC = () => {
   
   // 2. Quản lý chế độ (Mode) cho Admin hoặc Giáo viên
   const [adminMode, setAdminMode] = useState<'matran' | 'cauhoi' | 'word'>('matran'); 
-  // App.tsx
- // App.tsx
-
-// const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định là Toán
+ const [selectedMon, setSelectedMon] = useState(LIST_MON[0]); // Mặc định là Toán
 // Chỉ để môn mặc định là Toán thôi, các môn khác nằm trong mảng danh sách dưới đây
   
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
@@ -45,14 +42,14 @@ const App: React.FC = () => {
     setActiveExam(null);
     setActiveStudent(null);
     setExamResult(null);
+    setQuestions([]);
   };
 
 
   // Khởi tạo dữ liệu hệ thống
   useEffect(() => {
     const initApp = async () => {
-      try {
-        console.log("🚀 Hệ thống bắt đầu khởi tạo...");
+      try {        
         await Promise.all([
           fetchAdminConfig(selectedMon),          
           fetchQuestionsBank(selectedMon),
@@ -82,6 +79,7 @@ const App: React.FC = () => {
     const usedIds = new Set<string | number>();
     for(let i=0; i<num; i++) {
       const q = getRandomQuizQuestion(Array.from(usedIds) as any);
+      if (!q) break;
       usedIds.add(q.id);
       quizQuestions.push({...q, shuffledOptions: q.o ? [...q.o].sort(() => 0.5 - Math.random()) : undefined});
     }
